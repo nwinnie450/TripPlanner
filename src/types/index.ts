@@ -1,0 +1,86 @@
+import { ObjectId } from "mongodb";
+
+export interface TripMetadata {
+  tripName: string;
+  startDate: string;
+  endDate: string;
+  currency: string;
+  budget: number;
+  passcode: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Member {
+  memberId: string;
+  name: string;
+  joinedAt: string;
+}
+
+export interface ItineraryItem {
+  itemId: string;
+  dayDate: string;
+  time: string;
+  title: string;
+  location: string;
+  notes: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ExpenseCategory =
+  | "Food"
+  | "Transport"
+  | "Accommodation"
+  | "Activities"
+  | "Shopping"
+  | "Other";
+
+export interface Expense {
+  expenseId: string;
+  amount: number;
+  description: string;
+  category: ExpenseCategory;
+  paidBy: string;
+  splitBetween: string[];
+  date: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Balance {
+  memberId: string;
+  memberName: string;
+  net: number;
+}
+
+export interface Transaction {
+  from: string;
+  fromName: string;
+  to: string;
+  toName: string;
+  amount: number;
+}
+
+export interface ApiError {
+  code: string;
+  message: string;
+  status: number;
+}
+
+export interface TripDocument {
+  _id?: ObjectId;
+  passcode: string;
+  tripName: string;
+  startDate: string;
+  endDate: string;
+  currency: string;
+  budget: number;
+  members: Member[];
+  itinerary: ItineraryItem[];
+  expenses: Expense[];
+  createdAt: string;
+  updatedAt: string;
+}

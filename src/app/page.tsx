@@ -1,64 +1,171 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import ErrorMessage from '@/components/ui/ErrorMessage';
+import { PASSCODE_LENGTH } from '@/lib/constants';
+
+export default function HomePage() {
+  const router = useRouter();
+  const [chars, setChars] = useState<string[]>(
+    Array(PASSCODE_LENGTH).fill(''),
+  );
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  function handleChange(index: number, value: string) {
+    const upper = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!upper) return;
+    const char = upper[upper.length - 1];
+    const next = [...chars];
+    next[index] = char;
+    setChars(next);
+    setError('');
+
+    if (index < PASSCODE_LENGTH - 1) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  }
+
+  function handleKeyDown(index: number, e: React.KeyboardEvent) {
+    if (e.key === 'Backspace') {
+      if (chars[index]) {
+        const next = [...chars];
+        next[index] = '';
+        setChars(next);
+      } else if (index > 0) {
+        const next = [...chars];
+        next[index - 1] = '';
+        setChars(next);
+        inputRefs.current[index - 1]?.focus();
+      }
+    }
+  }
+
+  function handlePaste(e: React.ClipboardEvent) {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData('text')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, PASSCODE_LENGTH);
+    if (!pasted) return;
+    const next = [...chars];
+    for (let i = 0; i < pasted.length; i++) {
+      next[i] = pasted[i];
+    }
+    setChars(next);
+    const focusIdx = Math.min(pasted.length, PASSCODE_LENGTH - 1);
+    inputRefs.current[focusIdx]?.focus();
+  }
+
+  async function handleJoin() {
+    const passcode = chars.join('');
+    if (passcode.length !== PASSCODE_LENGTH) {
+      setError('Please enter the full 6-character passcode.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/trip/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passcode }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.message ?? 'Invalid passcode. Please try again.');
+        return;
+      }
+
+      router.push(`/trip/${passcode}`);
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <main className="flex w-full max-w-sm flex-col items-center gap-6">
+        <div className="text-center">
+          <svg
+            className="mx-auto mb-3 text-ocean"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M17.8 19.2L16 11L12 2L8 11L6.2 19.2" />
+            <path d="M1 22L6.2 19.2L12 21L17.8 19.2L23 22" />
+            <path d="M12 2V21" />
+          </svg>
+          <h1 className="text-[28px] font-bold text-ocean">GroupTrip</h1>
+          <p className="text-[15px] text-slate-600">
+            Plan together. Split fair.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <Card className="w-full">
+          <h2 className="mb-4 text-[16px] font-semibold text-slate-900">
+            Join an Existing Trip
+          </h2>
+          <p className="mb-3 text-[13px] text-slate-600">
+            Enter trip passcode
+          </p>
+          <div className="mb-4 flex justify-center gap-2">
+            {chars.map((char, i) => (
+              <input
+                key={i}
+                ref={(el) => {
+                  inputRefs.current[i] = el;
+                }}
+                type="text"
+                inputMode="text"
+                autoCapitalize="characters"
+                maxLength={2}
+                value={char}
+                onChange={(e) => handleChange(i, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(i, e)}
+                onPaste={i === 0 ? handlePaste : undefined}
+                className="h-12 w-11 rounded-lg border border-sand-dark bg-white text-center font-mono text-lg font-bold text-slate-900 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean"
+                aria-label={`Passcode character ${i + 1}`}
+              />
+            ))}
+          </div>
+          {error && <ErrorMessage message={error} />}
+          <Button onClick={handleJoin} disabled={isLoading}>
+            {isLoading ? 'Joining...' : 'Join Trip'}
+          </Button>
+        </Card>
+
+        <div className="flex items-center gap-3 text-[13px] text-slate-400">
+          <span className="h-px w-12 bg-sand-dark" />
+          or
+          <span className="h-px w-12 bg-sand-dark" />
         </div>
+
+        <Card className="w-full">
+          <h2 className="mb-3 text-[16px] font-semibold text-slate-900">
+            Start a New Trip
+          </h2>
+          <Link href="/create">
+            <Button variant="secondary">Create Trip &rarr;</Button>
+          </Link>
+        </Card>
       </main>
     </div>
   );
