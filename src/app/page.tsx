@@ -4,12 +4,15 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useMyTrips } from '@/hooks/useMyTrips';
+import { formatDate } from '@/lib/utils';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { PASSCODE_LENGTH } from '@/lib/constants';
 
 export default function HomePage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { trips, isLoading: tripsLoading } = useMyTrips(!!user);
   const [chars, setChars] = useState<string[]>(Array(PASSCODE_LENGTH).fill(''));
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -142,6 +145,40 @@ export default function HomePage() {
 
       {/* Content area */}
       <div className="flex-1 p-6">
+        {/* My Trips section */}
+        {tripsLoading ? (
+          <div className="mb-6">
+            <h2 className="mb-3 text-[16px] font-semibold text-slate-900">My Trips</h2>
+            <div className="space-y-3">
+              <div className="h-20 animate-pulse rounded-2xl bg-[#F4F4F5]" />
+            </div>
+          </div>
+        ) : trips.length > 0 ? (
+          <div className="mb-6">
+            <h2 className="mb-3 text-[16px] font-semibold text-slate-900">My Trips</h2>
+            <div className="space-y-3">
+              {trips.map((trip) => (
+                <Link key={trip.passcode} href={`/trip/${trip.passcode}`} className="block">
+                  <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#7C3AED] to-[#A78BFA]">
+                      <span className="text-[18px]">✈️</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="truncate text-[15px] font-semibold text-slate-900">{trip.tripName}</h3>
+                      <p className="text-[12px] text-slate-400">
+                        {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)} &middot; {trip.memberCount} {trip.memberCount === 1 ? 'member' : 'members'}
+                      </p>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         {/* Join Trip card */}
         <div className="rounded-3xl border border-[#8B5CF630] bg-gradient-to-br from-[#8B5CF620] to-[#F472B620] p-5">
           <div className="mb-3 flex items-center gap-3">
