@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import type { Expense, ExpenseCategory, Member } from '@/types';
-import { EXPENSE_CATEGORIES } from '@/lib/constants';
-import { formatCurrency } from '@/lib/utils';
+import { EXPENSE_CATEGORIES, CATEGORY_COLORS, formatCurrency } from '@/lib/constants';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
@@ -35,15 +34,9 @@ export default function ExpenseForm({
   isSubmitting = false,
 }: ExpenseFormProps) {
   const [amount, setAmount] = useState(initialData?.amount?.toString() ?? '');
-  const [description, setDescription] = useState(
-    initialData?.description ?? '',
-  );
-  const [category, setCategory] = useState<string>(
-    initialData?.category ?? '',
-  );
-  const [date, setDate] = useState(
-    initialData?.date ?? new Date().toISOString().split('T')[0],
-  );
+  const [description, setDescription] = useState(initialData?.description ?? '');
+  const [category, setCategory] = useState<string>(initialData?.category ?? '');
+  const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split('T')[0]);
   const [paidBy, setPaidBy] = useState(initialData?.paidBy ?? '');
   const [splitBetween, setSplitBetween] = useState<string[]>(
     initialData?.splitBetween ?? members.map((m) => m.memberId),
@@ -58,9 +51,7 @@ export default function ExpenseForm({
 
   function toggleMember(memberId: string) {
     setSplitBetween((prev) =>
-      prev.includes(memberId)
-        ? prev.filter((id) => id !== memberId)
-        : [...prev, memberId],
+      prev.includes(memberId) ? prev.filter((id) => id !== memberId) : [...prev, memberId],
     );
   }
 
@@ -72,8 +63,7 @@ export default function ExpenseForm({
     if (!category) errs.category = 'Category is required';
     if (!date) errs.date = 'Date is required';
     if (!paidBy) errs.paidBy = 'Select who paid';
-    if (splitBetween.length === 0)
-      errs.splitBetween = 'Select at least one person';
+    if (splitBetween.length === 0) errs.splitBetween = 'Select at least one person';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -91,32 +81,29 @@ export default function ExpenseForm({
     });
   }
 
-  const categoryOptions = EXPENSE_CATEGORIES.map((c) => ({
-    value: c,
-    label: c,
-  }));
+  const displayAmount = amount
+    ? formatCurrency(parseFloat(amount) || 0, currency)
+    : formatCurrency(0, currency);
+
   const memberOptions = members.map((m) => ({
     value: m.memberId,
     label: m.name,
   }));
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <label className="text-[13px] font-semibold text-slate-600">
-          Amount *
-        </label>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {/* Amount display */}
+      <div className="flex flex-col items-center gap-2 py-4">
         <input
           type="text"
           inputMode="decimal"
           placeholder="0.00"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className={`h-14 w-full rounded-[10px] border bg-white px-4 text-2xl font-bold text-slate-900 placeholder:text-slate-400 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean ${errors.amount ? 'border-red' : 'border-sand-dark'}`}
+          className="w-full bg-transparent text-center font-[family-name:var(--font-display)] text-[48px] font-extrabold text-slate-900 placeholder:text-slate-300 focus:outline-none"
         />
-        {errors.amount && (
-          <p className="text-[13px] text-red">{errors.amount}</p>
-        )}
+        <div className="h-1 w-24 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6]" />
+        {errors.amount && <p className="text-[13px] text-red-500">{errors.amount}</p>}
       </div>
 
       <Input
@@ -127,14 +114,31 @@ export default function ExpenseForm({
         error={errors.description}
       />
 
-      <Select
-        label="Category *"
-        options={categoryOptions}
-        placeholder="Select category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        error={errors.category}
-      />
+      {/* Category pills */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[13px] font-semibold text-slate-600">Category *</label>
+        <div className="flex flex-wrap gap-2">
+          {EXPENSE_CATEGORIES.map((cat) => {
+            const config = CATEGORY_COLORS[cat];
+            const isSelected = category === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategory(isSelected ? '' : cat)}
+                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-medium transition-all ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <span>{config.emoji}</span> {cat}
+              </button>
+            );
+          })}
+        </div>
+        {errors.category && <p className="text-[13px] text-red-500">{errors.category}</p>}
+      </div>
 
       <Input
         label="Date *"
@@ -153,57 +157,56 @@ export default function ExpenseForm({
         error={errors.paidBy}
       />
 
+      {/* Split between with purple checkboxes */}
       <div className="flex flex-col gap-2">
-        <label className="text-[13px] font-semibold text-slate-600">
-          Split between *
-        </label>
+        <label className="text-[13px] font-semibold text-slate-600">Split between *</label>
         <div className="grid grid-cols-2 gap-2">
           {members.map((m) => (
             <label
               key={m.memberId}
-              className="flex h-11 cursor-pointer items-center gap-2 rounded-lg border border-sand-dark px-3"
+              className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 px-3 transition-colors hover:bg-slate-50"
             >
               <input
                 type="checkbox"
                 checked={splitBetween.includes(m.memberId)}
                 onChange={() => toggleMember(m.memberId)}
-                className="h-4 w-4 accent-ocean"
+                className="h-4 w-4 rounded accent-[#8B5CF6]"
               />
               <span className="text-[15px] text-slate-900">{m.name}</span>
             </label>
           ))}
         </div>
-        {errors.splitBetween && (
-          <p className="text-[13px] text-red">{errors.splitBetween}</p>
-        )}
+        {errors.splitBetween && <p className="text-[13px] text-red-500">{errors.splitBetween}</p>}
         {perPerson > 0 && (
-          <p className="text-[13px] font-medium text-ocean">
+          <p className="text-[13px] font-medium text-[#8B5CF6]">
             Each person: {formatCurrency(perPerson, currency)}
           </p>
         )}
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() =>
-              setSplitBetween(members.map((m) => m.memberId))
-            }
-            className="text-[13px] font-medium text-ocean"
+            onClick={() => setSplitBetween(members.map((m) => m.memberId))}
+            className="text-[13px] font-medium text-[#8B5CF6]"
           >
             Select All
           </button>
           <button
             type="button"
             onClick={() => setSplitBetween([])}
-            className="text-[13px] font-medium text-ocean"
+            className="text-[13px] font-medium text-[#8B5CF6]"
           >
             Deselect All
           </button>
         </div>
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="mt-2 h-12 w-full rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] font-[family-name:var(--font-display)] text-[16px] font-bold text-white shadow-sm transition-opacity disabled:opacity-50"
+      >
         {isSubmitting ? 'Saving...' : 'Save Expense'}
-      </Button>
+      </button>
       <Button type="button" variant="ghost" onClick={onCancel}>
         Cancel
       </Button>

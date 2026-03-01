@@ -10,23 +10,32 @@ import ErrorMessage from '@/components/ui/ErrorMessage';
 import PasscodeDisplay from '@/components/trip/PasscodeDisplay';
 
 const CURRENCIES = [
+  { value: 'SGD', label: 'SGD - Singapore Dollar' },
+  { value: 'JPY', label: 'JPY - Japanese Yen' },
+  { value: 'KRW', label: 'KRW - South Korean Won' },
+  { value: 'CNY', label: 'CNY - Chinese Yuan' },
+  { value: 'MYR', label: 'MYR - Malaysian Ringgit' },
   { value: 'USD', label: 'USD - US Dollar' },
+  { value: 'THB', label: 'THB - Thai Baht' },
+  { value: 'VND', label: 'VND - Vietnamese Dong' },
   { value: 'EUR', label: 'EUR - Euro' },
   { value: 'GBP', label: 'GBP - British Pound' },
-  { value: 'JPY', label: 'JPY - Japanese Yen' },
   { value: 'AUD', label: 'AUD - Australian Dollar' },
   { value: 'CAD', label: 'CAD - Canadian Dollar' },
+  { value: 'TWD', label: 'TWD - Taiwan Dollar' },
+  { value: 'HKD', label: 'HKD - Hong Kong Dollar' },
+  { value: 'IDR', label: 'IDR - Indonesian Rupiah' },
+  { value: 'PHP', label: 'PHP - Philippine Peso' },
+  { value: 'INR', label: 'INR - Indian Rupee' },
+  { value: 'NZD', label: 'NZD - New Zealand Dollar' },
   { value: 'CHF', label: 'CHF - Swiss Franc' },
-  { value: 'SGD', label: 'SGD - Singapore Dollar' },
-  { value: 'MYR', label: 'MYR - Malaysian Ringgit' },
-  { value: 'THB', label: 'THB - Thai Baht' },
 ];
 
 export default function CreateTripPage() {
   const [tripName, setTripName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('SGD');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,7 +94,7 @@ export default function CreateTripPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-ocean">Trip Created!</h1>
             <p className="mt-1 text-[15px] text-slate-600">
-              Share this passcode with your group
+              Send this to your group so they can join
             </p>
           </div>
           <div className="w-full">

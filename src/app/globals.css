@@ -1,31 +1,43 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-ocean: #1B6B93;
-  --color-ocean-dark: #145374;
-  --color-ocean-light: #E8F4F8;
+  /* Primary purple palette (replaces ocean) */
+  --color-ocean: #8B5CF6;
+  --color-ocean-dark: #7C3AED;
+  --color-ocean-light: #F3F0FF;
 
-  --color-sand: #F5F0E8;
-  --color-sand-dark: #E8DFD0;
+  /* Background (replaces sand - now white/light gray) */
+  --color-sand: #FFFFFF;
+  --color-sand-dark: #E4E4E7;
 
-  --color-sunset: #E8734A;
-  --color-sunset-light: #FFF0EB;
+  /* Accent (replaces sunset - now teal) */
+  --color-sunset: #14B8A6;
+  --color-sunset-light: #F0FDFA;
 
-  --color-forest: #2D8B57;
-  --color-forest-light: #E8F5EE;
+  /* Success green (keep forest) */
+  --color-forest: #14B8A6;
+  --color-forest-light: #F0FDFA;
 
-  --color-slate-900: #1A1A2E;
-  --color-slate-600: #4A4A5A;
-  --color-slate-400: #8A8A9A;
+  /* Text colors (darker, matches design) */
+  --color-slate-900: #18181B;
+  --color-slate-600: #71717A;
+  --color-slate-400: #A1A1AA;
 
-  --color-red: #D94444;
+  /* Danger/error */
+  --color-red: #EF4444;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-nav: 0 -1px 4px rgba(0, 0, 0, 0.08);
-  --shadow-fab: 0 4px 12px rgba(232, 115, 74, 0.35);
+  /* Pink accent */
+  --color-pink: #F472B6;
+  --color-pink-light: #FDF2F8;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
+  /* Shadows (softer, purple-tinted) */
+  --shadow-card: 0 4px 16px rgba(139, 92, 246, 0.06);
+  --shadow-nav: 0 -4px 16px rgba(0, 0, 0, 0.05);
+  --shadow-fab: 0 4px 16px rgba(139, 92, 246, 0.4);
+
+  /* Fonts */
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-plus-jakarta-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {

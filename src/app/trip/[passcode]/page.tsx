@@ -27,16 +27,18 @@ export default function DashboardPage() {
   const days = getDaysBetween(trip.startDate, trip.endDate);
 
   return (
-    <div className="px-4 pt-6">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-slate-900">{trip.tripName}</h1>
-        <p className="text-[13px] text-slate-600">
+    <div>
+      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
+        <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
+          {trip.tripName}
+        </h1>
+        <p className="text-[13px] text-white/80">
           {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)}{' '}
           &middot; {days} {days === 1 ? 'day' : 'days'}
         </p>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="bg-white p-6 flex flex-col gap-6">
         <PasscodeDisplay passcode={trip.passcode} />
         <MemberList members={members} />
         <BudgetSummary

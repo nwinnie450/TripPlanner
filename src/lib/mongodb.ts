@@ -13,7 +13,12 @@ export async function getDb(): Promise<Db> {
     throw new Error("MONGODB_URI environment variable is not set");
   }
 
-  client = new MongoClient(uri);
+  client = new MongoClient(uri, {
+    tls: true,
+    directConnection: true,
+    serverSelectionTimeoutMS: 10000,
+    connectTimeoutMS: 10000,
+  });
   await client.connect();
   db = client.db(dbName);
   return db;

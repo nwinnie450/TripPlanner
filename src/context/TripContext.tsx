@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import type { Member } from '@/types';
 
 interface TripContextValue {
@@ -22,31 +23,29 @@ export function TripProvider({ children }: { children: ReactNode }) {
   const params = useParams();
   const rawPasscode = params.passcode;
   const passcode = typeof rawPasscode === 'string' ? rawPasscode : '';
-  const [currentMember, setCurrentMemberState] = useState<Member | null>(null);
+  const { user } = useAuth();
+  const [currentMember, setCurrentMember] = useState<Member | null>(null);
 
+  // Resolve current member by matching userId from auth
   useEffect(() => {
-    if (!passcode) return;
-    const stored = localStorage.getItem(`grouptrip_member_${passcode}`);
-    if (stored) {
+    if (!passcode || !user) return;
+
+    async function resolveMember() {
       try {
-        setCurrentMemberState(JSON.parse(stored));
+        const res = await fetch(`/api/trip/${passcode}/members`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const match = data.members?.find(
+          (m: Member) => m.userId === user!.userId,
+        );
+        if (match) setCurrentMember(match);
       } catch {
-        // invalid stored data
+        // ignore
       }
     }
-  }, [passcode]);
 
-  function setCurrentMember(member: Member | null) {
-    setCurrentMemberState(member);
-    if (member && passcode) {
-      localStorage.setItem(
-        `grouptrip_member_${passcode}`,
-        JSON.stringify(member),
-      );
-    } else if (passcode) {
-      localStorage.removeItem(`grouptrip_member_${passcode}`);
-    }
-  }
+    resolveMember();
+  }, [passcode, user]);
 
   return (
     <TripContext.Provider value={{ passcode, currentMember, setCurrentMember }}>

@@ -1,5 +1,9 @@
 import { z } from "zod/v4";
-import { EXPENSE_CATEGORIES, MEMBER_LIMIT } from "./constants";
+import {
+  EXPENSE_CATEGORIES,
+  ITINERARY_CATEGORIES,
+  MEMBER_LIMIT,
+} from "./constants";
 
 export const createTripSchema = z
   .object({
@@ -13,8 +17,20 @@ export const createTripSchema = z
     path: ["endDate"],
   });
 
+export const signupSchema = z.object({
+  email: z.string().email().max(255),
+  password: z.string().min(8).max(128),
+  name: z.string().min(1).max(50),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
 export const addMemberSchema = z.object({
   name: z.string().min(1).max(50),
+  userId: z.string().optional(),
 });
 
 export const addItineraryItemSchema = z.object({
@@ -26,6 +42,11 @@ export const addItineraryItemSchema = z.object({
     .or(z.literal("")),
   title: z.string().min(1).max(200),
   location: z.string().max(200).optional().default(""),
+  locationLat: z.number().min(-90).max(90).optional(),
+  locationLng: z.number().min(-180).max(180).optional(),
+  category: z
+    .enum(ITINERARY_CATEGORIES as [string, ...string[]])
+    .optional(),
   notes: z.string().max(500).optional().default(""),
   createdBy: z.string().min(1),
 });
@@ -39,6 +60,11 @@ export const updateItineraryItemSchema = z.object({
     .or(z.literal("")),
   title: z.string().min(1).max(200).optional(),
   location: z.string().max(200).optional(),
+  locationLat: z.number().min(-90).max(90).optional(),
+  locationLng: z.number().min(-180).max(180).optional(),
+  category: z
+    .enum(ITINERARY_CATEGORIES as [string, ...string[]])
+    .optional(),
   notes: z.string().max(500).optional(),
 });
 

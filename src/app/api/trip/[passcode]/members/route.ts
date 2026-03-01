@@ -66,6 +66,16 @@ export async function POST(
       );
     }
 
+    // If userId provided, check if already a member (idempotent join)
+    if (parsed.data.userId) {
+      const existing = trip.members.find(
+        (m) => m.userId === parsed.data.userId,
+      );
+      if (existing) {
+        return NextResponse.json(existing);
+      }
+    }
+
     if (trip.members.length >= MEMBER_LIMIT) {
       throw new ApiError(
         "MEMBER_LIMIT_REACHED",
@@ -77,6 +87,7 @@ export async function POST(
     const member: Member = {
       memberId: generateId(),
       name: parsed.data.name,
+      ...(parsed.data.userId && { userId: parsed.data.userId }),
       joinedAt: new Date().toISOString(),
     };
 

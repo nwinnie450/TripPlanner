@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
 import { useItinerary } from '@/hooks/useItinerary';
@@ -26,6 +25,9 @@ export default function AddItineraryPage() {
     title: string;
     time: string;
     location: string;
+    locationLat?: number;
+    locationLng?: number;
+    category?: string;
     notes: string;
   }) {
     setIsSubmitting(true);
@@ -48,20 +50,39 @@ export default function AddItineraryPage() {
   }
 
   return (
-    <div className="px-4 pt-4">
-      <Link
-        href={`/trip/${passcode}/itinerary`}
-        className="mb-4 inline-flex items-center gap-1 text-[15px] text-ocean"
-      >
-        &larr; Back
-      </Link>
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">Add Activity</h1>
-      <ItineraryForm
-        dates={dates}
-        onSubmit={handleSubmit}
-        onCancel={() => router.back()}
-        isSubmitting={isSubmitting}
-      />
+    <div className="min-h-screen bg-white">
+      <div className="flex items-center bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-4 pt-12">
+        <button
+          onClick={() => router.back()}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:text-white"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+        <h1 className="ml-3 font-[family-name:var(--font-display)] text-[20px] font-bold text-white">
+          Add Activity
+        </h1>
+      </div>
+      <div className="p-6">
+        <ItineraryForm
+          dates={dates}
+          onSubmit={handleSubmit}
+          onCancel={() => router.back()}
+          isSubmitting={isSubmitting}
+        />
+      </div>
     </div>
   );
 }

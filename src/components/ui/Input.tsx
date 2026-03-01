@@ -5,11 +5,13 @@ import { type InputHTMLAttributes } from 'react';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  icon?: React.ReactNode;
 }
 
 export default function Input({
   label,
   error,
+  icon,
   className = '',
   id,
   ...props
@@ -26,11 +28,18 @@ export default function Input({
           {label}
         </label>
       )}
-      <input
-        id={inputId}
-        className={`h-12 w-full rounded-[10px] border border-sand-dark bg-white px-4 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean ${error ? 'border-red' : ''} ${className}`}
-        {...props}
-      />
+      <div className="relative">
+        {icon && (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+            {icon}
+          </span>
+        )}
+        <input
+          id={inputId}
+          className={`h-12 w-full rounded-xl bg-[#F4F4F5] ${icon ? 'pl-10' : 'px-4'} pr-4 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-ocean/30 ${error ? 'ring-2 ring-red' : ''} ${className}`}
+          {...props}
+        />
+      </div>
       {error && <p className="text-[13px] text-red">{error}</p>}
     </div>
   );

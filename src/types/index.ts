@@ -11,11 +11,28 @@ export interface TripMetadata {
   updatedAt: string;
 }
 
+export interface User {
+  userId: string;
+  email: string;
+  name: string;
+}
+
 export interface Member {
   memberId: string;
   name: string;
+  userId?: string;
   joinedAt: string;
 }
+
+export type ItineraryCategory =
+  | "Food"
+  | "Sightseeing"
+  | "Transport"
+  | "Hotel"
+  | "Shopping"
+  | "Nightlife"
+  | "Activity"
+  | "Other";
 
 export interface ItineraryItem {
   itemId: string;
@@ -23,6 +40,9 @@ export interface ItineraryItem {
   time: string;
   title: string;
   location: string;
+  locationLat?: number;
+  locationLng?: number;
+  category?: ItineraryCategory;
   notes: string;
   createdBy: string;
   createdAt: string;

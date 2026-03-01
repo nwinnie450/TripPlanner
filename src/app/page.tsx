@@ -2,17 +2,14 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
+import { useAuth } from '@/context/AuthContext';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { PASSCODE_LENGTH } from '@/lib/constants';
 
 export default function HomePage() {
   const router = useRouter();
-  const [chars, setChars] = useState<string[]>(
-    Array(PASSCODE_LENGTH).fill(''),
-  );
+  const { user } = useAuth();
+  const [chars, setChars] = useState<string[]>(Array(PASSCODE_LENGTH).fill(''));
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -95,37 +92,81 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <main className="flex w-full max-w-sm flex-col items-center gap-6">
-        <div className="text-center">
+    <div className="flex min-h-screen flex-col bg-sand">
+      {/* Purple gradient header */}
+      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-12">
+        {/* Greeting row */}
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-[15px] font-medium text-white/90">
+            Hi, {user?.name ?? 'there'} {'👋'}
+          </span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/30">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Explore title */}
+        <h1 className="mb-4 font-display text-[26px] font-extrabold text-white">Explore</h1>
+
+        {/* Decorative search bar */}
+        <div className="flex items-center gap-3 rounded-full bg-white/20 px-4 py-3">
           <svg
-            className="mx-auto mb-3 text-ocean"
-            width="40"
-            height="40"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="currentColor"
+            stroke="rgba(255,255,255,0.5)"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M17.8 19.2L16 11L12 2L8 11L6.2 19.2" />
-            <path d="M1 22L6.2 19.2L12 21L17.8 19.2L23 22" />
-            <path d="M12 2V21" />
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <h1 className="text-[28px] font-bold text-ocean">GroupTrip</h1>
-          <p className="text-[15px] text-slate-600">
-            Plan together. Split fair.
-          </p>
+          <span className="text-[14px] text-white/50">Search destinations...</span>
         </div>
+      </div>
 
-        <Card className="w-full">
-          <h2 className="mb-4 text-[16px] font-semibold text-slate-900">
-            Join an Existing Trip
-          </h2>
-          <p className="mb-3 text-[13px] text-slate-600">
-            Enter trip passcode
-          </p>
+      {/* Content area */}
+      <div className="flex-1 p-6">
+        {/* Join Trip card */}
+        <div className="rounded-3xl border border-[#8B5CF630] bg-gradient-to-br from-[#8B5CF620] to-[#F472B620] p-5">
+          <div className="mb-3 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B5CF6]/10">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8B5CF6"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                <path d="M13 5v2" />
+                <path d="M13 17v2" />
+                <path d="M13 11v2" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-[16px] font-semibold text-slate-900">Join a Trip</h2>
+              <p className="text-[13px] text-slate-500">Enter the passcode shared by your group</p>
+            </div>
+          </div>
+
           <div className="mb-4 flex justify-center gap-2">
             {chars.map((char, i) => (
               <input
@@ -141,32 +182,23 @@ export default function HomePage() {
                 onChange={(e) => handleChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={i === 0 ? handlePaste : undefined}
-                className="h-12 w-11 rounded-lg border border-sand-dark bg-white text-center font-mono text-lg font-bold text-slate-900 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean"
+                className="h-12 w-11 rounded-lg border border-[#8B5CF6]/20 bg-white text-center font-mono text-lg font-bold text-slate-900 focus:border-[#8B5CF6] focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
                 aria-label={`Passcode character ${i + 1}`}
               />
             ))}
           </div>
+
           {error && <ErrorMessage message={error} />}
-          <Button onClick={handleJoin} disabled={isLoading}>
+
+          <button
+            onClick={handleJoin}
+            disabled={isLoading}
+            className="w-full rounded-xl bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] py-3 text-[15px] font-semibold text-white transition-opacity hover:opacity-90 active:opacity-90 disabled:opacity-50"
+          >
             {isLoading ? 'Joining...' : 'Join Trip'}
-          </Button>
-        </Card>
-
-        <div className="flex items-center gap-3 text-[13px] text-slate-400">
-          <span className="h-px w-12 bg-sand-dark" />
-          or
-          <span className="h-px w-12 bg-sand-dark" />
+          </button>
         </div>
-
-        <Card className="w-full">
-          <h2 className="mb-3 text-[16px] font-semibold text-slate-900">
-            Start a New Trip
-          </h2>
-          <Link href="/create">
-            <Button variant="secondary">Create Trip &rarr;</Button>
-          </Link>
-        </Card>
-      </main>
+      </div>
     </div>
   );
 }

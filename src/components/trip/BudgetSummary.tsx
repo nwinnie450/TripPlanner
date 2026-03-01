@@ -1,6 +1,6 @@
 import Card from '@/components/ui/Card';
 import ProgressBar from '@/components/ui/ProgressBar';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/lib/constants';
 
 interface BudgetSummaryProps {
   spent: number;

@@ -12,7 +12,7 @@ export default function Card({
 }: CardProps) {
   return (
     <div
-      className={`rounded-[14px] p-4 shadow-card ${
+      className={`rounded-3xl p-4 shadow-card ${
         highlighted ? 'bg-ocean-light' : 'bg-white'
       } ${className}`}
       {...props}

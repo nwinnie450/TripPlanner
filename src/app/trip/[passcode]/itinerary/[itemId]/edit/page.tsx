@@ -34,6 +34,9 @@ export default function EditItineraryPage() {
     title: string;
     time: string;
     location: string;
+    locationLat?: number;
+    locationLng?: number;
+    category?: string;
     notes: string;
   }) {
     setIsSubmitting(true);

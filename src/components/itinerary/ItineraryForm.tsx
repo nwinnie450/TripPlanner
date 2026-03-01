@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import type { ItineraryItem } from '@/types';
+import type { ItineraryItem, ItineraryCategory } from '@/types';
+import { ITINERARY_CATEGORIES, ITINERARY_CATEGORY_CONFIG } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
+import LocationAutocomplete from '@/components/ui/LocationAutocomplete';
 
 interface ItineraryFormProps {
   dates: string[];
@@ -15,6 +17,9 @@ interface ItineraryFormProps {
     title: string;
     time: string;
     location: string;
+    locationLat?: number;
+    locationLng?: number;
+    category?: ItineraryCategory;
     notes: string;
   }) => Promise<void>;
   onCancel: () => void;
@@ -34,6 +39,9 @@ export default function ItineraryForm({
   const [title, setTitle] = useState(initialData?.title ?? '');
   const [time, setTime] = useState(initialData?.time ?? '');
   const [location, setLocation] = useState(initialData?.location ?? '');
+  const [locationLat, setLocationLat] = useState<number | undefined>(initialData?.locationLat);
+  const [locationLng, setLocationLng] = useState<number | undefined>(initialData?.locationLng);
+  const [category, setCategory] = useState<ItineraryCategory | undefined>(initialData?.category);
   const [notes, setNotes] = useState(initialData?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -48,20 +56,33 @@ export default function ItineraryForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    await onSubmit({ dayDate, title: title.trim(), time, location: location.trim(), notes: notes.trim() });
+    await onSubmit({
+      dayDate,
+      title: title.trim(),
+      time,
+      location: location.trim(),
+      ...(locationLat != null && locationLng != null && { locationLat, locationLng }),
+      ...(category != null && { category }),
+      notes: notes.trim(),
+    });
+  }
+
+  function handleLocationSelect(loc: string, lat: number, lng: number) {
+    setLocation(loc);
+    setLocationLat(lat);
+    setLocationLng(lng);
+  }
+
+  function handleLocationChange(val: string) {
+    setLocation(val);
+    setLocationLat(undefined);
+    setLocationLng(undefined);
   }
 
   const dateOptions = dates.map((d) => ({ value: d, label: formatDate(d) }));
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <Select
-        label="Day *"
-        options={dateOptions}
-        value={dayDate}
-        onChange={(e) => setDayDate(e.target.value)}
-        error={errors.dayDate}
-      />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <Input
         label="Title *"
         placeholder="e.g., Visit Sagrada Familia"
@@ -69,36 +90,92 @@ export default function ItineraryForm({
         onChange={(e) => setTitle(e.target.value)}
         error={errors.title}
       />
-      <Input
-        label="Time"
-        type="time"
-        value={time}
-        onChange={(e) => setTime(e.target.value)}
-      />
-      <Input
-        label="Location"
-        placeholder="e.g., Carrer de Mallorca"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-      />
+
+      {/* Side-by-side Day and Time */}
+      <div className="grid grid-cols-2 gap-3">
+        <Select
+          label="Day *"
+          options={dateOptions}
+          value={dayDate}
+          onChange={(e) => setDayDate(e.target.value)}
+          error={errors.dayDate}
+        />
+        <Input label="Time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+      </div>
+
+      {/* Location with map-pin icon label */}
       <div className="flex flex-col gap-1">
-        <label
-          htmlFor="notes"
-          className="text-[13px] font-semibold text-slate-600"
-        >
+        <label className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          Location
+        </label>
+        <LocationAutocomplete
+          value={location}
+          onChange={handleLocationChange}
+          onSelect={handleLocationSelect}
+        />
+      </div>
+
+      {/* Category pills */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[13px] font-semibold text-slate-600">Category</label>
+        <div className="flex flex-wrap gap-2">
+          {ITINERARY_CATEGORIES.map((cat) => {
+            const config = ITINERARY_CATEGORY_CONFIG[cat];
+            const isSelected = category === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategory(isSelected ? undefined : cat)}
+                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-medium transition-all ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <span>{config.emoji}</span> {cat}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Notes textarea */}
+      <div className="flex flex-col gap-1">
+        <label htmlFor="notes" className="text-[13px] font-semibold text-slate-600">
           Notes
         </label>
         <textarea
           id="notes"
           rows={3}
-          className="w-full rounded-[10px] border border-sand-dark bg-white px-4 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean"
+          placeholder="Any additional details..."
+          className="w-full rounded-xl bg-slate-100 px-4 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
       </div>
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Saving...' : 'Save Activity'}
-      </Button>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="mt-2 h-12 w-full rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] font-[family-name:var(--font-display)] text-[16px] font-bold text-white shadow-sm transition-opacity disabled:opacity-50"
+      >
+        {isSubmitting ? 'Saving...' : 'Add Activity'}
+      </button>
       <Button type="button" variant="ghost" onClick={onCancel}>
         Cancel
       </Button>

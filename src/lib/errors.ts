@@ -34,6 +34,7 @@ export function handleApiError(error: unknown): NextResponse {
       error.message.includes("MongoDB"));
 
   if (isMongoError) {
+    console.error("MongoDB error:", error);
     return NextResponse.json(
       { code: "DATABASE_ERROR", message: "Database error" },
       { status: 502 }

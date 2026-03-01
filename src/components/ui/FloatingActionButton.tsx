@@ -15,7 +15,7 @@ export default function FloatingActionButton({
     <Link
       href={href}
       aria-label={label}
-      className="fixed bottom-20 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-sunset text-white shadow-fab transition-transform active:scale-95"
+      className="fixed bottom-20 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] text-white shadow-fab transition-transform active:scale-95"
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path
