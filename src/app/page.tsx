@@ -202,15 +202,15 @@ export default function HomePage() {
 
         {/* Create Trip card */}
         <Link href="/create" className="mt-4 block">
-          <div className="rounded-3xl border border-[#14B8A630] bg-gradient-to-br from-[#14B8A620] to-[#8B5CF620] p-5">
+          <div className="rounded-3xl border border-[#8B5CF630] bg-gradient-to-br from-[#8B5CF620] to-[#F472B620] p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#14B8A6]/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B5CF6]/10">
                 <svg
                   width="20"
                   height="20"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#14B8A6"
+                  stroke="#8B5CF6"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
