@@ -104,7 +104,7 @@ export default function HomePage() {
           <span className="text-[15px] font-medium text-white/90">
             Hi, {user?.name ?? 'there'} {'👋'}
           </span>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/30">
+          <Link href="/profile" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/30">
             <svg
               width="18"
               height="18"
@@ -118,7 +118,7 @@ export default function HomePage() {
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-          </div>
+          </Link>
         </div>
 
         {/* Explore title */}
