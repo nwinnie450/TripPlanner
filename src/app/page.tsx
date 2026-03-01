@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { PASSCODE_LENGTH } from '@/lib/constants';
@@ -198,6 +199,46 @@ export default function HomePage() {
             {isLoading ? 'Joining...' : 'Join Trip'}
           </button>
         </div>
+
+        {/* Create Trip card */}
+        <Link href="/create" className="mt-4 block">
+          <div className="rounded-3xl border border-[#14B8A630] bg-gradient-to-br from-[#14B8A620] to-[#8B5CF620] p-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#14B8A6]/10">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#14B8A6"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-[16px] font-semibold text-slate-900">Create a Trip</h2>
+                <p className="text-[13px] text-slate-500">Start planning a new group adventure</p>
+              </div>
+              <svg
+                className="ml-auto"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#A1A1AA"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </div>
+        </Link>
       </div>
     </div>
   );
