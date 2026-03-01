@@ -4,6 +4,8 @@ import { generatePasscode, lookupTrip } from "@/lib/passcode";
 import { getCollection } from "@/lib/mongodb";
 import { ApiError, handleApiError } from "@/lib/errors";
 import { rateLimitGeneral } from "@/lib/rate-limit";
+import { getSessionUser } from "@/lib/auth";
+import { generateId } from "@/lib/utils";
 import type { TripDocument } from "@/types";
 
 export async function POST(request: NextRequest) {
@@ -25,6 +27,22 @@ export async function POST(request: NextRequest) {
     }
 
     const { tripName, startDate, endDate, currency } = parsed.data;
+
+    // Get the authenticated user to auto-add as first member
+    const session = await getSessionUser();
+    let creatorMember = null;
+    if (session) {
+      const usersCollection = await getCollection("users");
+      const userDoc = await usersCollection.findOne({ userId: session.userId });
+      if (userDoc) {
+        creatorMember = {
+          memberId: generateId(),
+          name: userDoc.name as string,
+          userId: session.userId,
+          joinedAt: new Date().toISOString(),
+        };
+      }
+    }
 
     let passcode: string = "";
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -52,7 +70,7 @@ export async function POST(request: NextRequest) {
       endDate,
       currency,
       budget: 0,
-      members: [],
+      members: creatorMember ? [creatorMember] : [],
       itinerary: [],
       expenses: [],
       createdAt: now,
