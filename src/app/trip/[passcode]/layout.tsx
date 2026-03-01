@@ -5,10 +5,8 @@ import { useParams, useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { TripProvider } from '@/context/TripContext';
 import GoogleMapsProvider from '@/components/providers/GoogleMapsProvider';
-import BottomNav from '@/components/ui/BottomNav';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
-const NO_NAV_PATTERNS = ['/join', '/add', '/edit'];
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function TripLayout({
   children,
@@ -23,8 +21,6 @@ export default function TripLayout({
   const { user, isLoading: authLoading } = useAuth();
   const [validated, setValidated] = useState(false);
   const validatedRef = useRef(false);
-
-  const hideNav = NO_NAV_PATTERNS.some((p) => pathname.endsWith(p));
 
   useEffect(() => {
     if (authLoading) return;
@@ -82,10 +78,9 @@ export default function TripLayout({
   return (
     <TripProvider>
       <GoogleMapsProvider>
-        <div className={hideNav ? '' : 'pb-20'}>
+        <div className="pb-20">
           {children}
         </div>
-        {!hideNav && <BottomNav passcode={passcode} />}
       </GoogleMapsProvider>
     </TripProvider>
   );

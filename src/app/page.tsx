@@ -96,7 +96,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-sand">
+    <div className="flex min-h-screen flex-col bg-sand pb-20">
       {/* Purple gradient header */}
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-12">
         {/* Greeting row */}
