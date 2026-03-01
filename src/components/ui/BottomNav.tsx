@@ -7,7 +7,14 @@ interface BottomNavProps {
   passcode: string;
 }
 
-const tabs = [
+interface Tab {
+  label: string;
+  path: string;
+  absolute?: boolean;
+  icon: React.ReactNode;
+}
+
+const tabs: Tab[] = [
   {
     label: 'Dashboard',
     path: '',
@@ -52,26 +59,39 @@ const tabs = [
       </svg>
     ),
   },
+  {
+    label: 'Profile',
+    path: '/profile',
+    absolute: true,
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    ),
+  },
 ];
 
 export default function BottomNav({ passcode }: BottomNavProps) {
   const pathname = usePathname();
   const basePath = `/trip/${passcode}`;
 
-  function isActive(tabPath: string) {
-    const fullPath = basePath + tabPath;
-    if (tabPath === '') return pathname === basePath;
+  function isActive(tab: Tab) {
+    if (tab.absolute) return pathname === tab.path;
+    const fullPath = basePath + tab.path;
+    if (tab.path === '') return pathname === basePath;
     return pathname.startsWith(fullPath);
   }
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around bg-white shadow-nav">
       {tabs.map((tab) => {
-        const active = isActive(tab.path);
+        const active = isActive(tab);
+        const href = tab.absolute ? tab.path : basePath + tab.path;
         return (
           <Link
             key={tab.label}
-            href={basePath + tab.path}
+            href={href}
             className={`relative flex min-w-[44px] flex-1 flex-col items-center justify-center gap-0.5 pt-1 ${
               active ? 'text-ocean' : 'text-slate-400'
             }`}
