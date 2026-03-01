@@ -112,53 +112,59 @@ export default function CreateTripPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <Link
-          href="/"
-          className="mb-6 inline-flex items-center gap-1 text-[15px] text-ocean"
-        >
-          &larr; Back
-        </Link>
-        <h1 className="mb-6 text-2xl font-bold text-slate-900">
-          Create a New Trip
-        </h1>
-        <Card>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <Input
-              label="Trip Name *"
-              placeholder="e.g., Barcelona 2026"
-              value={tripName}
-              onChange={(e) => setTripName(e.target.value)}
-              error={errors.tripName}
-            />
-            <Input
-              label="Start Date *"
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              error={errors.startDate}
-            />
-            <Input
-              label="End Date *"
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              error={errors.endDate}
-            />
-            <Select
-              label="Currency *"
-              options={CURRENCIES}
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              error={errors.currency}
-            />
-            {apiError && <ErrorMessage message={apiError} />}
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create Trip'}
-            </Button>
-          </form>
-        </Card>
+    <div className="min-h-screen bg-white">
+      {/* Purple gradient header */}
+      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-5 pb-6 pt-12">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </Link>
+          <h1 className="font-display text-[20px] font-bold text-white">Create a New Trip</h1>
+        </div>
+      </div>
+
+      {/* Form */}
+      <div className="px-6 pt-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Input
+            label="Trip Name *"
+            placeholder="e.g., Barcelona 2026"
+            value={tripName}
+            onChange={(e) => setTripName(e.target.value)}
+            error={errors.tripName}
+          />
+          <Input
+            label="Start Date *"
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            error={errors.startDate}
+          />
+          <Input
+            label="End Date *"
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            error={errors.endDate}
+          />
+          <Select
+            label="Currency *"
+            options={CURRENCIES}
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            error={errors.currency}
+          />
+          {apiError && <ErrorMessage message={apiError} />}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Creating...' : 'Create Trip'}
+          </Button>
+        </form>
       </div>
     </div>
   );
