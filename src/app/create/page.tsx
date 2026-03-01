@@ -114,7 +114,7 @@ export default function CreateTripPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Purple gradient header */}
-      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-5 pb-6 pt-12">
+      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-5 pb-6 pt-4">
         <div className="flex items-center gap-3">
           <Link
             href="/"
