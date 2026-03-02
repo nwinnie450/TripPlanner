@@ -1,10 +1,16 @@
 import useSWR from 'swr';
-import type { Balance, Transaction } from '@/types';
+import type { Balance, Transaction, Payment } from '@/types';
 import { fetcher } from '@/lib/fetcher';
+
+export interface EnrichedTransaction extends Transaction {
+  paid: number;
+  remaining: number;
+}
 
 interface SettlementResponse {
   balances: Balance[];
-  transactions: Transaction[];
+  transactions: EnrichedTransaction[];
+  payments: Payment[];
 }
 
 const SWR_OPTIONS = {
@@ -22,6 +28,7 @@ export function useSettlement(passcode: string) {
   return {
     balances: data?.balances ?? [],
     transactions: data?.transactions ?? [],
+    payments: data?.payments ?? [],
     isLoading,
     error,
     mutate,

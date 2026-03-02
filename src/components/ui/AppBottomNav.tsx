@@ -89,7 +89,7 @@ export default function AppBottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around bg-white shadow-nav">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around bg-white shadow-nav" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {tabs.map((tab) => {
         const isDisabled = 'disabled' in tab && tab.disabled;
         return (

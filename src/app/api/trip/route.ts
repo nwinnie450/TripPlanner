@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
       members: creatorMember ? [creatorMember] : [],
       itinerary: [],
       expenses: [],
+      payments: [],
       createdAt: now,
       updatedAt: now,
     };

@@ -84,6 +84,16 @@ export interface Transaction {
   amount: number;
 }
 
+export interface Payment {
+  paymentId: string;
+  from: string;
+  to: string;
+  amount: number;
+  note?: string;
+  date: string;
+  createdAt: string;
+}
+
 export interface ApiError {
   code: string;
   message: string;
@@ -101,6 +111,7 @@ export interface TripDocument {
   members: Member[];
   itinerary: ItineraryItem[];
   expenses: Expense[];
+  payments: Payment[];
   createdAt: string;
   updatedAt: string;
 }

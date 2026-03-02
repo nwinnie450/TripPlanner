@@ -21,6 +21,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "GroupTrip",
   description: "Plan together. Split fair.",
+  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
 };
 
 export default function RootLayout({

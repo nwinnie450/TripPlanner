@@ -11,13 +11,28 @@ import ErrorMessage from '@/components/ui/ErrorMessage';
 export default function SettlementPage() {
   const { passcode } = useTripContext();
   const { trip } = useTrip(passcode);
-  const { balances, transactions, isLoading, error } = useSettlement(passcode);
+  const { balances, transactions, payments, isLoading, error, mutate } = useSettlement(passcode);
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message="Failed to load settlement." />;
 
   const currency = trip?.currency ?? 'USD';
   const maxAbsolute = Math.max(...balances.map((b) => Math.abs(b.net)), 0);
+
+  async function handleRecordPayment(from: string, to: string, amount: number, note: string) {
+    await fetch(`/api/trip/${passcode}/payments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from,
+        to,
+        amount,
+        note: note || undefined,
+        date: new Date().toISOString().split('T')[0],
+      }),
+    });
+    mutate();
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -64,7 +79,13 @@ export default function SettlementPage() {
                 </h2>
                 <div className="flex flex-col gap-3">
                   {transactions.map((tx, i) => (
-                    <TransactionCard key={i} transaction={tx} currency={currency} />
+                    <TransactionCard
+                      key={i}
+                      transaction={tx}
+                      currency={currency}
+                      payments={payments}
+                      onRecordPayment={handleRecordPayment}
+                    />
                   ))}
                 </div>
               </div>
@@ -73,7 +94,7 @@ export default function SettlementPage() {
             <div className="rounded-xl bg-[#F0FDFA] p-4">
               <p className="text-[13px] text-[#14B8A6]">
                 These transactions represent the minimum number of payments needed to settle all
-                debts.
+                debts. You can record partial payments for large amounts.
               </p>
             </div>
           </>

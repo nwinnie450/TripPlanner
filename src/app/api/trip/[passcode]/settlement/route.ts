@@ -3,6 +3,7 @@ import { validatePasscodeFormat, lookupTrip } from "@/lib/passcode";
 import { calculateSettlement } from "@/lib/settlement";
 import { ApiError, handleApiError } from "@/lib/errors";
 import { rateLimitGeneral } from "@/lib/rate-limit";
+import type { Payment } from "@/types";
 
 export async function GET(
   request: NextRequest,
@@ -30,7 +31,28 @@ export async function GET(
       trip.members
     );
 
-    return NextResponse.json({ balances, transactions });
+    const payments: Payment[] = trip.payments ?? [];
+
+    // Calculate paid amounts per transaction (from->to pair)
+    const paidMap = new Map<string, number>();
+    for (const p of payments) {
+      const key = `${p.from}->${p.to}`;
+      paidMap.set(key, (paidMap.get(key) ?? 0) + p.amount);
+    }
+
+    // Enrich transactions with paid/remaining info
+    const enrichedTransactions = transactions.map((tx) => {
+      const key = `${tx.from}->${tx.to}`;
+      const paid = Math.round((paidMap.get(key) ?? 0) * 100) / 100;
+      const remaining = Math.round(Math.max(0, tx.amount - paid) * 100) / 100;
+      return { ...tx, paid, remaining };
+    });
+
+    return NextResponse.json({
+      balances,
+      transactions: enrichedTransactions,
+      payments,
+    });
   } catch (error) {
     return handleApiError(error);
   }

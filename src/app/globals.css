@@ -48,6 +48,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html, body {
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
