@@ -51,6 +51,13 @@ export const addItineraryItemSchema = z.object({
   createdBy: z.string().min(1),
 });
 
+export const TRANSPORT_MODES = [
+  "DRIVING",
+  "WALKING",
+  "TRANSIT",
+  "BICYCLING",
+] as const;
+
 export const updateItineraryItemSchema = z.object({
   dayDate: z.iso.date().optional(),
   time: z
@@ -64,6 +71,9 @@ export const updateItineraryItemSchema = z.object({
   locationLng: z.number().min(-180).max(180).optional(),
   category: z
     .enum(ITINERARY_CATEGORIES as [string, ...string[]])
+    .optional(),
+  transportMode: z
+    .enum(TRANSPORT_MODES as unknown as [string, ...string[]])
     .optional(),
   notes: z.string().max(500).optional(),
 });

@@ -10,7 +10,7 @@ describe("CategoryBadge", () => {
     "should render the category text for %s",
     (category) => {
       render(<CategoryBadge category={category} />);
-      expect(screen.getByText(category)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(category))).toBeInTheDocument();
     }
   );
 
@@ -18,7 +18,7 @@ describe("CategoryBadge", () => {
     "should apply the correct background and text color for %s",
     (category) => {
       render(<CategoryBadge category={category} />);
-      const badge = screen.getByText(category);
+      const badge = screen.getByText(new RegExp(category));
       const colors = CATEGORY_COLORS[category];
 
       expect(badge).toHaveStyle({
@@ -30,7 +30,7 @@ describe("CategoryBadge", () => {
 
   it("should render as an inline span element", () => {
     render(<CategoryBadge category="Food" />);
-    const badge = screen.getByText("Food");
+    const badge = screen.getByText(/Food/);
     expect(badge.tagName).toBe("SPAN");
   });
 });

@@ -34,6 +34,19 @@ export type ItineraryCategory =
   | "Activity"
   | "Other";
 
+export type TransportMode = 'DRIVING' | 'WALKING' | 'TRANSIT' | 'BICYCLING';
+
+export interface TravelSegment {
+  fromItemId: string;
+  toItemId: string;
+  distance: string;
+  distanceMeters: number;
+  duration: string;
+  durationSeconds: number;
+  mode: TransportMode;
+  status: 'loading' | 'ok' | 'error' | 'no-coords';
+}
+
 export interface ItineraryItem {
   itemId: string;
   dayDate: string;
@@ -43,6 +56,7 @@ export interface ItineraryItem {
   locationLat?: number;
   locationLng?: number;
   category?: ItineraryCategory;
+  transportMode?: TransportMode;
   notes: string;
   createdBy: string;
   createdAt: string;

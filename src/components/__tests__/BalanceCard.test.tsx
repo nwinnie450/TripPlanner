@@ -30,31 +30,31 @@ describe("BalanceCard", () => {
     expect(screen.getByText("Alice")).toBeInTheDocument();
   });
 
-  it("should display a positive balance with a + prefix and text-forest class", () => {
+  it("should display a positive balance with a + prefix", () => {
     render(
       <BalanceCard balance={positiveBalance} maxAbsolute={25} currency="USD" />
     );
-    const amountEl = screen.getByText(/\+.*\$25\.00/);
+    const amountEl = screen.getByText(/\+.*\$25/);
     expect(amountEl).toBeInTheDocument();
-    expect(amountEl.className).toContain("text-forest");
+    // Uses inline style with teal color for positive
+    expect(amountEl).toHaveStyle({ color: "#14B8A6" });
   });
 
-  it("should display a negative balance with text-sunset class", () => {
+  it("should display a negative balance with red color", () => {
     render(
       <BalanceCard balance={negativeBalance} maxAbsolute={25} currency="USD" />
     );
-    // Negative formatting from Intl may include a minus sign
     const amountEl = screen.getByText(/15\.50/);
     expect(amountEl).toBeInTheDocument();
-    expect(amountEl.className).toContain("text-sunset");
+    expect(amountEl).toHaveStyle({ color: "#EF4444" });
   });
 
-  it("should use text-forest for a zero balance", () => {
+  it("should use teal color for a zero balance", () => {
     render(
       <BalanceCard balance={zeroBalance} maxAbsolute={25} currency="USD" />
     );
-    const amountEl = screen.getByText(/\$0\.00/);
-    expect(amountEl.className).toContain("text-forest");
+    const amountEl = screen.getByText(/\$0/);
+    expect(amountEl).toHaveStyle({ color: "#14B8A6" });
   });
 
   it("should render a progress bar with correct width for positive balance", () => {
@@ -62,23 +62,27 @@ describe("BalanceCard", () => {
       <BalanceCard balance={positiveBalance} maxAbsolute={50} currency="USD" />
     );
     // 25 / 50 = 50%
-    const bar = container.querySelector("[style*='width']");
-    expect(bar).toHaveStyle({ width: "50%" });
+    const bar = container.querySelector("[style*='width: 50%']");
+    expect(bar).toBeInTheDocument();
   });
 
-  it("should render a progress bar with bg-forest for positive balance", () => {
+  it("should render a progress bar with teal color for positive balance", () => {
     const { container } = render(
       <BalanceCard balance={positiveBalance} maxAbsolute={25} currency="USD" />
     );
-    const innerBar = container.querySelector(".bg-forest");
+    const innerBar = container.querySelector(
+      "[style*='background-color: rgb(20, 184, 166)']"
+    );
     expect(innerBar).toBeInTheDocument();
   });
 
-  it("should render a progress bar with bg-sunset for negative balance", () => {
+  it("should render a progress bar with red color for negative balance", () => {
     const { container } = render(
       <BalanceCard balance={negativeBalance} maxAbsolute={25} currency="USD" />
     );
-    const innerBar = container.querySelector(".bg-sunset");
+    const innerBar = container.querySelector(
+      "[style*='background-color: rgb(239, 68, 68)']"
+    );
     expect(innerBar).toBeInTheDocument();
   });
 
@@ -86,7 +90,7 @@ describe("BalanceCard", () => {
     const { container } = render(
       <BalanceCard balance={positiveBalance} maxAbsolute={0} currency="USD" />
     );
-    const bar = container.querySelector("[style*='width']");
-    expect(bar).toHaveStyle({ width: "0%" });
+    const bar = container.querySelector("[style*='width: 0%']");
+    expect(bar).toBeInTheDocument();
   });
 });

@@ -61,6 +61,8 @@ export async function PATCH(
       setFields["itinerary.$[elem].locationLng"] = parsed.data.locationLng;
     if (parsed.data.category !== undefined)
       setFields["itinerary.$[elem].category"] = parsed.data.category;
+    if (parsed.data.transportMode !== undefined)
+      setFields["itinerary.$[elem].transportMode"] = parsed.data.transportMode;
     if (parsed.data.notes !== undefined)
       setFields["itinerary.$[elem].notes"] = parsed.data.notes;
 
@@ -84,6 +86,7 @@ export async function PATCH(
       ...(parsed.data.locationLat !== undefined && { locationLat: parsed.data.locationLat }),
       ...(parsed.data.locationLng !== undefined && { locationLng: parsed.data.locationLng }),
       ...(parsed.data.category !== undefined && { category: parsed.data.category }),
+      ...(parsed.data.transportMode !== undefined && { transportMode: parsed.data.transportMode }),
       ...(parsed.data.notes !== undefined && { notes: parsed.data.notes }),
       updatedAt: now,
     };
