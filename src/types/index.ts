@@ -111,7 +111,7 @@ export interface TripDocument {
   members: Member[];
   itinerary: ItineraryItem[];
   expenses: Expense[];
-  payments: Payment[];
+  payments?: Payment[];
   createdAt: string;
   updatedAt: string;
 }

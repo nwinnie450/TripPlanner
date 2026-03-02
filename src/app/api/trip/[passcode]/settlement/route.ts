@@ -27,8 +27,8 @@ export async function GET(
     }
 
     const { balances, transactions } = calculateSettlement(
-      trip.expenses,
-      trip.members
+      trip.expenses ?? [],
+      trip.members ?? []
     );
 
     const payments: Payment[] = trip.payments ?? [];

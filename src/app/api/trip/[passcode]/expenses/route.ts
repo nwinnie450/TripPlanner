@@ -29,7 +29,7 @@ export async function GET(
       throw new ApiError("INVALID_PASSCODE", "Trip not found", 404);
     }
 
-    let expenses = [...trip.expenses];
+    let expenses = [...(trip.expenses ?? [])];
 
     const categoryParam = request.nextUrl.searchParams.get("category");
     if (categoryParam) {
