@@ -28,6 +28,7 @@ export default function AddItineraryPage() {
     locationLat?: number;
     locationLng?: number;
     category?: string;
+    transportMode?: string;
     notes: string;
   }) {
     setIsSubmitting(true);

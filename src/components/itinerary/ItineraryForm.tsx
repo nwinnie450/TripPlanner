@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import type { ItineraryItem, ItineraryCategory } from '@/types';
+import { Car, Footprints, Train, Bike } from 'lucide-react';
+import type { ItineraryItem, ItineraryCategory, TransportMode } from '@/types';
 import { ITINERARY_CATEGORIES, ITINERARY_CATEGORY_CONFIG } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import Button from '@/components/ui/Button';
@@ -20,6 +21,7 @@ interface ItineraryFormProps {
     locationLat?: number;
     locationLng?: number;
     category?: ItineraryCategory;
+    transportMode?: TransportMode;
     notes: string;
   }) => Promise<void>;
   onCancel: () => void;
@@ -42,6 +44,7 @@ export default function ItineraryForm({
   const [locationLat, setLocationLat] = useState<number | undefined>(initialData?.locationLat);
   const [locationLng, setLocationLng] = useState<number | undefined>(initialData?.locationLng);
   const [category, setCategory] = useState<ItineraryCategory | undefined>(initialData?.category);
+  const [transportMode, setTransportMode] = useState<TransportMode | undefined>(initialData?.transportMode);
   const [notes, setNotes] = useState(initialData?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -63,6 +66,7 @@ export default function ItineraryForm({
       location: location.trim(),
       ...(locationLat != null && locationLng != null && { locationLat, locationLng }),
       ...(category != null && { category }),
+      ...(transportMode != null && { transportMode }),
       notes: notes.trim(),
     });
   }
@@ -148,6 +152,37 @@ export default function ItineraryForm({
                 }`}
               >
                 <span>{config.emoji}</span> {cat}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Transport mode pills */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[13px] font-semibold text-slate-600">Travel Mode</label>
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              { mode: 'DRIVING' as TransportMode, icon: Car, label: 'Drive' },
+              { mode: 'WALKING' as TransportMode, icon: Footprints, label: 'Walk' },
+              { mode: 'TRANSIT' as TransportMode, icon: Train, label: 'Transit' },
+              { mode: 'BICYCLING' as TransportMode, icon: Bike, label: 'Bike' },
+            ] as const
+          ).map(({ mode, icon: Icon, label }) => {
+            const isSelected = transportMode === mode;
+            return (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setTransportMode(isSelected ? undefined : mode)}
+                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-medium transition-all ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <Icon size={14} /> {label}
               </button>
             );
           })}

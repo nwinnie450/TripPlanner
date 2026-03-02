@@ -37,6 +37,7 @@ export default function EditItineraryPage() {
     locationLat?: number;
     locationLng?: number;
     category?: string;
+    transportMode?: string;
     notes: string;
   }) {
     setIsSubmitting(true);
