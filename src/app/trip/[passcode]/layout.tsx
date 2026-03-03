@@ -53,6 +53,7 @@ export default function TripLayout({
           );
 
           if (!isMember && !pathname.endsWith('/join')) {
+            setValidated(true);
             router.replace(`/trip/${passcode}/join`);
             return;
           }
