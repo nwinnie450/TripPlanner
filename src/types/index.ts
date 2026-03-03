@@ -34,7 +34,7 @@ export type ItineraryCategory =
   | "Activity"
   | "Other";
 
-export type TransportMode = 'DRIVING' | 'WALKING' | 'TRANSIT' | 'BICYCLING';
+export type TransportMode = 'DRIVING' | 'WALKING' | 'TRANSIT' | 'BICYCLING' | 'FLIGHT';
 
 export interface TravelSegment {
   fromItemId: string;

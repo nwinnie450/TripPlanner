@@ -55,6 +55,7 @@ export const TRANSPORT_MODES = [
   "DRIVING",
   "WALKING",
   "TRANSIT",
+  "FLIGHT",
   "BICYCLING",
 ] as const;
 

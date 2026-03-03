@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Car, Footprints, Train, Bike } from 'lucide-react';
+import { Car, Footprints, Train, Bike, Plane } from 'lucide-react';
 import type { ItineraryItem, ItineraryCategory, TransportMode } from '@/types';
 import { ITINERARY_CATEGORIES, ITINERARY_CATEGORY_CONFIG } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
@@ -168,6 +168,7 @@ export default function ItineraryForm({
               { mode: 'WALKING' as TransportMode, icon: Footprints, label: 'Walk' },
               { mode: 'TRANSIT' as TransportMode, icon: Train, label: 'Transit' },
               { mode: 'BICYCLING' as TransportMode, icon: Bike, label: 'Bike' },
+              { mode: 'FLIGHT' as TransportMode, icon: Plane, label: 'Fly' },
             ] as const
           ).map(({ mode, icon: Icon, label }) => {
             const isSelected = transportMode === mode;

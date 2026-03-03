@@ -55,16 +55,17 @@ function formatDuration(seconds: number): string {
   return rem > 0 ? `${hrs} hr ${rem} min` : `${hrs} hr`;
 }
 
+const GOOGLE_TRAVEL_MODES: Partial<Record<TransportMode, google.maps.TravelMode>> = {
+  DRIVING: google.maps.TravelMode.DRIVING,
+  WALKING: google.maps.TravelMode.WALKING,
+  TRANSIT: google.maps.TravelMode.TRANSIT,
+  BICYCLING: google.maps.TravelMode.BICYCLING,
+};
+
 function toGoogleTravelMode(
   mode: TransportMode,
-): google.maps.TravelMode {
-  const map: Record<TransportMode, google.maps.TravelMode> = {
-    DRIVING: google.maps.TravelMode.DRIVING,
-    WALKING: google.maps.TravelMode.WALKING,
-    TRANSIT: google.maps.TravelMode.TRANSIT,
-    BICYCLING: google.maps.TravelMode.BICYCLING,
-  };
-  return map[mode];
+): google.maps.TravelMode | null {
+  return GOOGLE_TRAVEL_MODES[mode] ?? null;
 }
 
 interface SegmentPair {
@@ -115,6 +116,30 @@ export function useTravelSegments(items: ItineraryItem[]): TravelSegment[] {
       }
 
       const mode = from.transportMode ?? 'DRIVING';
+
+      // FLIGHT: use Haversine distance + estimated flight time (no Google API)
+      if (mode === 'FLIGHT') {
+        const meters = haversineDistance(
+          from.locationLat!,
+          from.locationLng!,
+          to.locationLat!,
+          to.locationLng!,
+        );
+        // Estimate flight time: ~800 km/h average + 1 hr for boarding/taxi
+        const flightSeconds = (meters / 800000) * 3600 + 3600;
+        initial.push({
+          fromItemId: from.itemId,
+          toItemId: to.itemId,
+          distance: formatDistance(meters),
+          distanceMeters: meters,
+          duration: `~${formatDuration(flightSeconds)}`,
+          durationSeconds: flightSeconds,
+          mode,
+          status: 'ok',
+        });
+        continue;
+      }
+
       const key = cacheKey(
         from.locationLat!,
         from.locationLng!,
@@ -172,7 +197,7 @@ export function useTravelSegments(items: ItineraryItem[]): TravelSegment[] {
                 pair.to.locationLng!,
               ),
             ],
-            travelMode: toGoogleTravelMode(pair.mode),
+            travelMode: toGoogleTravelMode(pair.mode)!,
           }),
         ),
       );

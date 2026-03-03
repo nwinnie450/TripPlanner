@@ -1,6 +1,6 @@
 'use client';
 
-import { Car, Footprints, Train, Bike } from 'lucide-react';
+import { Car, Footprints, Train, Bike, Plane } from 'lucide-react';
 import type { TravelSegment, TransportMode } from '@/types';
 
 interface TravelSegmentConnectorProps {
@@ -8,7 +8,7 @@ interface TravelSegmentConnectorProps {
   onModeChange: (mode: TransportMode) => void;
 }
 
-const MODES: TransportMode[] = ['DRIVING', 'WALKING', 'TRANSIT', 'BICYCLING'];
+const MODES: TransportMode[] = ['DRIVING', 'WALKING', 'TRANSIT', 'BICYCLING', 'FLIGHT'];
 
 const MODE_CONFIG: Record<
   TransportMode,
@@ -18,6 +18,7 @@ const MODE_CONFIG: Record<
   WALKING: { icon: Footprints, label: 'Walk' },
   TRANSIT: { icon: Train, label: 'Transit' },
   BICYCLING: { icon: Bike, label: 'Bike' },
+  FLIGHT: { icon: Plane, label: 'Fly' },
 };
 
 export default function TravelSegmentConnector({
