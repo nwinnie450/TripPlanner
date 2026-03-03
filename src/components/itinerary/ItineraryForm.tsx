@@ -5,7 +5,6 @@ import { Car, Footprints, Train, Bike, Plane } from 'lucide-react';
 import type { ItineraryItem, ItineraryCategory, TransportMode } from '@/types';
 import { ITINERARY_CATEGORIES, ITINERARY_CATEGORY_CONFIG } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
-import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import LocationAutocomplete from '@/components/ui/LocationAutocomplete';
@@ -205,20 +204,30 @@ export default function ItineraryForm({
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="mt-2 h-12 w-full rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] font-[family-name:var(--font-display)] text-[16px] font-bold text-white shadow-sm transition-opacity disabled:opacity-50"
-      >
-        {isSubmitting ? 'Saving...' : 'Add Activity'}
-      </button>
-      <Button type="button" variant="ghost" onClick={onCancel}>
-        Cancel
-      </Button>
+      <div className="mt-2 grid grid-cols-[1fr_auto] gap-3">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-12 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] font-[family-name:var(--font-display)] text-[16px] font-bold text-white shadow-sm transition-opacity disabled:opacity-50"
+        >
+          {isSubmitting ? 'Saving...' : initialData ? 'Save Activity' : 'Add Activity'}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="h-12 rounded-xl border border-slate-200 px-5 text-[15px] font-medium text-slate-500 transition-colors hover:bg-slate-50"
+        >
+          Cancel
+        </button>
+      </div>
       {onDelete && (
-        <Button type="button" variant="destructive" onClick={onDelete}>
-          Delete Activity
-        </Button>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="mt-1 self-center text-[13px] font-medium text-red-400 transition-colors hover:text-red-500"
+        >
+          Delete this activity
+        </button>
       )}
     </form>
   );
