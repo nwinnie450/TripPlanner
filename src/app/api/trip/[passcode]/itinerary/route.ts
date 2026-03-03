@@ -82,6 +82,7 @@ export async function POST(
       ...(parsed.data.locationLat != null && { locationLat: parsed.data.locationLat }),
       ...(parsed.data.locationLng != null && { locationLng: parsed.data.locationLng }),
       ...(parsed.data.category != null && { category: parsed.data.category as ItineraryCategory }),
+      ...(parsed.data.transportMode != null && { transportMode: parsed.data.transportMode }),
       notes: parsed.data.notes ?? "",
       createdBy: parsed.data.createdBy,
       createdAt: now,

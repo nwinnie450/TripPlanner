@@ -204,18 +204,18 @@ export default function ItineraryForm({
         />
       </div>
 
-      <div className="mt-2 grid grid-cols-[1fr_auto] gap-3">
+      <div className="mt-2 grid grid-cols-2 gap-3">
         <button
           type="submit"
           disabled={isSubmitting}
           className="h-12 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] font-[family-name:var(--font-display)] text-[16px] font-bold text-white shadow-sm transition-opacity disabled:opacity-50"
         >
-          {isSubmitting ? 'Saving...' : initialData ? 'Save Activity' : 'Add Activity'}
+          {isSubmitting ? 'Saving...' : initialData ? 'Save' : 'Add'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="h-12 rounded-xl border border-slate-200 px-5 text-[15px] font-medium text-slate-500 transition-colors hover:bg-slate-50"
+          className="h-12 rounded-xl border border-slate-200 text-[15px] font-medium text-slate-500 transition-colors hover:bg-slate-50"
         >
           Cancel
         </button>
