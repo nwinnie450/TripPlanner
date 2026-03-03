@@ -5,7 +5,7 @@ import { addItineraryItemSchema } from "@/lib/validation";
 import { ApiError, handleApiError } from "@/lib/errors";
 import { rateLimitGeneral } from "@/lib/rate-limit";
 import { generateId } from "@/lib/utils";
-import type { ItineraryItem, ItineraryCategory } from "@/types";
+import type { ItineraryItem, ItineraryCategory, TransportMode } from "@/types";
 
 export async function GET(
   request: NextRequest,
@@ -82,7 +82,7 @@ export async function POST(
       ...(parsed.data.locationLat != null && { locationLat: parsed.data.locationLat }),
       ...(parsed.data.locationLng != null && { locationLng: parsed.data.locationLng }),
       ...(parsed.data.category != null && { category: parsed.data.category as ItineraryCategory }),
-      ...(parsed.data.transportMode != null && { transportMode: parsed.data.transportMode }),
+      ...(parsed.data.transportMode != null && { transportMode: parsed.data.transportMode as TransportMode }),
       notes: parsed.data.notes ?? "",
       createdBy: parsed.data.createdBy,
       createdAt: now,
