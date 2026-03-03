@@ -55,17 +55,16 @@ function formatDuration(seconds: number): string {
   return rem > 0 ? `${hrs} hr ${rem} min` : `${hrs} hr`;
 }
 
-const GOOGLE_TRAVEL_MODES: Partial<Record<TransportMode, google.maps.TravelMode>> = {
-  DRIVING: google.maps.TravelMode.DRIVING,
-  WALKING: google.maps.TravelMode.WALKING,
-  TRANSIT: google.maps.TravelMode.TRANSIT,
-  BICYCLING: google.maps.TravelMode.BICYCLING,
-};
-
 function toGoogleTravelMode(
   mode: TransportMode,
 ): google.maps.TravelMode | null {
-  return GOOGLE_TRAVEL_MODES[mode] ?? null;
+  const map: Partial<Record<TransportMode, google.maps.TravelMode>> = {
+    DRIVING: google.maps.TravelMode.DRIVING,
+    WALKING: google.maps.TravelMode.WALKING,
+    TRANSIT: google.maps.TravelMode.TRANSIT,
+    BICYCLING: google.maps.TravelMode.BICYCLING,
+  };
+  return map[mode] ?? null;
 }
 
 interface SegmentPair {
