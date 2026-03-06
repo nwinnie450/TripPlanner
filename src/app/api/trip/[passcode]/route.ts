@@ -36,6 +36,7 @@ export async function GET(
       currencies: trip.currencies ?? [],
       exchangeRates: trip.exchangeRates ?? {},
       budget: trip.budget,
+      budgetPerPax: trip.budgetPerPax,
       passcode: trip.passcode,
       createdAt: trip.createdAt,
       updatedAt: trip.updatedAt,
@@ -78,7 +79,7 @@ export async function PATCH(
       );
     }
 
-    const { tripName, startDate, endDate, currency, budget, currencies, exchangeRates } = parsed.data;
+    const { tripName, startDate, endDate, currency, budget, budgetPerPax, currencies, exchangeRates } = parsed.data;
 
     const effectiveStartDate = startDate ?? trip.startDate;
     const effectiveEndDate = endDate ?? trip.endDate;
@@ -95,7 +96,12 @@ export async function PATCH(
     if (startDate !== undefined) $set.startDate = startDate;
     if (endDate !== undefined) $set.endDate = endDate;
     if (currency !== undefined) $set.currency = currency;
-    if (budget !== undefined) $set.budget = budget;
+    if (budgetPerPax !== undefined) {
+      $set.budgetPerPax = budgetPerPax;
+      $set.budget = budgetPerPax * trip.members.length;
+    } else if (budget !== undefined) {
+      $set.budget = budget;
+    }
     if (currencies !== undefined) $set.currencies = currencies;
     if (exchangeRates !== undefined) $set.exchangeRates = exchangeRates;
 
@@ -110,7 +116,8 @@ export async function PATCH(
       startDate: effectiveStartDate,
       endDate: effectiveEndDate,
       currency: currency ?? trip.currency,
-      budget: budget ?? trip.budget,
+      budget: ($set.budget as number) ?? trip.budget,
+      budgetPerPax: budgetPerPax ?? trip.budgetPerPax,
       passcode: trip.passcode,
       createdAt: trip.createdAt,
       updatedAt: $set.updatedAt,

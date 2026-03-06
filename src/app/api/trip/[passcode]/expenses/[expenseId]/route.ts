@@ -62,6 +62,8 @@ export async function PATCH(
       setFields["expenses.$[elem].date"] = parsed.data.date;
     if (parsed.data.currency !== undefined)
       setFields["expenses.$[elem].currency"] = parsed.data.currency;
+    if (parsed.data.expenseType !== undefined)
+      setFields["expenses.$[elem].expenseType"] = parsed.data.expenseType;
 
     const collection = await getCollection("trips");
     await collection.updateOne(
@@ -85,6 +87,7 @@ export async function PATCH(
       }),
       ...(parsed.data.date !== undefined && { date: parsed.data.date }),
       ...(parsed.data.currency !== undefined && { currency: parsed.data.currency }),
+      ...(parsed.data.expenseType !== undefined && { expenseType: parsed.data.expenseType }),
       updatedAt: now,
     };
 

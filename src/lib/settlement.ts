@@ -13,6 +13,9 @@ export function calculateSettlement(
   }
 
   for (const expense of expenses) {
+    // Skip personal expenses — they don't affect settlement
+    if (expense.expenseType === 'personal') continue;
+
     const sharePerPerson = expense.amount / expense.splitBetween.length;
 
     // Payer gets credit for the full amount
@@ -90,13 +93,16 @@ export function calculateMultiCurrencySettlement(
   baseCurrency: string,
   exchangeRates?: Record<string, number>,
 ): CurrencySettlement[] {
-  if (expenses.length === 0) {
+  // Filter out personal expenses before any settlement calculation
+  const groupExpenses = expenses.filter((e) => e.expenseType !== 'personal');
+
+  if (groupExpenses.length === 0) {
     return [{ currency: baseCurrency, ...calculateSettlement([], members) }];
   }
 
   // Determine unique currencies used
   const usedCurrencies = new Set(
-    expenses.map((e) => e.currency ?? baseCurrency)
+    groupExpenses.map((e) => e.currency ?? baseCurrency)
   );
 
   const nonBaseCurrencies = [...usedCurrencies].filter(
@@ -111,7 +117,7 @@ export function calculateMultiCurrencySettlement(
 
   if (nonBaseCurrencies.length === 0 || canConvert) {
     // Convert everything to base currency
-    const convertedExpenses: Expense[] = expenses.map((e) => {
+    const convertedExpenses: Expense[] = groupExpenses.map((e) => {
       const expCurrency = e.currency ?? baseCurrency;
       if (expCurrency === baseCurrency) return e;
       const rate = exchangeRates![expCurrency];
@@ -127,7 +133,7 @@ export function calculateMultiCurrencySettlement(
 
   // Group expenses by currency and run settlement per group
   const grouped = new Map<string, Expense[]>();
-  for (const expense of expenses) {
+  for (const expense of groupExpenses) {
     const currency = expense.currency ?? baseCurrency;
     if (!grouped.has(currency)) {
       grouped.set(currency, []);

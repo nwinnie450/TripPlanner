@@ -8,6 +8,7 @@ export interface TripMetadata {
   currencies?: string[];
   exchangeRates?: Record<string, number>;
   budget: number;
+  budgetPerPax?: number;
   passcode: string;
   createdAt: string;
   updatedAt: string;
@@ -73,12 +74,15 @@ export type ExpenseCategory =
   | "Shopping"
   | "Other";
 
+export type ExpenseType = 'personal' | 'group';
+
 export interface Expense {
   expenseId: string;
   amount: number;
   currency?: string;
   description: string;
   category: ExpenseCategory;
+  expenseType?: ExpenseType;
   paidBy: string;
   splitBetween: string[];
   date: string;
@@ -136,6 +140,7 @@ export interface TripDocument {
   currencies?: string[];
   exchangeRates?: Record<string, number>;
   budget: number;
+  budgetPerPax?: number;
   members: Member[];
   itinerary: ItineraryItem[];
   expenses: Expense[];

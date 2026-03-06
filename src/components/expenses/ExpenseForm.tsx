@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { Expense, ExpenseCategory, Member } from '@/types';
+import type { Expense, ExpenseCategory, ExpenseType, Member } from '@/types';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, formatCurrency } from '@/lib/constants';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -23,6 +23,7 @@ interface ExpenseFormProps {
     currency: string;
     description: string;
     category: ExpenseCategory;
+    expenseType: ExpenseType;
     date: string;
     paidBy: string;
     splitBetween: string[];
@@ -57,6 +58,9 @@ export default function ExpenseForm({
   const [splitBetween, setSplitBetween] = useState<string[]>(
     initialData?.splitBetween ?? members.map((m) => m.memberId),
   );
+  const [expenseType, setExpenseType] = useState<ExpenseType>(
+    initialData?.expenseType ?? 'group',
+  );
   const [selectedCurrency, setSelectedCurrency] = useState(
     initialData?.currency ?? currencies?.[0] ?? currency,
   );
@@ -82,7 +86,8 @@ export default function ExpenseForm({
     if (!category) errs.category = 'Category is required';
     if (!date) errs.date = 'Date is required';
     if (!paidBy) errs.paidBy = 'Select who paid';
-    if (splitBetween.length === 0) errs.splitBetween = 'Select at least one person';
+    if (expenseType === 'group' && splitBetween.length === 0)
+      errs.splitBetween = 'Select at least one person';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -95,9 +100,10 @@ export default function ExpenseForm({
       currency: selectedCurrency,
       description: description.trim(),
       category: category as ExpenseCategory,
+      expenseType,
       date,
       paidBy,
-      splitBetween,
+      splitBetween: expenseType === 'personal' ? [paidBy] : splitBetween,
     });
   }
 
@@ -120,6 +126,32 @@ export default function ExpenseForm({
           onChange={setSelectedCurrency}
         />
       )}
+
+      {/* Expense type toggle */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[13px] font-semibold text-slate-600">Expense type</label>
+        <div className="flex gap-2">
+          {(['group', 'personal'] as const).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => setExpenseType(type)}
+              className={`rounded-full px-4 py-2 text-[13px] font-medium transition-colors ${
+                expenseType === type
+                  ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white'
+                  : 'bg-slate-100 text-slate-600'
+              }`}
+            >
+              {type === 'group' ? 'Group' : 'Personal'}
+            </button>
+          ))}
+        </div>
+        {expenseType === 'personal' && (
+          <p className="text-[12px] text-slate-400">
+            Personal expenses are tracked separately and not included in group budget or settlement.
+          </p>
+        )}
+      </div>
 
       {/* Amount display */}
       <div className="flex flex-col items-center gap-2 py-4">
@@ -186,48 +218,50 @@ export default function ExpenseForm({
         error={errors.paidBy}
       />
 
-      {/* Split between with purple checkboxes */}
-      <div className="flex flex-col gap-2">
-        <label className="text-[13px] font-semibold text-slate-600">Split between *</label>
-        <div className="grid grid-cols-2 gap-2">
-          {members.map((m) => (
-            <label
-              key={m.memberId}
-              className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 px-3 transition-colors hover:bg-slate-50"
+      {/* Split between with purple checkboxes — only for group expenses */}
+      {expenseType === 'group' && (
+        <div className="flex flex-col gap-2">
+          <label className="text-[13px] font-semibold text-slate-600">Split between *</label>
+          <div className="grid grid-cols-2 gap-2">
+            {members.map((m) => (
+              <label
+                key={m.memberId}
+                className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 px-3 transition-colors hover:bg-slate-50"
+              >
+                <input
+                  type="checkbox"
+                  checked={splitBetween.includes(m.memberId)}
+                  onChange={() => toggleMember(m.memberId)}
+                  className="h-4 w-4 rounded accent-[#8B5CF6]"
+                />
+                <span className="text-[15px] text-slate-900">{m.name}</span>
+              </label>
+            ))}
+          </div>
+          {errors.splitBetween && <p className="text-[13px] text-red-500">{errors.splitBetween}</p>}
+          {perPerson > 0 && (
+            <p className="text-[13px] font-medium text-[#8B5CF6]">
+              Each person: {formatCurrency(perPerson, selectedCurrency)}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setSplitBetween(members.map((m) => m.memberId))}
+              className="text-[13px] font-medium text-[#8B5CF6]"
             >
-              <input
-                type="checkbox"
-                checked={splitBetween.includes(m.memberId)}
-                onChange={() => toggleMember(m.memberId)}
-                className="h-4 w-4 rounded accent-[#8B5CF6]"
-              />
-              <span className="text-[15px] text-slate-900">{m.name}</span>
-            </label>
-          ))}
+              Select All
+            </button>
+            <button
+              type="button"
+              onClick={() => setSplitBetween([])}
+              className="text-[13px] font-medium text-[#8B5CF6]"
+            >
+              Deselect All
+            </button>
+          </div>
         </div>
-        {errors.splitBetween && <p className="text-[13px] text-red-500">{errors.splitBetween}</p>}
-        {perPerson > 0 && (
-          <p className="text-[13px] font-medium text-[#8B5CF6]">
-            Each person: {formatCurrency(perPerson, selectedCurrency)}
-          </p>
-        )}
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setSplitBetween(members.map((m) => m.memberId))}
-            className="text-[13px] font-medium text-[#8B5CF6]"
-          >
-            Select All
-          </button>
-          <button
-            type="button"
-            onClick={() => setSplitBetween([])}
-            className="text-[13px] font-medium text-[#8B5CF6]"
-          >
-            Deselect All
-          </button>
-        </div>
-      </div>
+      )}
 
       <button
         type="submit"

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
+import { useMembers } from '@/hooks/useMembers';
+import { formatCurrency } from '@/lib/constants';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
@@ -36,12 +38,14 @@ const CURRENCIES = [
 export default function EditTripPage() {
   const { passcode } = useTripContext();
   const { trip, isLoading, mutate } = useTrip(passcode);
+  const { members } = useMembers(passcode);
   const router = useRouter();
 
   const [tripName, setTripName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [currency, setCurrency] = useState('');
+  const [budgetPerPax, setBudgetPerPax] = useState('');
   const [budget, setBudget] = useState('');
   const [currencies, setCurrencies] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -55,6 +59,7 @@ export default function EditTripPage() {
       setStartDate(trip.startDate);
       setEndDate(trip.endDate);
       setCurrency(trip.currency);
+      setBudgetPerPax(trip.budgetPerPax != null ? String(trip.budgetPerPax) : '');
       setBudget(trip.budget != null ? String(trip.budget) : '');
       setCurrencies(trip.currencies ?? []);
       setInitialized(true);
@@ -72,6 +77,8 @@ export default function EditTripPage() {
     if (startDate && endDate && startDate > endDate)
       errs.endDate = 'End date must be after start date';
     if (!currency) errs.currency = 'Currency is required';
+    if (budgetPerPax !== '' && (isNaN(Number(budgetPerPax)) || Number(budgetPerPax) < 0))
+      errs.budgetPerPax = 'Budget per person must be a non-negative number';
     if (budget !== '' && (isNaN(Number(budget)) || Number(budget) < 0))
       errs.budget = 'Budget must be a non-negative number';
     setErrors(errs);
@@ -90,8 +97,14 @@ export default function EditTripPage() {
     if (startDate !== trip!.startDate) payload.startDate = startDate;
     if (endDate !== trip!.endDate) payload.endDate = endDate;
     if (currency !== trip!.currency) payload.currency = currency;
-    const budgetNum = budget !== '' ? Number(budget) : undefined;
-    if (budgetNum !== trip!.budget) payload.budget = budgetNum;
+    const perPaxNum = budgetPerPax !== '' ? Number(budgetPerPax) : undefined;
+    if (perPaxNum !== trip!.budgetPerPax) {
+      payload.budgetPerPax = perPaxNum ?? 0;
+    }
+    if (!perPaxNum) {
+      const budgetNum = budget !== '' ? Number(budget) : undefined;
+      if (budgetNum !== trip!.budget) payload.budget = budgetNum;
+    }
     const prevCurrencies = trip!.currencies ?? [];
     if (JSON.stringify(currencies) !== JSON.stringify(prevCurrencies)) {
       payload.currencies = currencies;
@@ -187,15 +200,33 @@ export default function EditTripPage() {
             exclude={currency}
           />
           <Input
-            label="Budget"
+            label="Budget per person"
             type="number"
             placeholder="0"
             min="0"
             step="any"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            error={errors.budget}
+            value={budgetPerPax}
+            onChange={(e) => setBudgetPerPax(e.target.value)}
+            error={errors.budgetPerPax}
           />
+          {budgetPerPax && Number(budgetPerPax) > 0 && members.length > 0 && (
+            <p className="text-[13px] text-slate-500">
+              Total budget: {formatCurrency(Number(budgetPerPax) * members.length, currency || 'USD')}{' '}
+              ({members.length} {members.length === 1 ? 'person' : 'people'})
+            </p>
+          )}
+          {!budgetPerPax && (
+            <Input
+              label="Total Budget (manual)"
+              type="number"
+              placeholder="0"
+              min="0"
+              step="any"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              error={errors.budget}
+            />
+          )}
           {apiError && <ErrorMessage message={apiError} />}
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save Changes'}

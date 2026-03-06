@@ -88,6 +88,7 @@ export const addExpenseSchema = z.object({
   currency: z.string().min(3).max(3).optional(),
   description: z.string().min(1).max(200),
   category: z.enum(EXPENSE_CATEGORIES as [string, ...string[]]),
+  expenseType: z.enum(['personal', 'group']).optional(),
   paidBy: z.string().min(1),
   splitBetween: z.array(z.string().min(1)).min(1).max(MEMBER_LIMIT),
   date: z.iso.date(),
@@ -99,6 +100,7 @@ export const updateExpenseSchema = z.object({
   currency: z.string().min(3).max(3).optional(),
   description: z.string().min(1).max(200).optional(),
   category: z.enum(EXPENSE_CATEGORIES as [string, ...string[]]).optional(),
+  expenseType: z.enum(['personal', 'group']).optional(),
   paidBy: z.string().min(1).optional(),
   splitBetween: z
     .array(z.string().min(1))
@@ -116,6 +118,7 @@ export const updateTripSchema = z.object({
   currencies: z.array(z.string().min(3).max(3)).max(5).optional(),
   exchangeRates: z.record(z.string(), z.number().positive()).optional(),
   budget: z.number().min(0).optional(),
+  budgetPerPax: z.number().min(0).optional(),
 });
 
 export const addChecklistItemSchema = z.object({

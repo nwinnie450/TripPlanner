@@ -7,7 +7,7 @@ import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
 import { useMembers } from '@/hooks/useMembers';
 import { useExpenses } from '@/hooks/useExpenses';
-import type { ExpenseCategory } from '@/types';
+import type { ExpenseCategory, ExpenseType } from '@/types';
 import ExpenseForm from '@/components/expenses/ExpenseForm';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
@@ -40,6 +40,7 @@ export default function EditExpensePage() {
     currency: string;
     description: string;
     category: ExpenseCategory;
+    expenseType: ExpenseType;
     date: string;
     paidBy: string;
     splitBetween: string[];

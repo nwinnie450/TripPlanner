@@ -24,7 +24,9 @@ export default function DashboardPage() {
   if (error) return <ErrorMessage message="Failed to load trip data." />;
   if (!trip) return null;
 
-  const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalSpent = expenses
+    .filter((e) => e.expenseType !== 'personal')
+    .reduce((sum, e) => sum + e.amount, 0);
   const days = getDaysBetween(trip.startDate, trip.endDate);
 
   return (
@@ -56,6 +58,8 @@ export default function DashboardPage() {
           spent={totalSpent}
           budget={trip.budget}
           currency={trip.currency}
+          budgetPerPax={trip.budgetPerPax}
+          memberCount={members.length}
         />
 
         <Card>

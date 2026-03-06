@@ -33,14 +33,24 @@ export default function ExpenseCard({
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <CategoryBadge category={expense.category} />
+                {expense.expenseType === 'personal' && (
+                  <span className="rounded-full bg-[#FDF2F8] px-2 py-0.5 text-[11px] font-bold text-[#F472B6]">
+                    Personal
+                  </span>
+                )}
                 <span className="text-[13px] text-slate-600">
                   Paid by {payer?.name ?? 'Unknown'}
                 </span>
               </div>
               <p className="mt-1 text-[13px] text-slate-400">
-                {formatDate(expense.date)} &middot; Split:{' '}
-                {expense.splitBetween.length}{' '}
-                {expense.splitBetween.length === 1 ? 'person' : 'people'}
+                {formatDate(expense.date)}
+                {expense.expenseType !== 'personal' && (
+                  <>
+                    {' '}&middot; Split:{' '}
+                    {expense.splitBetween.length}{' '}
+                    {expense.splitBetween.length === 1 ? 'person' : 'people'}
+                  </>
+                )}
               </p>
             </div>
           </div>

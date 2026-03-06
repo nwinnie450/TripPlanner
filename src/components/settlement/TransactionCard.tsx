@@ -34,12 +34,15 @@ export default function TransactionCard({
   colorIndex,
 }: PersonDebtCardProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [historyIndex, setHistoryIndex] = useState<number | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   const avatarColor = AVATAR_COLORS[colorIndex % AVATAR_COLORS.length];
   const firstLetter = fromName.charAt(0).toUpperCase();
   const allSettled = debts.every((d) => d.remaining <= 0);
   const showCurrency = debts.some((d, _, arr) => d.currency !== arr[0].currency);
+
+  // All payments from this person (deduplicated at card level)
+  const allPayments = payments.filter((p) => p.from === from);
 
   async function handleSubmit(debt: Debt, amount: number, note: string) {
     await onRecordPayment(from, debt.to, amount, note);
@@ -77,11 +80,6 @@ export default function TransactionCard({
             debt.amount > 0
               ? Math.min(100, Math.round((debt.paid / debt.amount) * 100))
               : 0;
-
-          // Payments for this specific debt
-          const debtPayments = payments.filter(
-            (p) => p.from === from && p.to === debt.to,
-          );
 
           return (
             <div key={`${debt.to}-${debt.currency}`} className="rounded-lg bg-slate-50 p-3">
@@ -153,52 +151,57 @@ export default function TransactionCard({
                   onCancel={() => setExpandedIndex(null)}
                 />
               )}
-
-              {/* Payment history */}
-              {debtPayments.length > 0 && (
-                <div className="mt-2">
-                  <button
-                    onClick={() =>
-                      setHistoryIndex(historyIndex === index ? null : index)
-                    }
-                    className="text-[11px] font-medium text-[#8B5CF6]"
-                  >
-                    {historyIndex === index ? 'Hide' : 'View'} history (
-                    {debtPayments.length})
-                  </button>
-                  {historyIndex === index && (
-                    <div className="mt-1.5 space-y-1">
-                      {debtPayments.map((p) => (
-                        <div
-                          key={p.paymentId}
-                          className="flex items-center justify-between rounded-md bg-white px-2.5 py-1.5"
-                        >
-                          <div>
-                            <span className="text-[12px] font-medium text-slate-700">
-                              {formatCurrency(p.amount, debt.currency)}
-                            </span>
-                            {p.note && (
-                              <span className="ml-1.5 text-[11px] text-slate-400">
-                                {p.note}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-[10px] text-slate-400">
-                            {new Date(p.date).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                            })}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           );
         })}
       </div>
+
+      {/* Payment history — one toggle per person card */}
+      {allPayments.length > 0 && (
+        <div className="mt-3">
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="text-[11px] font-medium text-[#8B5CF6]"
+          >
+            {showHistory ? 'Hide' : 'View'} payment history ({allPayments.length})
+          </button>
+          {showHistory && (
+            <div className="mt-1.5 space-y-1">
+              {allPayments.map((p) => {
+                const toDebt = debts.find((d) => d.to === p.to);
+                const toName = toDebt?.toName ?? p.to;
+                const currency = toDebt?.currency ?? debts[0]?.currency ?? 'USD';
+                return (
+                  <div
+                    key={p.paymentId}
+                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                  >
+                    <div>
+                      <span className="text-[12px] font-medium text-slate-700">
+                        {formatCurrency(p.amount, currency)}
+                      </span>
+                      <span className="ml-1.5 text-[11px] text-slate-400">
+                        → {toName}
+                      </span>
+                      {p.note && (
+                        <span className="ml-1.5 text-[11px] text-slate-400">
+                          · {p.note}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-slate-400">
+                      {new Date(p.date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

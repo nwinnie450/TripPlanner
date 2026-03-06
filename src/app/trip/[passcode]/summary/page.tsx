@@ -33,8 +33,11 @@ export default function SummaryPage() {
     const memberCount = members.length;
     const duration = getDaysBetween(trip.startDate, trip.endDate);
 
-    // Total spent
-    const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
+    // Only count group expenses for summary stats
+    const groupExpenses = expenses.filter((e) => e.expenseType !== 'personal');
+
+    // Total spent (group only)
+    const totalSpent = groupExpenses.reduce((sum, e) => sum + e.amount, 0);
 
     // Per person
     const perPerson = memberCount > 0 ? totalSpent / memberCount : 0;
@@ -42,9 +45,9 @@ export default function SummaryPage() {
     // Budget status
     const budgetRemaining = trip.budget - totalSpent;
 
-    // Top category
+    // Top category (group only)
     const categoryTotals: Partial<Record<ExpenseCategory, number>> = {};
-    for (const e of expenses) {
+    for (const e of groupExpenses) {
       categoryTotals[e.category] = (categoryTotals[e.category] ?? 0) + e.amount;
     }
     let topCategory: ExpenseCategory | null = null;
