@@ -59,6 +59,55 @@ export default function SettlementPage() {
   // For share: use first group's data (or all if single currency)
   const firstGroup = groups[0];
 
+  // Group balances by member (one card per person)
+  const balancesByMember = new Map<
+    string,
+    { memberName: string; entries: { currency: string; net: number }[] }
+  >();
+  groups.forEach((group) => {
+    group.balances.forEach((b) => {
+      const existing = balancesByMember.get(b.memberId) || {
+        memberName: b.memberName,
+        entries: [],
+      };
+      existing.entries.push({ currency: group.currency, net: b.net });
+      balancesByMember.set(b.memberId, existing);
+    });
+  });
+
+  // Group transactions by payer (one card per person)
+  const debtsByPayer = new Map<
+    string,
+    {
+      fromName: string;
+      debts: {
+        to: string;
+        toName: string;
+        currency: string;
+        amount: number;
+        remaining: number;
+        paid: number;
+      }[];
+    }
+  >();
+  groups.forEach((group) => {
+    group.transactions.forEach((tx) => {
+      const existing = debtsByPayer.get(tx.from) || {
+        fromName: tx.fromName,
+        debts: [],
+      };
+      existing.debts.push({
+        to: tx.to,
+        toName: tx.toName,
+        currency: group.currency,
+        amount: tx.amount,
+        remaining: tx.remaining,
+        paid: tx.paid,
+      });
+      debtsByPayer.set(tx.from, existing);
+    });
+  });
+
   return (
     <div className="min-h-screen bg-white">
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-12">
@@ -129,51 +178,46 @@ export default function SettlementPage() {
               </div>
             )}
 
-            {/* Combined Net Balances section */}
-            {groups.some((g) => g.balances.length > 0) && (
+            {/* Net Balances — one card per person */}
+            {balancesByMember.size > 0 && (
               <div className="mb-6">
                 <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
                   Net Balances
                 </h2>
                 <div className="flex flex-col gap-2">
-                  {groups.flatMap((group) => {
-                    const maxAbsolute = Math.max(
-                      ...group.balances.map((b) => Math.abs(b.net)),
-                      0,
-                    );
-                    return group.balances.map((balance, index) => (
+                  {[...balancesByMember.entries()].map(
+                    ([memberId, { memberName, entries }], index) => (
                       <BalanceCard
-                        key={`${group.currency}-${balance.memberId}`}
-                        balance={balance}
-                        maxAbsolute={maxAbsolute}
-                        currency={group.currency}
+                        key={memberId}
+                        memberName={memberName}
+                        entries={entries}
                         colorIndex={index}
-                        showCurrencyBadge={hasMultipleCurrencies}
                       />
-                    ));
-                  })}
+                    ),
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Combined Settle Up section */}
-            {groups.some((g) => g.transactions.length > 0) && (
+            {/* Settle Up — one card per payer */}
+            {debtsByPayer.size > 0 && (
               <div className="mb-6">
                 <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
                   Settle Up
                 </h2>
                 <div className="flex flex-col gap-3">
-                  {groups.flatMap((group) =>
-                    group.transactions.map((tx, i) => (
+                  {[...debtsByPayer.entries()].map(
+                    ([fromId, { fromName, debts }], index) => (
                       <TransactionCard
-                        key={`${group.currency}-${i}`}
-                        transaction={tx}
-                        currency={group.currency}
+                        key={fromId}
+                        from={fromId}
+                        fromName={fromName}
+                        debts={debts}
                         payments={payments}
                         onRecordPayment={handleRecordPayment}
-                        showCurrencyBadge={hasMultipleCurrencies}
+                        colorIndex={index}
                       />
-                    )),
+                    ),
                   )}
                 </div>
               </div>
