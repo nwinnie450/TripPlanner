@@ -187,7 +187,14 @@ export default function SettlementPage() {
             )}
 
             {/* Net Balances — one card per person */}
-            {balancesByMember.size > 0 && (
+            {balancesByMember.size > 0 && (() => {
+              const globalMaxAbsolute = Math.max(
+                ...[...balancesByMember.values()].map(({ entries }) =>
+                  Math.max(...entries.map((e) => Math.abs(e.net)), 0),
+                ),
+                0,
+              );
+              return (
               <div className="mb-6">
                 <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
                   Net Balances
@@ -200,12 +207,14 @@ export default function SettlementPage() {
                         memberName={memberName}
                         entries={entries}
                         colorIndex={index}
+                        globalMaxAbsolute={globalMaxAbsolute}
                       />
                     ),
                   )}
                 </div>
               </div>
-            )}
+              );
+            })()}
 
             {/* Settle Up — one card per payer */}
             {debtsByPayer.size > 0 && (

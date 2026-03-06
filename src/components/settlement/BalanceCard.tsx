@@ -11,16 +11,19 @@ interface PersonBalanceCardProps {
   memberName: string;
   entries: BalanceEntry[];
   colorIndex: number;
+  globalMaxAbsolute?: number;
 }
 
 export default function BalanceCard({
   memberName,
   entries,
   colorIndex,
+  globalMaxAbsolute,
 }: PersonBalanceCardProps) {
   const avatarColor = AVATAR_COLORS[colorIndex % AVATAR_COLORS.length];
   const firstLetter = memberName.charAt(0).toUpperCase();
   const maxAbsolute = Math.max(...entries.map((e) => Math.abs(e.net)), 0);
+  const barDenominator = globalMaxAbsolute ?? maxAbsolute;
   const overallPositive = entries.reduce((sum, e) => sum + e.net, 0) >= 0;
   const showCurrency = entries.length > 1;
 
@@ -62,7 +65,7 @@ export default function BalanceCard({
         <div
           className="h-full rounded-full transition-all duration-300"
           style={{
-            width: `${maxAbsolute > 0 ? Math.round((Math.max(...entries.map((e) => Math.abs(e.net))) / maxAbsolute) * 100) : 0}%`,
+            width: `${barDenominator > 0 ? Math.round((maxAbsolute / barDenominator) * 100) : 0}%`,
             backgroundColor: overallPositive ? '#14B8A6' : '#EF4444',
           }}
         />

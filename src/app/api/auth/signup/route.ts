@@ -4,9 +4,16 @@ import { signupSchema } from "@/lib/validation";
 import { hashPassword, createSession, sessionCookieOptions } from "@/lib/auth";
 import { ApiError, handleApiError } from "@/lib/errors";
 import { generateId } from "@/lib/utils";
+import { rateLimitGeneral } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+    const rl = rateLimitGeneral(ip);
+    if (!rl.allowed) {
+      throw new ApiError("RATE_LIMITED", "Too many requests", 429);
+    }
+
     const body = await request.json();
     const parsed = signupSchema.safeParse(body);
     if (!parsed.success) {

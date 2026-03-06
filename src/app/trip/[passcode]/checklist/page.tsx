@@ -4,6 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { useTripContext } from '@/context/TripContext';
 import { useMembers } from '@/hooks/useMembers';
 import { useChecklist } from '@/hooks/useChecklist';
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 import ChecklistItemCard from '@/components/checklist/ChecklistItemCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
@@ -68,6 +70,13 @@ export default function ChecklistPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
+        <Link
+          href={`/trip/${passcode}`}
+          className="mb-2 inline-flex items-center gap-0.5 text-[13px] font-medium text-white/70"
+        >
+          <ChevronLeft size={14} />
+          Dashboard
+        </Link>
         <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
           Packing List
         </h1>

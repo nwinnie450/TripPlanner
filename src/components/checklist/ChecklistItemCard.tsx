@@ -21,7 +21,7 @@ export default function ChecklistItemCard({
   async function togglePacked() {
     setLoading(true);
     try {
-      await fetch(
+      const res = await fetch(
         `/api/trip/${passcode}/checklist/${item.checklistItemId}`,
         {
           method: 'PATCH',
@@ -29,6 +29,7 @@ export default function ChecklistItemCard({
           body: JSON.stringify({ packed: !item.packed }),
         },
       );
+      if (!res.ok) return;
       onUpdate();
     } finally {
       setLoading(false);
@@ -38,10 +39,11 @@ export default function ChecklistItemCard({
   async function handleDelete() {
     setLoading(true);
     try {
-      await fetch(
+      const res = await fetch(
         `/api/trip/${passcode}/checklist/${item.checklistItemId}`,
         { method: 'DELETE' },
       );
+      if (!res.ok) return;
       onUpdate();
     } finally {
       setLoading(false);

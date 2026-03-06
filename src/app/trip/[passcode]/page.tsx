@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Pencil } from 'lucide-react';
+import { Pencil, ChevronLeft } from 'lucide-react';
 import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
 import { useMembers } from '@/hooks/useMembers';
@@ -32,6 +32,13 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
+        <Link
+          href="/"
+          className="mb-2 inline-flex items-center gap-0.5 text-[13px] font-medium text-white/70"
+        >
+          <ChevronLeft size={14} />
+          My Trips
+        </Link>
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">

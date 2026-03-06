@@ -24,8 +24,12 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret && process.env.NODE_ENV === "production") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
     const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET ?? "fallback-dev-secret-change-me",
+      jwtSecret ?? "fallback-dev-secret-change-me",
     );
     await jwtVerify(token, secret);
     return NextResponse.next();

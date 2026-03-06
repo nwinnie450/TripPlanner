@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTripContext } from '@/context/TripContext';
+import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
@@ -53,6 +54,12 @@ export default function JoinPage() {
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-sm">
           <ErrorMessage message={error} />
+          <Link
+            href="/"
+            className="mt-4 block text-center text-[14px] font-medium text-ocean"
+          >
+            Go to My Trips
+          </Link>
         </div>
       </div>
     );
@@ -69,9 +76,17 @@ export default function JoinPage() {
             </p>
           </>
         ) : (
-          <p className="text-[15px] text-slate-600">
-            Unable to join this trip.
-          </p>
+          <>
+            <p className="text-[15px] text-slate-600">
+              Unable to join this trip.
+            </p>
+            <Link
+              href="/"
+              className="mt-4 inline-block text-[14px] font-medium text-ocean"
+            >
+              Go to My Trips
+            </Link>
+          </>
         )}
       </Card>
     </div>

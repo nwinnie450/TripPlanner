@@ -37,7 +37,7 @@ export default function GoogleMapsProvider({
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=places`;
     script.async = true;
     script.onload = () => setLoaded(true);
-    script.onerror = () => setLoaded(true);
+    script.onerror = () => {}; // Keep loaded=false so map components gracefully skip
     document.head.appendChild(script);
   }, [loaded]);
 

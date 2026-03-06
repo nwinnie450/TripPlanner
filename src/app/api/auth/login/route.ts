@@ -3,9 +3,16 @@ import { getCollection } from "@/lib/mongodb";
 import { loginSchema } from "@/lib/validation";
 import { verifyPassword, createSession, sessionCookieOptions } from "@/lib/auth";
 import { ApiError, handleApiError } from "@/lib/errors";
+import { rateLimitGeneral } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+    const rl = rateLimitGeneral(ip);
+    if (!rl.allowed) {
+      throw new ApiError("RATE_LIMITED", "Too many requests", 429);
+    }
+
     const body = await request.json();
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) {

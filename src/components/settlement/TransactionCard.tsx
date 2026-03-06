@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { Payment } from '@/types';
 import { formatCurrency } from '@/lib/constants';
 import PaymentForm from './PaymentForm';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 const AVATAR_COLORS = ['#8B5CF6', '#14B8A6', '#F472B6', '#F59E0B'];
 
@@ -37,6 +38,7 @@ export default function TransactionCard({
 }: PersonDebtCardProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const avatarColor = AVATAR_COLORS[colorIndex % AVATAR_COLORS.length];
   const firstLetter = fromName.charAt(0).toUpperCase();
@@ -199,7 +201,7 @@ export default function TransactionCard({
                         })}
                       </span>
                       <button
-                        onClick={() => onDeletePayment(p.paymentId)}
+                        onClick={() => setConfirmDeleteId(p.paymentId)}
                         className="text-[11px] font-medium text-red-400 hover:text-red-600"
                       >
                         Undo
@@ -212,6 +214,18 @@ export default function TransactionCard({
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDeleteId}
+        title="Undo payment?"
+        message="This will remove the recorded payment. The debt will reappear in the settlement."
+        confirmLabel="Undo"
+        onConfirm={() => {
+          if (confirmDeleteId) onDeletePayment(confirmDeleteId);
+          setConfirmDeleteId(null);
+        }}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
     </div>
   );
 }
