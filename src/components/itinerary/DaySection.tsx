@@ -51,7 +51,7 @@ export default function DaySection({
 
   return (
     <section className="mb-6">
-      <div className="sticky top-0 z-10 -mx-6 mb-3 bg-white px-6 py-2">
+      <div className="sticky top-0 z-10 mb-3 bg-white py-2">
         <div className="flex items-center gap-2">
           <h2 className="font-[family-name:var(--font-display)] text-[17px] font-bold text-slate-900">
             Day {dayNumber} &mdash; {formatDate(date)}
