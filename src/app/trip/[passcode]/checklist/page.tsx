@@ -143,7 +143,7 @@ export default function ChecklistPage() {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-[#E4E4E7] bg-white px-4 pb-6 pt-3">
+      <div className="fixed bottom-16 left-0 right-0 border-t border-[#E4E4E7] bg-white px-4 pb-3 pt-3">
         <form onSubmit={handleAdd} className="flex gap-2">
           <input
             type="text"
