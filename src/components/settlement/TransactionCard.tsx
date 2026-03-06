@@ -11,6 +11,7 @@ interface TransactionCardProps {
   currency: string;
   payments: Payment[];
   onRecordPayment: (from: string, to: string, amount: number, note: string) => Promise<void>;
+  showCurrencyBadge?: boolean;
 }
 
 export default function TransactionCard({
@@ -18,6 +19,7 @@ export default function TransactionCard({
   currency,
   payments,
   onRecordPayment,
+  showCurrencyBadge = false,
 }: TransactionCardProps) {
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -41,11 +43,18 @@ export default function TransactionCard({
     <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
       {/* Header: names and amount */}
       <div className="flex items-center justify-between">
-        <p className="text-[15px] text-slate-900">
-          <span className="font-semibold">{transaction.fromName}</span>{' '}
-          <span className="text-slate-400">&rarr;</span>{' '}
-          <span className="font-semibold">{transaction.toName}</span>
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-[15px] text-slate-900">
+            <span className="font-semibold">{transaction.fromName}</span>{' '}
+            <span className="text-slate-400">&rarr;</span>{' '}
+            <span className="font-semibold">{transaction.toName}</span>
+          </p>
+          {showCurrencyBadge && (
+            <span className="rounded-full bg-[#F3E8FF] px-2 py-0.5 text-[11px] font-bold text-[#7C3AED]">
+              {currency}
+            </span>
+          )}
+        </div>
         <span className={`rounded-xl px-3 py-1.5 text-[14px] font-bold text-white ${isSettled ? 'bg-[#14B8A6]' : 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6]'}`}>
           {isSettled ? 'Settled' : formatCurrency(transaction.remaining, currency)}
         </span>

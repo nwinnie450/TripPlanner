@@ -129,62 +129,55 @@ export default function SettlementPage() {
               </div>
             )}
 
-            {groups.map((group) => {
-              const maxAbsolute = Math.max(
-                ...group.balances.map((b) => Math.abs(b.net)),
-                0,
-              );
+            {/* Combined Net Balances section */}
+            {groups.some((g) => g.balances.length > 0) && (
+              <div className="mb-6">
+                <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
+                  Net Balances
+                </h2>
+                <div className="flex flex-col gap-2">
+                  {groups.flatMap((group) => {
+                    const maxAbsolute = Math.max(
+                      ...group.balances.map((b) => Math.abs(b.net)),
+                      0,
+                    );
+                    return group.balances.map((balance, index) => (
+                      <BalanceCard
+                        key={`${group.currency}-${balance.memberId}`}
+                        balance={balance}
+                        maxAbsolute={maxAbsolute}
+                        currency={group.currency}
+                        colorIndex={index}
+                        showCurrencyBadge={hasMultipleCurrencies}
+                      />
+                    ));
+                  })}
+                </div>
+              </div>
+            )}
 
-              return (
-                <div key={group.currency} className="mb-8">
-                  {hasMultipleCurrencies && groups.length > 1 && (
-                    <div className="mb-4 flex items-center gap-2">
-                      <span className="rounded-full bg-[#F3E8FF] px-3 py-1 text-[13px] font-bold text-[#7C3AED]">
-                        {group.currency}
-                      </span>
-                    </div>
-                  )}
-
-                  {group.balances.length > 0 && (
-                    <div className="mb-6">
-                      <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
-                        Net Balances
-                      </h2>
-                      <div className="flex flex-col gap-2">
-                        {group.balances.map((balance, index) => (
-                          <BalanceCard
-                            key={balance.memberId}
-                            balance={balance}
-                            maxAbsolute={maxAbsolute}
-                            currency={group.currency}
-                            colorIndex={index}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {group.transactions.length > 0 && (
-                    <div className="mb-6">
-                      <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
-                        Settle Up
-                      </h2>
-                      <div className="flex flex-col gap-3">
-                        {group.transactions.map((tx, i) => (
-                          <TransactionCard
-                            key={i}
-                            transaction={tx}
-                            currency={group.currency}
-                            payments={payments}
-                            onRecordPayment={handleRecordPayment}
-                          />
-                        ))}
-                      </div>
-                    </div>
+            {/* Combined Settle Up section */}
+            {groups.some((g) => g.transactions.length > 0) && (
+              <div className="mb-6">
+                <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
+                  Settle Up
+                </h2>
+                <div className="flex flex-col gap-3">
+                  {groups.flatMap((group) =>
+                    group.transactions.map((tx, i) => (
+                      <TransactionCard
+                        key={`${group.currency}-${i}`}
+                        transaction={tx}
+                        currency={group.currency}
+                        payments={payments}
+                        onRecordPayment={handleRecordPayment}
+                        showCurrencyBadge={hasMultipleCurrencies}
+                      />
+                    )),
                   )}
                 </div>
-              );
-            })}
+              </div>
+            )}
 
             <div className="rounded-xl bg-[#F0FDFA] p-4">
               <p className="text-[13px] text-[#14B8A6]">

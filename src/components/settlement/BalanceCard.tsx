@@ -8,6 +8,7 @@ interface BalanceCardProps {
   maxAbsolute: number;
   currency: string;
   colorIndex?: number;
+  showCurrencyBadge?: boolean;
 }
 
 export default function BalanceCard({
@@ -15,6 +16,7 @@ export default function BalanceCard({
   maxAbsolute,
   currency,
   colorIndex = 0,
+  showCurrencyBadge = false,
 }: BalanceCardProps) {
   const isPositive = balance.net >= 0;
   const barWidth = maxAbsolute > 0 ? Math.round((Math.abs(balance.net) / maxAbsolute) * 100) : 0;
@@ -34,10 +36,17 @@ export default function BalanceCard({
           </div>
           <p className="text-[15px] font-semibold text-slate-900">{balance.memberName}</p>
         </div>
-        <p className="text-[15px] font-bold" style={{ color: isPositive ? '#14B8A6' : '#EF4444' }}>
-          {isPositive ? '+' : '-'}
-          {formatCurrency(balance.net, currency)}
-        </p>
+        <div className="flex items-center gap-2">
+          {showCurrencyBadge && (
+            <span className="rounded-full bg-[#F3E8FF] px-2 py-0.5 text-[11px] font-bold text-[#7C3AED]">
+              {currency}
+            </span>
+          )}
+          <p className="text-[15px] font-bold" style={{ color: isPositive ? '#14B8A6' : '#EF4444' }}>
+            {isPositive ? '+' : '-'}
+            {formatCurrency(balance.net, currency)}
+          </p>
+        </div>
       </div>
       <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
         <div

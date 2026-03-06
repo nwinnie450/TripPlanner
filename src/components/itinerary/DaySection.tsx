@@ -62,7 +62,7 @@ export default function DaySection({
         </div>
       </div>
       {items.length > 0 ? (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-2">
           {items.map((item, index) => (
             <Fragment key={item.itemId}>
               <ItineraryItemCard item={item} passcode={passcode} />
