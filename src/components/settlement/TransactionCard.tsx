@@ -21,7 +21,8 @@ interface PersonDebtCardProps {
   fromName: string;
   debts: Debt[];
   payments: Payment[];
-  onRecordPayment: (from: string, to: string, amount: number, note: string) => Promise<void>;
+  onRecordPayment: (from: string, to: string, amount: number, currency: string, note: string) => Promise<void>;
+  onDeletePayment: (paymentId: string) => Promise<void>;
   colorIndex: number;
 }
 
@@ -31,6 +32,7 @@ export default function TransactionCard({
   debts,
   payments,
   onRecordPayment,
+  onDeletePayment,
   colorIndex,
 }: PersonDebtCardProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -45,7 +47,7 @@ export default function TransactionCard({
   const allPayments = payments.filter((p) => p.from === from);
 
   async function handleSubmit(debt: Debt, amount: number, note: string) {
-    await onRecordPayment(from, debt.to, amount, note);
+    await onRecordPayment(from, debt.to, amount, debt.currency, note);
     setExpandedIndex(null);
   }
 
@@ -170,7 +172,7 @@ export default function TransactionCard({
               {allPayments.map((p) => {
                 const toDebt = debts.find((d) => d.to === p.to);
                 const toName = toDebt?.toName ?? p.to;
-                const currency = toDebt?.currency ?? debts[0]?.currency ?? 'USD';
+                const cur = p.currency ?? toDebt?.currency ?? debts[0]?.currency ?? 'USD';
                 return (
                   <div
                     key={p.paymentId}
@@ -178,7 +180,7 @@ export default function TransactionCard({
                   >
                     <div>
                       <span className="text-[12px] font-medium text-slate-700">
-                        {formatCurrency(p.amount, currency)}
+                        {formatCurrency(p.amount, cur)}
                       </span>
                       <span className="ml-1.5 text-[11px] text-slate-400">
                         → {toName}
@@ -189,12 +191,20 @@ export default function TransactionCard({
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] text-slate-400">
-                      {new Date(p.date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400">
+                        {new Date(p.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                      <button
+                        onClick={() => onDeletePayment(p.paymentId)}
+                        className="text-[11px] font-medium text-red-400 hover:text-red-600"
+                      >
+                        Undo
+                      </button>
+                    </div>
                   </div>
                 );
               })}

@@ -38,7 +38,7 @@ export async function GET(
     // Calculate paid amounts per transaction (from->to pair), grouped by currency
     const paidMap = new Map<string, number>();
     for (const p of payments) {
-      const currency = (p as any).currency ?? trip.currency;
+      const currency = p.currency ?? trip.currency;
       const key = `${currency}:${p.from}->${p.to}`;
       paidMap.set(key, (paidMap.get(key) ?? 0) + p.amount);
     }

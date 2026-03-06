@@ -111,6 +111,7 @@ export interface Payment {
   from: string;
   to: string;
   amount: number;
+  currency?: string;
   note?: string;
   date: string;
   createdAt: string;

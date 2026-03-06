@@ -27,7 +27,7 @@ export default function SettlementPage() {
     .map((g) => g.currency)
     .filter((c) => c !== baseCurrency);
 
-  async function handleRecordPayment(from: string, to: string, amount: number, note: string) {
+  async function handleRecordPayment(from: string, to: string, amount: number, currency: string, note: string) {
     await fetch(`/api/trip/${passcode}/payments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -35,9 +35,19 @@ export default function SettlementPage() {
         from,
         to,
         amount,
+        currency,
         note: note || undefined,
         date: new Date().toISOString().split('T')[0],
       }),
+    });
+    mutate();
+  }
+
+  async function handleDeletePayment(paymentId: string) {
+    await fetch(`/api/trip/${passcode}/payments`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentId }),
     });
     mutate();
   }
@@ -213,6 +223,7 @@ export default function SettlementPage() {
                         debts={debts}
                         payments={payments}
                         onRecordPayment={handleRecordPayment}
+                        onDeletePayment={handleDeletePayment}
                         colorIndex={index}
                       />
                     ),
