@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import type { Expense, ExpenseCategory, ExpenseType, Member } from '@/types';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, formatCurrency } from '@/lib/constants';
-import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import CurrencyToggle from '@/components/expenses/CurrencyToggle';
@@ -270,14 +269,22 @@ export default function ExpenseForm({
       >
         {isSubmitting ? 'Saving...' : 'Save Expense'}
       </button>
-      <Button type="button" variant="ghost" onClick={onCancel}>
-        Cancel
-      </Button>
       {onDelete && (
-        <Button type="button" variant="destructive" onClick={onDelete}>
-          Delete Expense
-        </Button>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="text-[13px] font-medium text-red-500 hover:text-red-600"
+        >
+          Delete this expense
+        </button>
       )}
+      <button
+        type="button"
+        onClick={onCancel}
+        className="text-[13px] font-medium text-slate-400 hover:text-slate-600"
+      >
+        Cancel
+      </button>
     </form>
   );
 }
