@@ -64,24 +64,6 @@ export default function DashboardPage() {
           </p>
           <div className="grid grid-cols-2 gap-2">
             <Link
-              href={`/trip/${passcode}/itinerary`}
-              className="flex h-11 items-center justify-center rounded-[10px] bg-ocean-light text-[15px] font-medium text-ocean"
-            >
-              Itinerary
-            </Link>
-            <Link
-              href={`/trip/${passcode}/expenses`}
-              className="flex h-11 items-center justify-center rounded-[10px] bg-ocean-light text-[15px] font-medium text-ocean"
-            >
-              Expenses
-            </Link>
-            <Link
-              href={`/trip/${passcode}/settlement`}
-              className="flex h-11 items-center justify-center rounded-[10px] bg-ocean-light text-[15px] font-medium text-ocean"
-            >
-              Settlement
-            </Link>
-            <Link
               href={`/trip/${passcode}/summary`}
               className="flex h-11 items-center justify-center rounded-[10px] bg-ocean-light text-[15px] font-medium text-ocean"
             >
