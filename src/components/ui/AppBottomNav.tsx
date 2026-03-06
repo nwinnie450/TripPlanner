@@ -26,8 +26,8 @@ export default function AppBottomNav() {
   const tabs = [
     {
       label: 'Home',
-      href: '/',
-      active: pathname === '/' || pathname === '/create',
+      href: base ?? '/',
+      active: pathname === '/' || pathname === '/create' || (!!base && pathname === base),
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9L12 2L21 9V20A2 2 0 0 1 19 22H5A2 2 0 0 1 3 20V9Z" />

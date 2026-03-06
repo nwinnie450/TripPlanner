@@ -79,7 +79,7 @@ export default function TripLayout({
   return (
     <TripProvider>
       <GoogleMapsProvider>
-        <div className="pb-20">
+        <div className="overflow-x-hidden pb-20">
           {children}
         </div>
       </GoogleMapsProvider>
