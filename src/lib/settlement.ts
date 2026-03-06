@@ -77,3 +77,72 @@ export function calculateSettlement(
 
   return { balances, transactions };
 }
+
+export interface CurrencySettlement {
+  currency: string;
+  balances: Balance[];
+  transactions: Transaction[];
+}
+
+export function calculateMultiCurrencySettlement(
+  expenses: Expense[],
+  members: Member[],
+  baseCurrency: string,
+  exchangeRates?: Record<string, number>,
+): CurrencySettlement[] {
+  if (expenses.length === 0) {
+    return [{ currency: baseCurrency, ...calculateSettlement([], members) }];
+  }
+
+  // Determine unique currencies used
+  const usedCurrencies = new Set(
+    expenses.map((e) => e.currency ?? baseCurrency)
+  );
+
+  const nonBaseCurrencies = [...usedCurrencies].filter(
+    (c) => c !== baseCurrency
+  );
+
+  // Check if exchange rates cover all non-base currencies
+  const canConvert =
+    exchangeRates &&
+    nonBaseCurrencies.length > 0 &&
+    nonBaseCurrencies.every((c) => exchangeRates[c] !== undefined);
+
+  if (nonBaseCurrencies.length === 0 || canConvert) {
+    // Convert everything to base currency
+    const convertedExpenses: Expense[] = expenses.map((e) => {
+      const expCurrency = e.currency ?? baseCurrency;
+      if (expCurrency === baseCurrency) return e;
+      const rate = exchangeRates![expCurrency];
+      return { ...e, amount: e.amount * rate, currency: baseCurrency };
+    });
+
+    const { balances, transactions } = calculateSettlement(
+      convertedExpenses,
+      members
+    );
+    return [{ currency: baseCurrency, balances, transactions }];
+  }
+
+  // Group expenses by currency and run settlement per group
+  const grouped = new Map<string, Expense[]>();
+  for (const expense of expenses) {
+    const currency = expense.currency ?? baseCurrency;
+    if (!grouped.has(currency)) {
+      grouped.set(currency, []);
+    }
+    grouped.get(currency)!.push(expense);
+  }
+
+  const results: CurrencySettlement[] = [];
+  for (const [currency, currencyExpenses] of grouped) {
+    const { balances, transactions } = calculateSettlement(
+      currencyExpenses,
+      members
+    );
+    results.push({ currency, balances, transactions });
+  }
+
+  return results;
+}

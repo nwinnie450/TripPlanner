@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import AuthProvider from "@/context/AuthContext";
+import ToastProvider from "@/context/ToastContext";
 import AppBottomNav from "@/components/ui/AppBottomNav";
 import "./globals.css";
 
@@ -33,8 +34,10 @@ export default function RootLayout({
     <html lang="en" className={`${plusJakartaSans.variable} ${inter.variable}`}>
       <body className="antialiased">
         <AuthProvider>
-          {children}
-          <AppBottomNav />
+          <ToastProvider>
+            {children}
+            <AppBottomNav />
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
 import { useMembers } from '@/hooks/useMembers';
@@ -16,13 +16,23 @@ export default function AddExpensePage() {
   const { members, isLoading: membersLoading } = useMembers(passcode);
   const { mutate } = useExpenses(passcode);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const defaultValues = {
+    description: searchParams.get('title') ?? '',
+    category: (searchParams.get('category') as ExpenseCategory) ?? undefined,
+    date: searchParams.get('date') ?? '',
+  };
 
   if (tripLoading || membersLoading) return <LoadingSpinner />;
   if (!trip) return null;
 
+  const allCurrencies = [trip.currency, ...(trip.currencies ?? [])];
+
   async function handleSubmit(data: {
     amount: number;
+    currency: string;
     description: string;
     category: ExpenseCategory;
     date: string;
@@ -78,9 +88,11 @@ export default function AddExpensePage() {
         <ExpenseForm
           members={members}
           currency={trip.currency}
+          currencies={allCurrencies}
           onSubmit={handleSubmit}
           onCancel={() => router.back()}
           isSubmitting={isSubmitting}
+          defaultValues={defaultValues}
         />
       </div>
     </div>

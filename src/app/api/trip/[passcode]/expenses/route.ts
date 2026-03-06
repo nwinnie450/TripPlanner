@@ -117,6 +117,7 @@ export async function POST(
       paidBy: parsed.data.paidBy,
       splitBetween: parsed.data.splitBetween,
       date: parsed.data.date,
+      ...(parsed.data.currency !== undefined && { currency: parsed.data.currency }),
       createdBy: parsed.data.createdBy,
       createdAt: now,
       updatedAt: now,

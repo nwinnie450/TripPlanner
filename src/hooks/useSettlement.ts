@@ -7,9 +7,14 @@ export interface EnrichedTransaction extends Transaction {
   remaining: number;
 }
 
-interface SettlementResponse {
+export interface CurrencySettlementGroup {
+  currency: string;
   balances: Balance[];
   transactions: EnrichedTransaction[];
+}
+
+interface SettlementResponse {
+  groups: CurrencySettlementGroup[];
   payments: Payment[];
 }
 
@@ -26,8 +31,7 @@ export function useSettlement(passcode: string) {
   );
 
   return {
-    balances: data?.balances ?? [],
-    transactions: data?.transactions ?? [],
+    groups: data?.groups ?? [],
     payments: data?.payments ?? [],
     isLoading,
     error,

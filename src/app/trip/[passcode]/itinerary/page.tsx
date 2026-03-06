@@ -8,9 +8,11 @@ import { generateDateRange, formatDate } from '@/lib/utils';
 import DaySection from '@/components/itinerary/DaySection';
 import ViewToggle from '@/components/itinerary/ViewToggle';
 import ItineraryMapView from '@/components/itinerary/ItineraryMapView';
+import ShareButton from '@/components/ui/ShareButton';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import { formatItineraryText } from '@/lib/formatExport';
 
 export default function ItineraryPage() {
   const { passcode } = useTripContext();
@@ -28,12 +30,30 @@ export default function ItineraryPage() {
   return (
     <div>
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6">
-        <h1 className="mb-1 font-[family-name:var(--font-display)] text-[28px] font-bold text-white">
-          Itinerary
-        </h1>
-        <p className="text-[13px] text-white/80">
-          {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)}
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="mb-1 font-[family-name:var(--font-display)] text-[28px] font-bold text-white">
+              Itinerary
+            </h1>
+            <p className="text-[13px] text-white/80">
+              {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)}
+            </p>
+          </div>
+          {hasItems && (
+            <ShareButton
+              getShareData={() => ({
+                title: `${trip.tripName} Itinerary`,
+                text: formatItineraryText(
+                  trip.tripName,
+                  trip.startDate,
+                  trip.endDate,
+                  items,
+                  dates,
+                ),
+              })}
+            />
+          )}
+        </div>
         {hasItems && (
           <div className="mt-4">
             <ViewToggle view={view} onViewChange={setView} />

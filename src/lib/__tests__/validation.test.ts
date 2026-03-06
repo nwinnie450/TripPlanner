@@ -3,7 +3,7 @@ import {
   addMemberSchema,
   addExpenseSchema,
   addItineraryItemSchema,
-  updateBudgetSchema,
+  updateTripSchema,
 } from "../validation";
 
 describe("createTripSchema", () => {
@@ -204,21 +204,21 @@ describe("addItineraryItemSchema", () => {
   });
 });
 
-describe("updateBudgetSchema", () => {
+describe("updateTripSchema", () => {
   it("should accept zero budget", () => {
-    expect(updateBudgetSchema.safeParse({ budget: 0 }).success).toBe(true);
+    expect(updateTripSchema.safeParse({ budget: 0 }).success).toBe(true);
   });
 
   it("should accept positive budget", () => {
-    expect(updateBudgetSchema.safeParse({ budget: 1000 }).success).toBe(true);
+    expect(updateTripSchema.safeParse({ budget: 1000 }).success).toBe(true);
   });
 
   it("should reject negative budget", () => {
-    expect(updateBudgetSchema.safeParse({ budget: -1 }).success).toBe(false);
+    expect(updateTripSchema.safeParse({ budget: -1 }).success).toBe(false);
   });
 
   it("should reject non-number budget", () => {
-    expect(updateBudgetSchema.safeParse({ budget: "lots" }).success).toBe(
+    expect(updateTripSchema.safeParse({ budget: "lots" }).success).toBe(
       false
     );
   });

@@ -82,3 +82,16 @@ export function formatCurrency(amount: number, currency: string = 'SGD'): string
   const symbol = symbols[currency] || currency + ' ';
   return `${symbol}${Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: amount % 1 !== 0 ? 2 : 0 })}`;
 }
+
+export function mapItineraryCategoryToExpense(category?: ItineraryCategory): ExpenseCategory {
+  const map: Partial<Record<ItineraryCategory, ExpenseCategory>> = {
+    Food: 'Food',
+    Shopping: 'Shopping',
+    Transport: 'Transport',
+    Hotel: 'Accommodation',
+    Activity: 'Activities',
+    Sightseeing: 'Activities',
+    Nightlife: 'Activities',
+  };
+  return category ? (map[category] ?? 'Other') : 'Other';
+}

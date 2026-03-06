@@ -5,6 +5,8 @@ export interface TripMetadata {
   startDate: string;
   endDate: string;
   currency: string;
+  currencies?: string[];
+  exchangeRates?: Record<string, number>;
   budget: number;
   passcode: string;
   createdAt: string;
@@ -74,6 +76,7 @@ export type ExpenseCategory =
 export interface Expense {
   expenseId: string;
   amount: number;
+  currency?: string;
   description: string;
   category: ExpenseCategory;
   paidBy: string;
@@ -108,6 +111,15 @@ export interface Payment {
   createdAt: string;
 }
 
+export interface ChecklistItem {
+  checklistItemId: string;
+  text: string;
+  assignee?: string;
+  packed: boolean;
+  createdBy: string;
+  createdAt: string;
+}
+
 export interface ApiError {
   code: string;
   message: string;
@@ -121,11 +133,14 @@ export interface TripDocument {
   startDate: string;
   endDate: string;
   currency: string;
+  currencies?: string[];
+  exchangeRates?: Record<string, number>;
   budget: number;
   members: Member[];
   itinerary: ItineraryItem[];
   expenses: Expense[];
   payments?: Payment[];
+  checklist?: ChecklistItem[];
   createdAt: string;
   updatedAt: string;
 }

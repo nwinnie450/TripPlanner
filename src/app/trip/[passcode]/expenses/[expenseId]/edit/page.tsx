@@ -11,6 +11,7 @@ import type { ExpenseCategory } from '@/types';
 import ExpenseForm from '@/components/expenses/ExpenseForm';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 export default function EditExpensePage() {
   const { passcode } = useTripContext();
@@ -23,16 +24,20 @@ export default function EditExpensePage() {
     useExpenses(passcode);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   if (tripLoading || membersLoading || expensesLoading)
     return <LoadingSpinner />;
   if (!trip) return null;
+
+  const allCurrencies = [trip.currency, ...(trip.currencies ?? [])];
 
   const expense = expenses.find((e) => e.expenseId === expenseId);
   if (!expense) return <ErrorMessage message="Expense not found." />;
 
   async function handleSubmit(data: {
     amount: number;
+    currency: string;
     description: string;
     category: ExpenseCategory;
     date: string;
@@ -59,7 +64,7 @@ export default function EditExpensePage() {
   }
 
   async function handleDelete() {
-    if (!confirm('Are you sure you want to delete this expense?')) return;
+    setShowConfirm(false);
     try {
       const res = await fetch(
         `/api/trip/${passcode}/expenses/${expenseId}`,
@@ -86,11 +91,19 @@ export default function EditExpensePage() {
       <ExpenseForm
         members={members}
         currency={trip.currency}
+        currencies={allCurrencies}
         initialData={expense}
         onSubmit={handleSubmit}
         onCancel={() => router.back()}
-        onDelete={handleDelete}
+        onDelete={() => setShowConfirm(true)}
         isSubmitting={isSubmitting}
+      />
+      <ConfirmDialog
+        open={showConfirm}
+        title="Delete Expense"
+        message="Are you sure? This cannot be undone."
+        onConfirm={handleDelete}
+        onCancel={() => setShowConfirm(false)}
       />
     </div>
   );

@@ -6,13 +6,21 @@ import { EXPENSE_CATEGORIES, CATEGORY_COLORS, formatCurrency } from '@/lib/const
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
+import CurrencyToggle from '@/components/expenses/CurrencyToggle';
 
 interface ExpenseFormProps {
   members: Member[];
   currency: string;
+  currencies?: string[];
   initialData?: Partial<Expense>;
+  defaultValues?: {
+    description?: string;
+    category?: ExpenseCategory;
+    date?: string;
+  };
   onSubmit: (data: {
     amount: number;
+    currency: string;
     description: string;
     category: ExpenseCategory;
     date: string;
@@ -27,19 +35,30 @@ interface ExpenseFormProps {
 export default function ExpenseForm({
   members,
   currency,
+  currencies,
   initialData,
+  defaultValues,
   onSubmit,
   onCancel,
   onDelete,
   isSubmitting = false,
 }: ExpenseFormProps) {
   const [amount, setAmount] = useState(initialData?.amount?.toString() ?? '');
-  const [description, setDescription] = useState(initialData?.description ?? '');
-  const [category, setCategory] = useState<string>(initialData?.category ?? '');
-  const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split('T')[0]);
+  const [description, setDescription] = useState(
+    initialData?.description ?? defaultValues?.description ?? '',
+  );
+  const [category, setCategory] = useState<string>(
+    initialData?.category ?? defaultValues?.category ?? '',
+  );
+  const [date, setDate] = useState(
+    initialData?.date ?? (defaultValues?.date || new Date().toISOString().split('T')[0]),
+  );
   const [paidBy, setPaidBy] = useState(initialData?.paidBy ?? '');
   const [splitBetween, setSplitBetween] = useState<string[]>(
     initialData?.splitBetween ?? members.map((m) => m.memberId),
+  );
+  const [selectedCurrency, setSelectedCurrency] = useState(
+    initialData?.currency ?? currencies?.[0] ?? currency,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -73,6 +92,7 @@ export default function ExpenseForm({
     if (!validate()) return;
     await onSubmit({
       amount: parseFloat(parseFloat(amount).toFixed(2)),
+      currency: selectedCurrency,
       description: description.trim(),
       category: category as ExpenseCategory,
       date,
@@ -82,8 +102,8 @@ export default function ExpenseForm({
   }
 
   const displayAmount = amount
-    ? formatCurrency(parseFloat(amount) || 0, currency)
-    : formatCurrency(0, currency);
+    ? formatCurrency(parseFloat(amount) || 0, selectedCurrency)
+    : formatCurrency(0, selectedCurrency);
 
   const memberOptions = members.map((m) => ({
     value: m.memberId,
@@ -92,6 +112,15 @@ export default function ExpenseForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {/* Currency toggle */}
+      {currencies && currencies.length > 1 && (
+        <CurrencyToggle
+          currencies={currencies}
+          selected={selectedCurrency}
+          onChange={setSelectedCurrency}
+        />
+      )}
+
       {/* Amount display */}
       <div className="flex flex-col items-center gap-2 py-4">
         <input
@@ -179,7 +208,7 @@ export default function ExpenseForm({
         {errors.splitBetween && <p className="text-[13px] text-red-500">{errors.splitBetween}</p>}
         {perPerson > 0 && (
           <p className="text-[13px] font-medium text-[#8B5CF6]">
-            Each person: {formatCurrency(perPerson, currency)}
+            Each person: {formatCurrency(perPerson, selectedCurrency)}
           </p>
         )}
         <div className="flex gap-2">

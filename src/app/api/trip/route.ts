@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { tripName, startDate, endDate, currency } = parsed.data;
+    const { tripName, startDate, endDate, currency, currencies } = parsed.data;
 
     // Get the authenticated user to auto-add as first member
     const session = await getSessionUser();
@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
       startDate,
       endDate,
       currency,
+      currencies: currencies ?? [],
       budget: 0,
       members: creatorMember ? [creatorMember] : [],
       itinerary: [],

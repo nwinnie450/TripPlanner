@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Pencil } from 'lucide-react';
 import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
 import { useMembers } from '@/hooks/useMembers';
@@ -29,13 +30,23 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
-        <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
-          {trip.tripName}
-        </h1>
-        <p className="text-[13px] text-white/80">
-          {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)}{' '}
-          &middot; {days} {days === 1 ? 'day' : 'days'}
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
+              {trip.tripName}
+            </h1>
+            <p className="text-[13px] text-white/80">
+              {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)}{' '}
+              &middot; {days} {days === 1 ? 'day' : 'days'}
+            </p>
+          </div>
+          <Link
+            href={`/trip/${passcode}/edit`}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white"
+          >
+            <Pencil size={16} />
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white p-6 flex flex-col gap-6">
@@ -69,6 +80,18 @@ export default function DashboardPage() {
               className="flex h-11 items-center justify-center rounded-[10px] bg-ocean-light text-[15px] font-medium text-ocean"
             >
               Settlement
+            </Link>
+            <Link
+              href={`/trip/${passcode}/summary`}
+              className="flex h-11 items-center justify-center rounded-[10px] bg-ocean-light text-[15px] font-medium text-ocean"
+            >
+              Summary
+            </Link>
+            <Link
+              href={`/trip/${passcode}/checklist`}
+              className="flex h-11 items-center justify-center rounded-[10px] bg-ocean-light text-[15px] font-medium text-ocean"
+            >
+              Checklist
             </Link>
           </div>
         </Card>

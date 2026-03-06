@@ -11,6 +11,7 @@ export const createTripSchema = z
     startDate: z.iso.date(),
     endDate: z.iso.date(),
     currency: z.string().min(3).max(3),
+    currencies: z.array(z.string().min(3).max(3)).max(5).optional(),
   })
   .refine((data) => data.endDate >= data.startDate, {
     message: "End date must be on or after start date",
@@ -84,6 +85,7 @@ export const updateItineraryItemSchema = z.object({
 
 export const addExpenseSchema = z.object({
   amount: z.number().positive(),
+  currency: z.string().min(3).max(3).optional(),
   description: z.string().min(1).max(200),
   category: z.enum(EXPENSE_CATEGORIES as [string, ...string[]]),
   paidBy: z.string().min(1),
@@ -94,6 +96,7 @@ export const addExpenseSchema = z.object({
 
 export const updateExpenseSchema = z.object({
   amount: z.number().positive().optional(),
+  currency: z.string().min(3).max(3).optional(),
   description: z.string().min(1).max(200).optional(),
   category: z.enum(EXPENSE_CATEGORIES as [string, ...string[]]).optional(),
   paidBy: z.string().min(1).optional(),
@@ -105,8 +108,26 @@ export const updateExpenseSchema = z.object({
   date: z.iso.date().optional(),
 });
 
-export const updateBudgetSchema = z.object({
-  budget: z.number().min(0),
+export const updateTripSchema = z.object({
+  tripName: z.string().min(1).max(100).optional(),
+  startDate: z.iso.date().optional(),
+  endDate: z.iso.date().optional(),
+  currency: z.string().min(3).max(3).optional(),
+  currencies: z.array(z.string().min(3).max(3)).max(5).optional(),
+  exchangeRates: z.record(z.string(), z.number().positive()).optional(),
+  budget: z.number().min(0).optional(),
+});
+
+export const addChecklistItemSchema = z.object({
+  text: z.string().min(1).max(200),
+  assignee: z.string().optional(),
+  createdBy: z.string().min(1),
+});
+
+export const updateChecklistItemSchema = z.object({
+  text: z.string().min(1).max(200).optional(),
+  assignee: z.string().optional(),
+  packed: z.boolean().optional(),
 });
 
 export type CreateTripInput = z.infer<typeof createTripSchema>;
@@ -117,4 +138,4 @@ export type UpdateItineraryItemInput = z.infer<
 >;
 export type AddExpenseInput = z.infer<typeof addExpenseSchema>;
 export type UpdateExpenseInput = z.infer<typeof updateExpenseSchema>;
-export type UpdateBudgetInput = z.infer<typeof updateBudgetSchema>;
+export type UpdateTripInput = z.infer<typeof updateTripSchema>;

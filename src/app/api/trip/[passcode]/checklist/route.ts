@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validatePasscodeFormat, lookupTrip } from "@/lib/passcode";
 import { getCollection } from "@/lib/mongodb";
-import { updateTripSchema } from "@/lib/validation";
+import { addChecklistItemSchema } from "@/lib/validation";
 import { ApiError, handleApiError } from "@/lib/errors";
 import { rateLimitGeneral } from "@/lib/rate-limit";
+import { generateId, nowISO } from "@/lib/utils";
+import type { ChecklistItem } from "@/types";
 
 export async function GET(
   request: NextRequest,
@@ -26,28 +28,13 @@ export async function GET(
       throw new ApiError("INVALID_PASSCODE", "Trip not found", 404);
     }
 
-    const totalExpenses = trip.expenses.reduce((sum, e) => sum + e.amount, 0);
-
-    return NextResponse.json({
-      tripName: trip.tripName,
-      startDate: trip.startDate,
-      endDate: trip.endDate,
-      currency: trip.currency,
-      currencies: trip.currencies ?? [],
-      exchangeRates: trip.exchangeRates ?? {},
-      budget: trip.budget,
-      passcode: trip.passcode,
-      createdAt: trip.createdAt,
-      updatedAt: trip.updatedAt,
-      memberCount: trip.members.length,
-      totalExpenses: Math.round(totalExpenses * 100) / 100,
-    });
+    return NextResponse.json(trip.checklist ?? []);
   } catch (error) {
     return handleApiError(error);
   }
 }
 
-export async function PATCH(
+export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ passcode: string }> }
 ) {
@@ -69,7 +56,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const parsed = updateTripSchema.safeParse(body);
+    const parsed = addChecklistItemSchema.safeParse(body);
     if (!parsed.success) {
       throw new ApiError(
         "VALIDATION_ERROR",
@@ -78,43 +65,26 @@ export async function PATCH(
       );
     }
 
-    const { tripName, startDate, endDate, currency, budget, currencies, exchangeRates } = parsed.data;
-
-    const effectiveStartDate = startDate ?? trip.startDate;
-    const effectiveEndDate = endDate ?? trip.endDate;
-    if (effectiveEndDate < effectiveStartDate) {
-      throw new ApiError(
-        "VALIDATION_ERROR",
-        "End date must be on or after start date",
-        400
-      );
-    }
-
-    const $set: Record<string, unknown> = { updatedAt: new Date().toISOString() };
-    if (tripName !== undefined) $set.tripName = tripName;
-    if (startDate !== undefined) $set.startDate = startDate;
-    if (endDate !== undefined) $set.endDate = endDate;
-    if (currency !== undefined) $set.currency = currency;
-    if (budget !== undefined) $set.budget = budget;
-    if (currencies !== undefined) $set.currencies = currencies;
-    if (exchangeRates !== undefined) $set.exchangeRates = exchangeRates;
+    const now = nowISO();
+    const item: ChecklistItem = {
+      checklistItemId: generateId(),
+      text: parsed.data.text,
+      ...(parsed.data.assignee != null && { assignee: parsed.data.assignee }),
+      packed: false,
+      createdBy: parsed.data.createdBy,
+      createdAt: now,
+    };
 
     const collection = await getCollection("trips");
     await collection.updateOne(
       { passcode: passcode.toUpperCase() },
-      { $set }
+      {
+        $push: { checklist: item } as any,
+        $set: { updatedAt: now },
+      } as any
     );
 
-    return NextResponse.json({
-      tripName: tripName ?? trip.tripName,
-      startDate: effectiveStartDate,
-      endDate: effectiveEndDate,
-      currency: currency ?? trip.currency,
-      budget: budget ?? trip.budget,
-      passcode: trip.passcode,
-      createdAt: trip.createdAt,
-      updatedAt: $set.updatedAt,
-    });
+    return NextResponse.json(item, { status: 201 });
   } catch (error) {
     return handleApiError(error);
   }

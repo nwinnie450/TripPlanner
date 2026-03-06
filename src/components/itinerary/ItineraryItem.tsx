@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
+import { MapPin, DollarSign } from 'lucide-react';
 import type { ItineraryItem } from '@/types';
-import { ITINERARY_CATEGORY_CONFIG } from '@/lib/constants';
+import { ITINERARY_CATEGORY_CONFIG, mapItineraryCategoryToExpense } from '@/lib/constants';
 import Card from '@/components/ui/Card';
 
 interface ItineraryItemProps {
@@ -62,6 +62,14 @@ export default function ItineraryItemCard({ item, passcode }: ItineraryItemProps
               <p className="mt-1 text-[13px] text-slate-400 line-clamp-2">{item.notes}</p>
             )}
           </div>
+          <Link
+            href={`/trip/${passcode}/expenses/add?title=${encodeURIComponent(item.title)}&category=${mapItineraryCategoryToExpense(item.category)}&date=${item.dayDate}`}
+            onClick={(e) => e.stopPropagation()}
+            className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ocean/10 text-ocean"
+            aria-label="Add expense for this activity"
+          >
+            <DollarSign className="h-3.5 w-3.5" />
+          </Link>
         </div>
       </Card>
     </Link>

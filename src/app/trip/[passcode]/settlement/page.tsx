@@ -1,23 +1,31 @@
 'use client';
 
+import { useState } from 'react';
 import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
 import { useSettlement } from '@/hooks/useSettlement';
 import BalanceCard from '@/components/settlement/BalanceCard';
 import TransactionCard from '@/components/settlement/TransactionCard';
+import ExchangeRateForm from '@/components/settlement/ExchangeRateForm';
+import ShareButton from '@/components/ui/ShareButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import { formatSettlementText } from '@/lib/formatExport';
 
 export default function SettlementPage() {
   const { passcode } = useTripContext();
-  const { trip } = useTrip(passcode);
-  const { balances, transactions, payments, isLoading, error, mutate } = useSettlement(passcode);
+  const { trip, mutate: mutateTrip } = useTrip(passcode);
+  const { groups, payments, isLoading, error, mutate } = useSettlement(passcode);
+  const [convertMode, setConvertMode] = useState(false);
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message="Failed to load settlement." />;
 
-  const currency = trip?.currency ?? 'USD';
-  const maxAbsolute = Math.max(...balances.map((b) => Math.abs(b.net)), 0);
+  const baseCurrency = trip?.currency ?? 'USD';
+  const hasMultipleCurrencies = groups.length > 1;
+  const nonBaseCurrencies = groups
+    .map((g) => g.currency)
+    .filter((c) => c !== baseCurrency);
 
   async function handleRecordPayment(from: string, to: string, amount: number, note: string) {
     await fetch(`/api/trip/${passcode}/payments`, {
@@ -34,17 +42,51 @@ export default function SettlementPage() {
     mutate();
   }
 
+  async function handleSaveRate(fromCurrency: string, rate: number) {
+    const currentRates = trip?.exchangeRates ?? {};
+    const updatedRates = { ...currentRates, [fromCurrency]: rate };
+    await fetch(`/api/trip/${passcode}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ exchangeRates: updatedRates }),
+    });
+    mutateTrip();
+    mutate();
+  }
+
+  const hasData = groups.some((g) => g.balances.length > 0 || g.transactions.length > 0);
+
+  // For share: use first group's data (or all if single currency)
+  const firstGroup = groups[0];
+
   return (
     <div className="min-h-screen bg-white">
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-12">
-        <h1 className="font-[family-name:var(--font-display)] text-[28px] font-bold text-white">
-          Settlement
-        </h1>
-        <p className="mt-1 text-[15px] text-white/80">Who owes whom</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="font-[family-name:var(--font-display)] text-[28px] font-bold text-white">
+              Settlement
+            </h1>
+            <p className="mt-1 text-[15px] text-white/80">Who owes whom</p>
+          </div>
+          {hasData && firstGroup && (
+            <ShareButton
+              getShareData={() => ({
+                title: `${trip?.tripName ?? 'Trip'} Settlement`,
+                text: formatSettlementText(
+                  trip?.tripName ?? 'Trip',
+                  firstGroup.currency,
+                  firstGroup.balances,
+                  firstGroup.transactions,
+                ),
+              })}
+            />
+          )}
+        </div>
       </div>
 
       <div className="bg-white p-6">
-        {balances.length === 0 && transactions.length === 0 ? (
+        {!hasData ? (
           <div className="flex flex-col items-center py-16 text-center">
             <p className="font-[family-name:var(--font-display)] text-[18px] font-semibold text-slate-900">
               All settled!
@@ -55,41 +97,94 @@ export default function SettlementPage() {
           </div>
         ) : (
           <>
-            <div className="mb-6">
-              <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
-                Net Balances
-              </h2>
-              <div className="flex flex-col gap-2">
-                {balances.map((balance, index) => (
-                  <BalanceCard
-                    key={balance.memberId}
-                    balance={balance}
-                    maxAbsolute={maxAbsolute}
-                    currency={currency}
-                    colorIndex={index}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {transactions.length > 0 && (
+            {hasMultipleCurrencies && (
               <div className="mb-6">
-                <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
-                  Settle Up
-                </h2>
-                <div className="flex flex-col gap-3">
-                  {transactions.map((tx, i) => (
-                    <TransactionCard
-                      key={i}
-                      transaction={tx}
-                      currency={currency}
-                      payments={payments}
-                      onRecordPayment={handleRecordPayment}
-                    />
-                  ))}
-                </div>
+                <button
+                  onClick={() => setConvertMode(!convertMode)}
+                  className={`rounded-full px-4 py-2 text-[13px] font-medium transition-colors ${
+                    convertMode
+                      ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {convertMode ? `Converting to ${baseCurrency}` : `Convert to ${baseCurrency}`}
+                </button>
+
+                {convertMode && (
+                  <div className="mt-4 flex flex-col gap-3">
+                    {nonBaseCurrencies.map((cur) => (
+                      <ExchangeRateForm
+                        key={cur}
+                        fromCurrency={cur}
+                        toCurrency={baseCurrency}
+                        currentRate={trip?.exchangeRates?.[cur]}
+                        onSave={(rate) => handleSaveRate(cur, rate)}
+                      />
+                    ))}
+                    <p className="text-[12px] text-slate-400">
+                      Enter rates and settlement will recalculate automatically.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
+
+            {groups.map((group) => {
+              const maxAbsolute = Math.max(
+                ...group.balances.map((b) => Math.abs(b.net)),
+                0,
+              );
+
+              return (
+                <div key={group.currency} className="mb-8">
+                  {hasMultipleCurrencies && groups.length > 1 && (
+                    <div className="mb-4 flex items-center gap-2">
+                      <span className="rounded-full bg-[#F3E8FF] px-3 py-1 text-[13px] font-bold text-[#7C3AED]">
+                        {group.currency}
+                      </span>
+                    </div>
+                  )}
+
+                  {group.balances.length > 0 && (
+                    <div className="mb-6">
+                      <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
+                        Net Balances
+                      </h2>
+                      <div className="flex flex-col gap-2">
+                        {group.balances.map((balance, index) => (
+                          <BalanceCard
+                            key={balance.memberId}
+                            balance={balance}
+                            maxAbsolute={maxAbsolute}
+                            currency={group.currency}
+                            colorIndex={index}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {group.transactions.length > 0 && (
+                    <div className="mb-6">
+                      <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
+                        Settle Up
+                      </h2>
+                      <div className="flex flex-col gap-3">
+                        {group.transactions.map((tx, i) => (
+                          <TransactionCard
+                            key={i}
+                            transaction={tx}
+                            currency={group.currency}
+                            payments={payments}
+                            onRecordPayment={handleRecordPayment}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             <div className="rounded-xl bg-[#F0FDFA] p-4">
               <p className="text-[13px] text-[#14B8A6]">

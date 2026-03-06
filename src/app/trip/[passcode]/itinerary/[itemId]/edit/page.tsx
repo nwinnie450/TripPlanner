@@ -10,6 +10,7 @@ import { generateDateRange } from '@/lib/utils';
 import ItineraryForm from '@/components/itinerary/ItineraryForm';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 export default function EditItineraryPage() {
   const { passcode } = useTripContext();
@@ -20,6 +21,7 @@ export default function EditItineraryPage() {
   const { items, isLoading: itemsLoading, mutate } = useItinerary(passcode);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   if (tripLoading || itemsLoading) return <LoadingSpinner />;
   if (!trip) return null;
@@ -60,7 +62,7 @@ export default function EditItineraryPage() {
   }
 
   async function handleDelete() {
-    if (!confirm('Are you sure you want to delete this activity?')) return;
+    setShowConfirm(false);
     try {
       const res = await fetch(
         `/api/trip/${passcode}/itinerary/${itemId}`,
@@ -91,8 +93,15 @@ export default function EditItineraryPage() {
         initialData={item}
         onSubmit={handleSubmit}
         onCancel={() => router.back()}
-        onDelete={handleDelete}
+        onDelete={() => setShowConfirm(true)}
         isSubmitting={isSubmitting}
+      />
+      <ConfirmDialog
+        open={showConfirm}
+        title="Delete Activity"
+        message="Are you sure? This cannot be undone."
+        onConfirm={handleDelete}
+        onCancel={() => setShowConfirm(false)}
       />
     </div>
   );
