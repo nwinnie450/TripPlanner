@@ -48,6 +48,7 @@ export default function EditTripPage() {
   const [budgetPerPax, setBudgetPerPax] = useState('');
   const [budget, setBudget] = useState('');
   const [currencies, setCurrencies] = useState<string[]>([]);
+  const [personalBudgets, setPersonalBudgets] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +63,12 @@ export default function EditTripPage() {
       setBudgetPerPax(trip.budgetPerPax != null ? String(trip.budgetPerPax) : '');
       setBudget(trip.budget != null ? String(trip.budget) : '');
       setCurrencies(trip.currencies ?? []);
+      const pb = trip.personalBudgets ?? {};
+      const pbStrings: Record<string, string> = {};
+      for (const [key, val] of Object.entries(pb)) {
+        pbStrings[key] = String(val);
+      }
+      setPersonalBudgets(pbStrings);
       setInitialized(true);
     }
   }, [trip, initialized]);
@@ -81,6 +88,11 @@ export default function EditTripPage() {
       errs.budgetPerPax = 'Budget per person must be a non-negative number';
     if (budget !== '' && (isNaN(Number(budget)) || Number(budget) < 0))
       errs.budget = 'Budget must be a non-negative number';
+    for (const [memberId, val] of Object.entries(personalBudgets)) {
+      if (val !== '' && (isNaN(Number(val)) || Number(val) < 0)) {
+        errs[`pb_${memberId}`] = 'Must be a non-negative number';
+      }
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -108,6 +120,14 @@ export default function EditTripPage() {
     const prevCurrencies = trip!.currencies ?? [];
     if (JSON.stringify(currencies) !== JSON.stringify(prevCurrencies)) {
       payload.currencies = currencies;
+    }
+    const pbPayload: Record<string, number> = {};
+    for (const [memberId, val] of Object.entries(personalBudgets)) {
+      if (val !== '' && Number(val) > 0) pbPayload[memberId] = Number(val);
+    }
+    const prevPb = trip!.personalBudgets ?? {};
+    if (JSON.stringify(pbPayload) !== JSON.stringify(prevPb)) {
+      payload.personalBudgets = pbPayload;
     }
 
     if (Object.keys(payload).length === 0) {
@@ -226,6 +246,34 @@ export default function EditTripPage() {
               onChange={(e) => setBudget(e.target.value)}
               error={errors.budget}
             />
+          )}
+          {members.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <label className="text-[13px] font-semibold text-slate-600">
+                Personal Budgets
+              </label>
+              <p className="text-[12px] text-slate-400">
+                Each member can only see their own personal budget.
+              </p>
+              {members.map((m) => (
+                <Input
+                  key={m.memberId}
+                  label={m.name}
+                  type="number"
+                  placeholder="No budget set"
+                  min="0"
+                  step="any"
+                  value={personalBudgets[m.memberId] ?? ''}
+                  onChange={(e) =>
+                    setPersonalBudgets((prev) => ({
+                      ...prev,
+                      [m.memberId]: e.target.value,
+                    }))
+                  }
+                  error={errors[`pb_${m.memberId}`]}
+                />
+              ))}
+            </div>
           )}
           {apiError && <ErrorMessage message={apiError} />}
           <Button type="submit" disabled={isSubmitting}>

@@ -13,7 +13,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 
 export default function ExpensesPage() {
-  const { passcode } = useTripContext();
+  const { passcode, currentMember } = useTripContext();
   const { trip } = useTrip(passcode);
   const { members } = useMembers(passcode);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
@@ -34,6 +34,14 @@ export default function ExpensesPage() {
   const personalTotal = personalExpenses.reduce((sum, e) => sum + e.amount, 0);
   const perPerson = members.length > 0 ? groupTotal / members.length : 0;
 
+  const myPersonalBudget = currentMember
+    ? (trip?.personalBudgets?.[currentMember.memberId] ?? 0)
+    : 0;
+  const myPersonalExpenses = personalExpenses.filter(
+    (e) => e.paidBy === currentMember?.memberId,
+  );
+  const myPersonalSpent = myPersonalExpenses.reduce((sum, e) => sum + e.amount, 0);
+
   const filtered = typeFilter === 'all'
     ? expenses
     : typeFilter === 'personal'
@@ -46,21 +54,33 @@ export default function ExpensesPage() {
         <h1 className="mb-4 text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
           Expenses
         </h1>
-        <div className="bg-white/20 rounded-[20px] p-4">
-          <p className="text-[13px] text-white/80">Group Spent</p>
-          <p className="text-[28px] font-extrabold text-white font-[family-name:var(--font-display)]">
-            {formatCurrency(groupTotal, currency)}
-          </p>
-          <p className="text-[13px] text-white/80">
-            of {formatCurrency(trip?.budget ?? 0, currency)} budget &middot;{' '}
-            {formatCurrency(perPerson, currency)}/person
-          </p>
-          {personalTotal > 0 && (
-            <p className="mt-1 text-[13px] text-white/60">
-              + {formatCurrency(personalTotal, currency)} personal
+        {typeFilter === 'personal' && myPersonalBudget > 0 ? (
+          <div className="bg-white/20 rounded-[20px] p-4">
+            <p className="text-[13px] text-white/80">My Personal Spending</p>
+            <p className="text-[28px] font-extrabold text-white font-[family-name:var(--font-display)]">
+              {formatCurrency(myPersonalSpent, currency)}
             </p>
-          )}
-        </div>
+            <p className="text-[13px] text-white/80">
+              of {formatCurrency(myPersonalBudget, currency)} personal budget
+            </p>
+          </div>
+        ) : (
+          <div className="bg-white/20 rounded-[20px] p-4">
+            <p className="text-[13px] text-white/80">Group Spent</p>
+            <p className="text-[28px] font-extrabold text-white font-[family-name:var(--font-display)]">
+              {formatCurrency(groupTotal, currency)}
+            </p>
+            <p className="text-[13px] text-white/80">
+              of {formatCurrency(trip?.budget ?? 0, currency)} budget &middot;{' '}
+              {formatCurrency(perPerson, currency)}/person
+            </p>
+            {personalTotal > 0 && (
+              <p className="mt-1 text-[13px] text-white/60">
+                + {formatCurrency(personalTotal, currency)} personal
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="bg-white p-6">

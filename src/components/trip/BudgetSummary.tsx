@@ -8,6 +8,7 @@ interface BudgetSummaryProps {
   currency: string;
   budgetPerPax?: number;
   memberCount?: number;
+  label?: string;
 }
 
 export default function BudgetSummary({
@@ -16,13 +17,14 @@ export default function BudgetSummary({
   currency,
   budgetPerPax,
   memberCount,
+  label,
 }: BudgetSummaryProps) {
   const remaining = budget - spent;
   const pct = budget > 0 ? ((spent / budget) * 100).toFixed(1) : '0';
 
   return (
     <Card>
-      <p className="mb-2 text-[13px] font-semibold text-slate-600">Budget</p>
+      <p className="mb-2 text-[13px] font-semibold text-slate-600">{label ?? 'Budget'}</p>
       {budgetPerPax != null && budgetPerPax > 0 && memberCount != null && (
         <p className="mb-1 text-[13px] text-slate-500">
           {formatCurrency(budgetPerPax, currency)} per person &middot; {memberCount}{' '}

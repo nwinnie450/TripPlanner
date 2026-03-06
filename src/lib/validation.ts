@@ -119,6 +119,7 @@ export const updateTripSchema = z.object({
   exchangeRates: z.record(z.string(), z.number().positive()).optional(),
   budget: z.number().min(0).optional(),
   budgetPerPax: z.number().min(0).optional(),
+  personalBudgets: z.record(z.string(), z.number().min(0)).optional(),
 });
 
 export const addChecklistItemSchema = z.object({

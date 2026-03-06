@@ -15,7 +15,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 
 export default function DashboardPage() {
-  const { passcode } = useTripContext();
+  const { passcode, currentMember } = useTripContext();
   const { trip, isLoading, error } = useTrip(passcode);
   const { members } = useMembers(passcode);
   const { expenses } = useExpenses(passcode);
@@ -60,7 +60,28 @@ export default function DashboardPage() {
           currency={trip.currency}
           budgetPerPax={trip.budgetPerPax}
           memberCount={members.length}
+          label="Group Budget"
         />
+        {(() => {
+          if (!currentMember) return null;
+          const myBudget = trip.personalBudgets?.[currentMember.memberId];
+          if (!myBudget || myBudget <= 0) return null;
+          const myPersonalSpent = expenses
+            .filter(
+              (e) =>
+                e.expenseType === 'personal' &&
+                e.paidBy === currentMember.memberId,
+            )
+            .reduce((sum, e) => sum + e.amount, 0);
+          return (
+            <BudgetSummary
+              spent={myPersonalSpent}
+              budget={myBudget}
+              currency={trip.currency}
+              label="My Personal Budget"
+            />
+          );
+        })()}
 
         <Card>
           <p className="mb-3 text-[13px] font-semibold text-slate-600">

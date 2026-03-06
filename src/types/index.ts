@@ -9,6 +9,7 @@ export interface TripMetadata {
   exchangeRates?: Record<string, number>;
   budget: number;
   budgetPerPax?: number;
+  personalBudgets?: Record<string, number>;
   passcode: string;
   createdAt: string;
   updatedAt: string;
@@ -141,6 +142,7 @@ export interface TripDocument {
   exchangeRates?: Record<string, number>;
   budget: number;
   budgetPerPax?: number;
+  personalBudgets?: Record<string, number>;
   members: Member[];
   itinerary: ItineraryItem[];
   expenses: Expense[];
