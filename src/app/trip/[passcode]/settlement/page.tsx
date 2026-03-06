@@ -118,15 +118,13 @@ export default function SettlementPage() {
             </h1>
             <p className="mt-1 text-[15px] text-white/80">Who owes whom</p>
           </div>
-          {hasData && firstGroup && (
+          {hasData && (
             <ShareButton
               getShareData={() => ({
                 title: `${trip?.tripName ?? 'Trip'} Settlement`,
                 text: formatSettlementText(
                   trip?.tripName ?? 'Trip',
-                  firstGroup.currency,
-                  firstGroup.balances,
-                  firstGroup.transactions,
+                  groups,
                 ),
               })}
             />

@@ -1,78 +1,104 @@
-import { formatSettlementText, formatItineraryText } from '../formatExport';
-import type { Balance, ItineraryItem } from '@/types';
-import type { EnrichedTransaction } from '@/hooks/useSettlement';
+import { formatSettlementText, formatItineraryText, formatExpensesJson } from '../formatExport';
+import type { ItineraryItem, Expense, Member } from '@/types';
+import type { CurrencySettlementGroup } from '@/hooks/useSettlement';
 
 describe('formatSettlementText', () => {
-  const baseBalance: Balance = { memberId: '1', memberName: 'Alice', net: 50 };
+  function makeGroup(overrides: Partial<CurrencySettlementGroup> = {}): CurrencySettlementGroup {
+    return {
+      currency: 'SGD',
+      balances: [],
+      transactions: [],
+      ...overrides,
+    };
+  }
 
-  it('formats positive, negative, and zero balances', () => {
-    const balances: Balance[] = [
-      { memberId: '1', memberName: 'Alice', net: 50 },
-      { memberId: '2', memberName: 'Bob', net: -30 },
-      { memberId: '3', memberName: 'Charlie', net: 0 },
+  it('shows pending transactions as who pays who', () => {
+    const groups = [
+      makeGroup({
+        transactions: [
+          {
+            from: '2',
+            fromName: 'Bob',
+            to: '1',
+            toName: 'Alice',
+            amount: 50,
+            paid: 0,
+            remaining: 50,
+          },
+        ],
+      }),
     ];
-    const result = formatSettlementText('Tokyo 2026', 'SGD', balances, []);
-    expect(result).toContain('Alice');
-    expect(result).toContain('(is owed)');
-    expect(result).toContain('Bob');
-    expect(result).toContain('(owes)');
-    expect(result).toContain('Charlie');
-    expect(result).toContain('(settled)');
-  });
-
-  it('shows pending transactions with remaining amounts', () => {
-    const transactions: EnrichedTransaction[] = [
-      {
-        from: '2',
-        fromName: 'Bob',
-        to: '1',
-        toName: 'Alice',
-        amount: 50,
-        paid: 0,
-        remaining: 50,
-      },
-    ];
-    const result = formatSettlementText('Trip', 'SGD', [baseBalance], transactions);
+    const result = formatSettlementText('Tokyo 2026', groups);
     expect(result).toContain('Bob → Alice');
-    expect(result).toContain('Payments Needed');
+    expect(result).toContain('Who pays who');
   });
 
   it('shows partially paid transactions', () => {
-    const transactions: EnrichedTransaction[] = [
-      {
-        from: '2',
-        fromName: 'Bob',
-        to: '1',
-        toName: 'Alice',
-        amount: 50,
-        paid: 20,
-        remaining: 30,
-      },
+    const groups = [
+      makeGroup({
+        transactions: [
+          {
+            from: '2',
+            fromName: 'Bob',
+            to: '1',
+            toName: 'Alice',
+            amount: 50,
+            paid: 20,
+            remaining: 30,
+          },
+        ],
+      }),
     ];
-    const result = formatSettlementText('Trip', 'SGD', [baseBalance], transactions);
+    const result = formatSettlementText('Trip', groups);
     expect(result).toContain('paid');
   });
 
-  it('skips fully paid transactions', () => {
-    const transactions: EnrichedTransaction[] = [
-      {
-        from: '2',
-        fromName: 'Bob',
-        to: '1',
-        toName: 'Alice',
-        amount: 50,
-        paid: 50,
-        remaining: 0,
-      },
+  it('shows settled transactions with checkmark', () => {
+    const groups = [
+      makeGroup({
+        transactions: [
+          {
+            from: '2',
+            fromName: 'Bob',
+            to: '1',
+            toName: 'Alice',
+            amount: 50,
+            paid: 50,
+            remaining: 0,
+          },
+        ],
+      }),
     ];
-    const result = formatSettlementText('Trip', 'SGD', [baseBalance], transactions);
-    expect(result).not.toContain('Payments Needed');
+    const result = formatSettlementText('Trip', groups);
+    expect(result).toContain('Settled');
+    expect(result).toContain('✅');
+  });
+
+  it('handles multi-currency groups', () => {
+    const groups = [
+      makeGroup({
+        currency: 'SGD',
+        transactions: [
+          { from: '2', fromName: 'Bob', to: '1', toName: 'Alice', amount: 50, paid: 0, remaining: 50 },
+        ],
+      }),
+      makeGroup({
+        currency: 'JPY',
+        transactions: [
+          { from: '3', fromName: 'Charlie', to: '1', toName: 'Alice', amount: 3000, paid: 0, remaining: 3000 },
+        ],
+      }),
+    ];
+    const result = formatSettlementText('Trip', groups);
+    expect(result).toContain('Bob → Alice');
+    expect(result).toContain('Charlie → Alice');
   });
 
   it('handles empty data gracefully', () => {
-    const result = formatSettlementText('Trip', 'SGD', [], []);
+    const result = formatSettlementText('Trip', []);
     expect(result).toContain('Trip');
     expect(result).toContain('Shared via GroupTrip');
+    expect(result).toContain('No settlements needed');
   });
 });
 
@@ -114,18 +140,58 @@ describe('formatItineraryText', () => {
     expect(result).toContain('Day 2');
   });
 
-  it('truncates long notes to 80 characters', () => {
+  it('shows full notes without truncation', () => {
     const longNote = 'A'.repeat(100);
     const items = [makeItem({ notes: longNote })];
     const dates = ['2026-03-07'];
     const result = formatItineraryText('Trip', '2026-03-07', '2026-03-07', items, dates);
-    expect(result).toContain('...');
-    expect(result).not.toContain('A'.repeat(100));
+    expect(result).toContain('A'.repeat(100));
+    expect(result).not.toContain('...');
   });
 
   it('handles empty items gracefully', () => {
     const result = formatItineraryText('Trip', '2026-03-07', '2026-03-07', [], ['2026-03-07']);
     expect(result).toContain('Trip');
     expect(result).toContain('Shared via GroupTrip');
+  });
+});
+
+describe('formatExpensesJson', () => {
+  const members: Member[] = [
+    { memberId: 'm1', name: 'Alice', joinedAt: '' },
+    { memberId: 'm2', name: 'Bob', joinedAt: '' },
+  ];
+
+  const expenses: Expense[] = [
+    {
+      expenseId: 'e1',
+      amount: 120,
+      description: 'Dinner',
+      category: 'Food',
+      expenseType: 'group',
+      paidBy: 'm1',
+      splitBetween: ['m1', 'm2'],
+      date: '2026-03-01',
+      createdBy: 'm1',
+      createdAt: '',
+      updatedAt: '',
+    },
+  ];
+
+  it('exports valid JSON with member names resolved', () => {
+    const result = formatExpensesJson('Trip', 'SGD', expenses, members);
+    const parsed = JSON.parse(result);
+    expect(parsed.trip).toBe('Trip');
+    expect(parsed.currency).toBe('SGD');
+    expect(parsed.expenses).toHaveLength(1);
+    expect(parsed.expenses[0].paidBy).toBe('Alice');
+    expect(parsed.expenses[0].splitBetween).toEqual(['Alice', 'Bob']);
+    expect(parsed.expenses[0].type).toBe('group');
+  });
+
+  it('handles empty expenses', () => {
+    const result = formatExpensesJson('Trip', 'SGD', [], members);
+    const parsed = JSON.parse(result);
+    expect(parsed.expenses).toHaveLength(0);
   });
 });

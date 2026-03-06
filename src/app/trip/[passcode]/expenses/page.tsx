@@ -8,9 +8,11 @@ import { useExpenses } from '@/hooks/useExpenses';
 import { formatCurrency } from '@/lib/constants';
 import CategoryFilter from '@/components/expenses/CategoryFilter';
 import ExpenseCard from '@/components/expenses/ExpenseCard';
+import ShareButton from '@/components/ui/ShareButton';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
+import { formatExpensesJson } from '@/lib/formatExport';
 
 export default function ExpensesPage() {
   const { passcode, currentMember } = useTripContext();
@@ -51,9 +53,24 @@ export default function ExpensesPage() {
   return (
     <div>
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
-        <h1 className="mb-4 text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
-          Expenses
-        </h1>
+        <div className="mb-4 flex items-start justify-between">
+          <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
+            Expenses
+          </h1>
+          {expenses.length > 0 && (
+            <ShareButton
+              getShareData={() => ({
+                title: `${trip?.tripName ?? 'Trip'} Expenses`,
+                text: formatExpensesJson(
+                  trip?.tripName ?? 'Trip',
+                  currency,
+                  expenses,
+                  members,
+                ),
+              })}
+            />
+          )}
+        </div>
         {typeFilter === 'personal' && myPersonalBudget > 0 ? (
           <div className="bg-white/20 rounded-[20px] p-4">
             <p className="text-[13px] text-white/80">My Personal Spending</p>

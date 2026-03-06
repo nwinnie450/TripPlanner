@@ -1,7 +1,7 @@
 import { formatCurrency, ITINERARY_CATEGORY_CONFIG } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
-import type { Balance, ItineraryItem } from '@/types';
-import type { EnrichedTransaction } from '@/hooks/useSettlement';
+import type { Expense, ItineraryItem, Member } from '@/types';
+import type { CurrencySettlementGroup } from '@/hooks/useSettlement';
 
 export function formatSummaryText(
   tripName: string,
@@ -39,9 +39,7 @@ export function formatSummaryText(
 
 export function formatSettlementText(
   tripName: string,
-  currency: string,
-  balances: Balance[],
-  transactions: EnrichedTransaction[],
+  groups: CurrencySettlementGroup[],
 ): string {
   const lines: string[] = [];
 
@@ -49,26 +47,35 @@ export function formatSettlementText(
   lines.push('━━━━━━━━━━━━━━━━━━━━');
   lines.push('');
 
-  if (balances.length > 0) {
-    lines.push('Net Balances:');
-    for (const b of balances) {
-      const sign = b.net > 0 ? '+' : '';
-      const label = b.net > 0 ? '(is owed)' : b.net < 0 ? '(owes)' : '(settled)';
-      lines.push(`  ${b.memberName}: ${sign}${formatCurrency(b.net, currency)} ${label}`);
+  const allTransactions = groups.flatMap((g) =>
+    g.transactions.map((tx) => ({ ...tx, currency: g.currency })),
+  );
+
+  const pending = allTransactions.filter((tx) => tx.remaining > 0);
+  const settled = allTransactions.filter((tx) => tx.remaining === 0 && tx.amount > 0);
+
+  if (pending.length > 0) {
+    lines.push('Who pays who:');
+    for (const tx of pending) {
+      let line = `  ${tx.fromName} → ${tx.toName}: ${formatCurrency(tx.remaining, tx.currency)}`;
+      if (tx.paid > 0) {
+        line += ` (${formatCurrency(tx.paid, tx.currency)} paid)`;
+      }
+      lines.push(line);
     }
     lines.push('');
   }
 
-  const pending = transactions.filter((tx) => tx.remaining > 0);
-  if (pending.length > 0) {
-    lines.push('Payments Needed:');
-    for (const tx of pending) {
-      let line = `  ${tx.fromName} → ${tx.toName}: ${formatCurrency(tx.remaining, currency)}`;
-      if (tx.paid > 0) {
-        line += ` (${formatCurrency(tx.paid, currency)} paid)`;
-      }
-      lines.push(line);
+  if (settled.length > 0) {
+    lines.push('Settled:');
+    for (const tx of settled) {
+      lines.push(`  ✅ ${tx.fromName} → ${tx.toName}: ${formatCurrency(tx.amount, tx.currency)}`);
     }
+    lines.push('');
+  }
+
+  if (pending.length === 0 && settled.length === 0) {
+    lines.push('No settlements needed.');
     lines.push('');
   }
 
@@ -105,11 +112,10 @@ export function formatItineraryText(
         : '';
       lines.push(`  ${item.time}  ${emoji}${item.title}`);
       if (item.location) {
-        lines.push(`         📍 ${item.location}`);
+        lines.push(`    📍 ${item.location}`);
       }
       if (item.notes) {
-        const truncated = item.notes.length > 80 ? item.notes.slice(0, 77) + '...' : item.notes;
-        lines.push(`         ${truncated}`);
+        lines.push(`    ${item.notes}`);
       }
     }
     lines.push('');
@@ -117,4 +123,31 @@ export function formatItineraryText(
 
   lines.push('Shared via GroupTrip');
   return lines.join('\n');
+}
+
+export function formatExpensesJson(
+  tripName: string,
+  currency: string,
+  expenses: Expense[],
+  members: Member[],
+): string {
+  const memberMap = new Map(members.map((m) => [m.memberId, m.name]));
+
+  const data = {
+    trip: tripName,
+    currency,
+    exportedAt: new Date().toISOString().split('T')[0],
+    expenses: expenses.map((e) => ({
+      date: e.date,
+      description: e.description,
+      amount: e.amount,
+      currency: e.currency ?? currency,
+      category: e.category,
+      type: e.expenseType ?? 'group',
+      paidBy: memberMap.get(e.paidBy) ?? e.paidBy,
+      splitBetween: e.splitBetween.map((id) => memberMap.get(id) ?? id),
+    })),
+  };
+
+  return JSON.stringify(data, null, 2);
 }
