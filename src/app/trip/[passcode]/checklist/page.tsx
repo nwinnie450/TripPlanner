@@ -12,10 +12,10 @@ import ErrorMessage from '@/components/ui/ErrorMessage';
 
 type Filter = 'all' | 'unpacked' | 'packed';
 
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'unpacked', label: 'Unpacked' },
-  { value: 'packed', label: 'Packed' },
+const FILTERS: { value: Filter; label: string; emoji: string }[] = [
+  { value: 'all', label: 'All', emoji: '📋' },
+  { value: 'unpacked', label: 'Unpacked', emoji: '📦' },
+  { value: 'packed', label: 'Packed', emoji: '✅' },
 ];
 
 export default function ChecklistPage() {
@@ -67,36 +67,62 @@ export default function ChecklistPage() {
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message="Failed to load checklist." />;
 
+  const progressPercent = items.length > 0 ? Math.round((packedCount / items.length) * 100) : 0;
+
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#EC4899] px-6 pb-8 pt-6">
+        <span className="pointer-events-none absolute -right-2 -top-2 text-[64px] opacity-20 rotate-12 select-none">
+          🧳
+        </span>
+        <span className="pointer-events-none absolute right-16 top-8 text-[40px] opacity-15 -rotate-6 select-none">
+          👕
+        </span>
+        <span className="pointer-events-none absolute left-2 bottom-2 text-[48px] opacity-15 rotate-6 select-none">
+          🎒
+        </span>
+        <span className="pointer-events-none absolute right-8 bottom-0 text-[36px] opacity-15 select-none">
+          🧴
+        </span>
         <Link
           href={`/trip/${passcode}`}
-          className="mb-2 inline-flex items-center gap-0.5 text-[13px] font-medium text-white/70"
+          className="relative z-10 mb-2 inline-flex items-center gap-0.5 text-[13px] font-medium text-white/70"
         >
           <ChevronLeft size={14} />
           Dashboard
         </Link>
-        <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
+        <h1 className="relative z-10 text-3xl font-extrabold text-white drop-shadow-md font-[family-name:var(--font-display)]">
           Packing List
         </h1>
-        <p className="text-[13px] text-white/80">
-          {packedCount}/{items.length} packed
-        </p>
+        <div className="relative z-10 mt-3 rounded-[16px] bg-white/20 p-3 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[13px] font-medium text-white">
+              {packedCount} of {items.length} packed
+            </p>
+            <p className="text-[13px] font-bold text-white">{progressPercent}%</p>
+          </div>
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/20">
+            <div
+              className="h-full rounded-full bg-white transition-all duration-500 ease-out"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="flex-1 bg-white p-6 pb-40">
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white p-6 pb-40">
         <div className="mb-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x">
           {FILTERS.map((f) => (
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
-              className={`shrink-0 snap-start rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors ${
+              className={`shrink-0 snap-start rounded-full px-4 py-1.5 text-[13px] font-medium transition-all ${
                 filter === f.value
-                  ? 'bg-ocean text-white'
-                  : 'bg-white text-slate-600'
+                  ? 'bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white shadow-md'
+                  : 'bg-white text-slate-600 shadow-sm'
               }`}
             >
+              <span className="mr-1">{f.emoji}</span>
               {f.label}
             </button>
           ))}
@@ -104,41 +130,22 @@ export default function ChecklistPage() {
 
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 48 48"
-              fill="none"
-              className="mb-4 text-slate-300"
-            >
-              <path
-                d="M38 12H10C8.895 12 8 12.895 8 14V38C8 39.105 8.895 40 10 40H38C39.105 40 40 39.105 40 38V14C40 12.895 39.105 12 38 12Z"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M16 12V8C16 7.47 16.21 6.961 16.586 6.586C16.961 6.21 17.47 6 18 6H30C30.53 6 31.039 6.21 31.414 6.586C31.789 6.961 32 7.47 32 8V12"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M24 22V30M20 26H28"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <p className="text-[15px] font-medium text-slate-400">
-              Nothing to pack yet!
+            <div className="mb-4 flex items-center gap-2">
+              <span className="text-[48px]">🏖️</span>
+            </div>
+            <p className="text-[18px] font-bold text-slate-900 font-[family-name:var(--font-display)]">
+              {filter === 'packed' ? 'Nothing packed yet!' : filter === 'unpacked' ? 'All packed!' : 'Nothing to pack yet!'}
+            </p>
+            <p className="mt-1 text-[13px] text-slate-500">
+              {filter === 'all'
+                ? 'Add items below to start your packing list'
+                : filter === 'packed'
+                  ? 'Check off items to see them here'
+                  : 'You\'re all set for the trip!'}
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             {filtered.map((item) => (
               <ChecklistItemCard
                 key={item.checklistItemId}
@@ -152,20 +159,20 @@ export default function ChecklistPage() {
         )}
       </div>
 
-      <div className="fixed bottom-16 left-0 right-0 border-t border-[#E4E4E7] bg-white px-4 pb-3 pt-3">
+      <div className="fixed bottom-16 left-0 right-0 border-t border-[#E4E4E7] bg-white/95 backdrop-blur-md px-4 pb-3 pt-3 shadow-lg">
         <form onSubmit={handleAdd} className="flex gap-2">
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Add item..."
+            placeholder="Add item... 🧳"
             maxLength={200}
-            className="h-11 flex-1 rounded-xl bg-[#F4F4F5] px-4 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-ocean/30"
+            className="h-12 flex-1 rounded-[16px] bg-[#F4F4F5] px-4 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30"
           />
           <select
             value={assignee}
             onChange={(e) => setAssignee(e.target.value)}
-            className="h-11 w-28 shrink-0 appearance-none rounded-xl bg-[#F4F4F5] px-3 text-[13px] text-slate-600 focus:outline-none focus:ring-2 focus:ring-ocean/30"
+            className="h-12 w-28 shrink-0 appearance-none rounded-[16px] bg-[#F4F4F5] px-3 text-[13px] text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30"
           >
             <option value="">Anyone</option>
             {members.map((m) => (
@@ -177,7 +184,7 @@ export default function ChecklistPage() {
           <button
             type="submit"
             disabled={!text.trim() || submitting}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] text-white transition-opacity disabled:opacity-50"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-gradient-to-br from-[#7C3AED] to-[#EC4899] text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
             aria-label="Add item"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

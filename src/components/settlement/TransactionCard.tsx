@@ -54,11 +54,11 @@ export default function TransactionCard({
   }
 
   return (
-    <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
+    <div className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold text-white"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[15px] font-bold text-white shadow-md"
           style={{ backgroundColor: avatarColor }}
         >
           {firstLetter}
@@ -70,14 +70,17 @@ export default function TransactionCard({
           </p>
         </div>
         {allSettled && (
-          <span className="rounded-xl bg-[#14B8A6] px-3 py-1 text-[12px] font-bold text-white">
-            All Settled
+          <span className="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-3 py-1 text-[12px] font-bold text-white shadow-sm">
+            All Settled 🎉
           </span>
         )}
       </div>
 
+      {/* Dashed separator like a receipt */}
+      <div className="my-3 border-t-2 border-dashed border-slate-100" />
+
       {/* Debt rows */}
-      <div className="mt-3 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         {debts.map((debt, index) => {
           const isSettled = debt.remaining <= 0;
           const progressPercent =
@@ -86,10 +89,10 @@ export default function TransactionCard({
               : 0;
 
           return (
-            <div key={`${debt.to}-${debt.currency}`} className="rounded-lg bg-slate-50 p-3">
+            <div key={`${debt.to}-${debt.currency}`} className="rounded-[16px] bg-gradient-to-r from-slate-50 to-slate-50/50 p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-[13px] text-slate-400">&rarr;</span>
+                  <span className="text-[14px]">➡️</span>
                   <span className="text-[14px] font-medium text-slate-900">
                     {debt.toName}
                   </span>
@@ -100,8 +103,8 @@ export default function TransactionCard({
                   )}
                 </div>
                 {isSettled ? (
-                  <span className="rounded-lg bg-[#14B8A6]/10 px-2.5 py-1 text-[12px] font-bold text-[#14B8A6]">
-                    Settled
+                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[12px] font-bold text-emerald-600">
+                    Settled ✅
                   </span>
                 ) : (
                   <div className="flex items-center gap-2">
@@ -112,9 +115,9 @@ export default function TransactionCard({
                       onClick={() =>
                         setExpandedIndex(expandedIndex === index ? null : index)
                       }
-                      className="rounded-lg bg-gradient-to-b from-[#7C3AED] to-[#8B5CF6] px-3 py-1 text-[12px] font-semibold text-white"
+                      className="rounded-full bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-3.5 py-1 text-[12px] font-semibold text-white shadow-sm transition-all hover:shadow-md"
                     >
-                      Pay
+                      Pay 💸
                     </button>
                   </div>
                 )}
@@ -128,16 +131,18 @@ export default function TransactionCard({
                       {formatCurrency(debt.paid, debt.currency)} of{' '}
                       {formatCurrency(debt.amount, debt.currency)} paid
                     </span>
-                    <span className="font-medium text-[#8B5CF6]">
+                    <span className="font-medium text-[#7C3AED]">
                       {progressPercent}%
                     </span>
                   </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
                     <div
-                      className="h-full rounded-full transition-all duration-300"
+                      className="h-full rounded-full transition-all duration-500 ease-out"
                       style={{
                         width: `${progressPercent}%`,
-                        backgroundColor: isSettled ? '#14B8A6' : '#8B5CF6',
+                        background: isSettled
+                          ? 'linear-gradient(to right, #059669, #14B8A6)'
+                          : 'linear-gradient(to right, #7C3AED, #EC4899)',
                       }}
                     />
                   </div>
@@ -160,17 +165,18 @@ export default function TransactionCard({
         })}
       </div>
 
-      {/* Payment history — one toggle per person card */}
+      {/* Payment history -- one toggle per person card */}
       {allPayments.length > 0 && (
         <div className="mt-3">
           <button
             onClick={() => setShowHistory(!showHistory)}
-            className="text-[11px] font-medium text-[#8B5CF6]"
+            className="flex items-center gap-1 text-[12px] font-medium text-[#7C3AED]"
           >
+            <span>📜</span>
             {showHistory ? 'Hide' : 'View'} payment history ({allPayments.length})
           </button>
           {showHistory && (
-            <div className="mt-1.5 space-y-1">
+            <div className="mt-2 space-y-1.5">
               {allPayments.map((p) => {
                 const toDebt = debts.find((d) => d.to === p.to);
                 const toName = toDebt?.toName ?? p.to;
@@ -178,7 +184,7 @@ export default function TransactionCard({
                 return (
                   <div
                     key={p.paymentId}
-                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                    className="flex items-center justify-between rounded-[12px] bg-gradient-to-r from-slate-50 to-white px-3 py-2 border border-slate-100"
                   >
                     <div>
                       <span className="text-[12px] font-medium text-slate-700">

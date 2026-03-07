@@ -81,24 +81,38 @@ export default function EditExpensePage() {
   }
 
   return (
-    <div className="px-4 pt-4">
-      <Link
-        href={`/trip/${passcode}/expenses`}
-        className="mb-4 inline-flex items-center gap-1 text-[15px] text-ocean"
-      >
-        &larr; Back
-      </Link>
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">Edit Expense</h1>
-      <ExpenseForm
-        members={members}
-        currency={trip.currency}
-        currencies={allCurrencies}
-        initialData={expense}
-        onSubmit={handleSubmit}
-        onCancel={() => router.back()}
-        onDelete={() => setShowConfirm(true)}
-        isSubmitting={isSubmitting}
-      />
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
+      <div className="relative overflow-hidden flex items-center bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-6 pt-12">
+        {/* Floating travel emojis */}
+        <span className="absolute right-4 top-4 text-[32px] opacity-20 rotate-12 select-none pointer-events-none">🧾</span>
+        <span className="absolute right-20 top-2 text-[24px] opacity-15 -rotate-6 select-none pointer-events-none">✏️</span>
+
+        <Link
+          href={`/trip/${passcode}/expenses`}
+          className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </Link>
+        <h1 className="relative ml-3 font-[family-name:var(--font-display)] text-[20px] font-bold text-white">
+          Edit Expense ✏️
+        </h1>
+      </div>
+      <div className="px-5 -mt-3">
+        <div className="rounded-[20px] border-t-4 border-dashed border-[#A78BFA] bg-white p-6 shadow-lg">
+          <ExpenseForm
+            members={members}
+            currency={trip.currency}
+            currencies={allCurrencies}
+            initialData={expense}
+            onSubmit={handleSubmit}
+            onCancel={() => router.back()}
+            onDelete={() => setShowConfirm(true)}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+      </div>
       <ConfirmDialog
         open={showConfirm}
         title="Delete Expense"

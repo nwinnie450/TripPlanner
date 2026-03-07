@@ -60,11 +60,16 @@ export default function AddExpensePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="flex items-center bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-4 pt-12">
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
+      <div className="relative overflow-hidden flex items-center bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-6 pt-12">
+        {/* Floating travel emojis */}
+        <span className="absolute right-4 top-4 text-[32px] opacity-20 rotate-12 select-none pointer-events-none">🧾</span>
+        <span className="absolute right-20 top-2 text-[24px] opacity-15 -rotate-6 select-none pointer-events-none">✏️</span>
+        <span className="absolute left-4 bottom-1 text-[28px] opacity-15 rotate-6 select-none pointer-events-none">💳</span>
+
         <button
           onClick={() => router.back()}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:text-white"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -81,20 +86,22 @@ export default function AddExpensePage() {
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
-        <h1 className="ml-3 font-[family-name:var(--font-display)] text-[20px] font-bold text-white">
-          Add Expense
+        <h1 className="relative ml-3 font-[family-name:var(--font-display)] text-[20px] font-bold text-white">
+          Add Expense ✈️
         </h1>
       </div>
-      <div className="p-6">
-        <ExpenseForm
-          members={members}
-          currency={trip.currency}
-          currencies={allCurrencies}
-          onSubmit={handleSubmit}
-          onCancel={() => router.back()}
-          isSubmitting={isSubmitting}
-          defaultValues={defaultValues}
-        />
+      <div className="px-5 -mt-3">
+        <div className="rounded-[20px] border-t-4 border-dashed border-[#A78BFA] bg-white p-6 shadow-lg">
+          <ExpenseForm
+            members={members}
+            currency={trip.currency}
+            currencies={allCurrencies}
+            onSubmit={handleSubmit}
+            onCancel={() => router.back()}
+            isSubmitting={isSubmitting}
+            defaultValues={defaultValues}
+          />
+        </div>
       </div>
     </div>
   );

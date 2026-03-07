@@ -51,15 +51,21 @@ export default function ChecklistItemCard({
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-[#E4E4E7] p-3.5 transition-colors">
+    <div
+      className={`flex items-center gap-3 rounded-[20px] p-4 transition-all duration-200 shadow-sm ${
+        item.packed
+          ? 'bg-gradient-to-r from-[#ECFDF5] to-[#F0FDF4] border border-emerald-100'
+          : 'bg-white border border-slate-100 shadow-md'
+      }`}
+    >
       <button
         type="button"
         onClick={togglePacked}
         disabled={loading}
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 ${
           item.packed
-            ? 'border-teal-500 bg-teal-500'
-            : 'border-slate-300 bg-white'
+            ? 'border-emerald-500 bg-emerald-500 scale-110'
+            : 'border-slate-300 bg-white hover:border-[#7C3AED] hover:scale-105'
         }`}
         aria-label={item.packed ? 'Mark as unpacked' : 'Mark as packed'}
       >
@@ -84,14 +90,16 @@ export default function ChecklistItemCard({
 
       <div className="min-w-0 flex-1">
         <p
-          className={`text-[15px] font-medium ${
+          className={`text-[15px] font-medium transition-all duration-200 ${
             item.packed ? 'text-slate-400 line-through' : 'text-slate-900'
           }`}
         >
+          {item.packed && <span className="mr-1.5">✅</span>}
           {item.text}
         </p>
         {memberName && (
-          <span className="mt-0.5 inline-block rounded-full bg-[#F4F4F5] px-2 py-0.5 text-[12px] font-medium text-slate-500">
+          <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#F5F3FF] to-[#FDF2F8] px-2.5 py-0.5 text-[12px] font-medium text-[#7C3AED]">
+            <span className="text-[10px]">👤</span>
             {memberName}
           </span>
         )}
@@ -101,7 +109,7 @@ export default function ChecklistItemCard({
         type="button"
         onClick={handleDelete}
         disabled={loading}
-        className="shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red/10 hover:text-red"
+        className="shrink-0 rounded-xl p-2 text-slate-300 transition-all hover:bg-red-50 hover:text-red-400 hover:scale-105"
         aria-label="Delete item"
       >
         <svg

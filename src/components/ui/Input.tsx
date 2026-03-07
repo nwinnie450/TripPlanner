@@ -36,7 +36,7 @@ export default function Input({
         )}
         <input
           id={inputId}
-          className={`h-12 w-full rounded-xl bg-[#F4F4F5] ${icon ? 'pl-10' : 'px-4'} pr-4 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-ocean/30 ${error ? 'ring-2 ring-red' : ''} ${className}`}
+          className={`h-12 w-full rounded-2xl border border-transparent bg-[#F8F7FA] ${icon ? 'pl-10' : 'px-4'} pr-4 text-[15px] text-slate-900 placeholder:text-slate-400 transition-all focus:border-ocean/40 focus:outline-none focus:ring-2 focus:ring-ocean/20 focus:bg-white ${error ? 'ring-2 ring-red border-red/30' : ''} ${className}`}
           {...props}
         />
       </div>

@@ -44,14 +44,11 @@ export default function EditItineraryPage() {
   }) {
     setIsSubmitting(true);
     try {
-      const res = await fetch(
-        `/api/trip/${passcode}/itinerary/${itemId}`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        },
-      );
+      const res = await fetch(`/api/trip/${passcode}/itinerary/${itemId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
       if (res.ok) {
         await mutate();
         router.back();
@@ -64,10 +61,7 @@ export default function EditItineraryPage() {
   async function handleDelete() {
     setShowConfirm(false);
     try {
-      const res = await fetch(
-        `/api/trip/${passcode}/itinerary/${itemId}`,
-        { method: 'DELETE' },
-      );
+      const res = await fetch(`/api/trip/${passcode}/itinerary/${itemId}`, { method: 'DELETE' });
       if (res.ok) {
         await mutate();
         router.replace(`/trip/${passcode}/itinerary`);
@@ -78,24 +72,50 @@ export default function EditItineraryPage() {
   }
 
   return (
-    <div className="px-4 pt-4">
-      <Link
-        href={`/trip/${passcode}/itinerary`}
-        className="mb-4 inline-flex items-center gap-1 text-[15px] text-ocean"
-      >
-        &larr; Back
-      </Link>
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">
-        Edit Activity
-      </h1>
-      <ItineraryForm
-        dates={dates}
-        initialData={item}
-        onSubmit={handleSubmit}
-        onCancel={() => router.back()}
-        onDelete={() => setShowConfirm(true)}
-        isSubmitting={isSubmitting}
-      />
+    <div className="min-h-screen bg-gradient-to-b from-violet-50/60 via-white to-amber-50/30">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-6 pt-12">
+        {/* Floating travel emojis */}
+        <span className="pointer-events-none absolute right-6 top-8 text-[28px] opacity-20 rotate-12">
+          🛠️
+        </span>
+        <span className="pointer-events-none absolute left-6 bottom-2 text-[22px] opacity-15 -rotate-6">
+          ✨
+        </span>
+
+        <div className="relative z-10 flex items-center">
+          <Link
+            href={`/trip/${passcode}/itinerary`}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </Link>
+          <h1 className="ml-3 font-[family-name:var(--font-display)] text-[20px] font-bold text-white drop-shadow-sm">
+            ✏️ Edit Activity
+          </h1>
+        </div>
+      </div>
+      <div className="px-5 py-6">
+        <ItineraryForm
+          dates={dates}
+          initialData={item}
+          onSubmit={handleSubmit}
+          onCancel={() => router.back()}
+          onDelete={() => setShowConfirm(true)}
+          isSubmitting={isSubmitting}
+        />
+      </div>
       <ConfirmDialog
         open={showConfirm}
         title="Delete Activity"

@@ -51,11 +51,17 @@ export default function ExpensesPage() {
       : groupExpenses;
 
   return (
-    <div>
-      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
-        <div className="mb-4 flex items-start justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-8 pt-6">
+        {/* Floating travel emojis */}
+        <span className="absolute -right-2 top-3 text-[40px] opacity-20 rotate-12 select-none pointer-events-none">✈️</span>
+        <span className="absolute right-16 top-1 text-[28px] opacity-15 -rotate-12 select-none pointer-events-none">🌴</span>
+        <span className="absolute left-2 bottom-2 text-[32px] opacity-15 rotate-6 select-none pointer-events-none">🧳</span>
+        <span className="absolute right-8 bottom-3 text-[24px] opacity-15 -rotate-6 select-none pointer-events-none">💸</span>
+
+        <div className="relative mb-4 flex items-start justify-between">
           <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
-            Expenses
+            Expenses 💰
           </h1>
           {expenses.length > 0 && (
             <ShareButton
@@ -72,8 +78,8 @@ export default function ExpensesPage() {
           )}
         </div>
         {typeFilter === 'personal' && myPersonalBudget > 0 ? (
-          <div className="bg-white/20 rounded-[20px] p-4">
-            <p className="text-[13px] text-white/80">My Personal Spending</p>
+          <div className="relative bg-white/20 backdrop-blur-sm rounded-[20px] p-4 border border-white/10">
+            <p className="text-[13px] text-white/80 font-medium">My Personal Spending</p>
             <p className="text-[28px] font-extrabold text-white font-[family-name:var(--font-display)]">
               {formatCurrency(myPersonalSpent, currency)}
             </p>
@@ -82,8 +88,8 @@ export default function ExpensesPage() {
             </p>
           </div>
         ) : (
-          <div className="bg-white/20 rounded-[20px] p-4">
-            <p className="text-[13px] text-white/80">Group Spent</p>
+          <div className="relative bg-white/20 backdrop-blur-sm rounded-[20px] p-4 border border-white/10">
+            <p className="text-[13px] text-white/80 font-medium">Group Spent</p>
             <p className="text-[28px] font-extrabold text-white font-[family-name:var(--font-display)]">
               {formatCurrency(groupTotal, currency)}
             </p>
@@ -100,21 +106,24 @@ export default function ExpensesPage() {
         )}
       </div>
 
-      <div className="bg-white p-6">
+      <div className="p-6">
         <div className="mb-3 flex gap-2">
-          {(['all', 'group', 'personal'] as const).map((type) => (
-            <button
-              key={type}
-              onClick={() => setTypeFilter(type)}
-              className={`rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors ${
-                typeFilter === type
-                  ? 'bg-ocean text-white'
-                  : 'bg-white text-slate-600'
-              }`}
-            >
-              {type === 'all' ? 'All' : type === 'group' ? 'Group' : 'Personal'}
-            </button>
-          ))}
+          {(['all', 'group', 'personal'] as const).map((type) => {
+            const typeEmoji = type === 'all' ? '🌐' : type === 'group' ? '👥' : '🙋';
+            return (
+              <button
+                key={type}
+                onClick={() => setTypeFilter(type)}
+                className={`rounded-full px-4 py-2 text-[13px] font-bold transition-all ${
+                  typeFilter === type
+                    ? 'bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] text-white shadow-md scale-105'
+                    : 'bg-white/80 text-slate-500 border border-slate-200 hover:border-purple-300'
+                }`}
+              >
+                {typeEmoji} {type === 'all' ? 'All' : type === 'group' ? 'Group' : 'Personal'}
+              </button>
+            );
+          })}
         </div>
         <div className="mb-4">
           <CategoryFilter
@@ -124,25 +133,12 @@ export default function ExpensesPage() {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center py-16 text-center">
-            <svg
-              className="mb-4 text-slate-400"
-              width="64"
-              height="64"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5A3.5 3.5 0 0 0 6 8.5 3.5 3.5 0 0 0 9.5 12H14.5A3.5 3.5 0 0 1 18 15.5 3.5 3.5 0 0 1 14.5 19H6" />
-            </svg>
-            <p className="text-[18px] font-semibold text-slate-900">
+          <div className="flex flex-col items-center rounded-[20px] bg-white/60 border border-dashed border-purple-200 py-16 text-center">
+            <span className="mb-3 text-[56px]">🧾</span>
+            <p className="text-[18px] font-bold text-slate-900">
               No expenses yet!
             </p>
-            <p className="mt-1 text-[13px] text-slate-600">
+            <p className="mt-1 text-[13px] text-slate-500">
               Tap the + button to add your first expense.
             </p>
           </div>

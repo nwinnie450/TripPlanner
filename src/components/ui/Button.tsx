@@ -9,11 +9,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] text-white hover:opacity-90 active:opacity-90',
+  primary:
+    'bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] text-white shadow-button hover:opacity-90 active:opacity-90 active:scale-[0.98]',
   secondary:
-    'border-2 border-ocean text-ocean bg-transparent hover:bg-ocean-light active:bg-ocean-light',
-  ghost: 'text-ocean bg-transparent hover:bg-ocean-light active:bg-ocean-light',
-  destructive: 'bg-red text-white hover:opacity-90 active:opacity-90',
+    'border-2 border-ocean text-ocean bg-transparent hover:bg-ocean-light active:bg-ocean-light active:scale-[0.98]',
+  ghost:
+    'text-ocean bg-transparent hover:bg-ocean-light active:bg-ocean-light active:scale-[0.98]',
+  destructive:
+    'bg-red text-white hover:opacity-90 active:opacity-90 active:scale-[0.98]',
 };
 
 export default function Button({
@@ -25,7 +28,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`flex h-12 min-h-[44px] w-full items-center justify-center rounded-[14px] px-6 text-[15px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${className}`}
+      className={`flex h-12 min-h-[44px] w-full items-center justify-center rounded-2xl px-6 text-[15px] font-semibold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${className}`}
       disabled={disabled}
       {...props}
     >

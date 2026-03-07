@@ -10,10 +10,10 @@ export default function CategoryBadge({ category }: CategoryBadgeProps) {
 
   return (
     <span
-      className="inline-block rounded-full px-2 py-0.5 text-[11px] font-medium"
-      style={{ backgroundColor: colors.bg, color: colors.text }}
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide shadow-sm"
+      style={{ backgroundColor: colors.bg, color: colors.text, border: `1.5px solid ${colors.text}22` }}
     >
-      {colors.emoji} {category}
+      <span className="text-[13px]">{colors.emoji}</span> {category}
     </span>
   );
 }

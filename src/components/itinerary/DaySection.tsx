@@ -15,12 +15,7 @@ interface DaySectionProps {
   passcode: string;
 }
 
-export default function DaySection({
-  date,
-  dayNumber,
-  items,
-  passcode,
-}: DaySectionProps) {
+export default function DaySection({ date, dayNumber, items, passcode }: DaySectionProps) {
   const segments = useTravelSegments(items);
   const { mutate } = useItinerary(passcode);
 
@@ -49,20 +44,27 @@ export default function DaySection({
     [passcode, mutate],
   );
 
+  const dayEmojis = ['🌅', '☀️', '🌴', '🎯', '🗻', '🎪', '🌊', '🏰', '🎨', '🌸'];
+  const dayEmoji = dayEmojis[(dayNumber - 1) % dayEmojis.length];
+
   return (
-    <section className="mb-6">
-      <div className="sticky top-0 z-10 mb-3 bg-white py-2">
-        <div className="flex items-center gap-2">
+    <section className="mb-8">
+      <div className="sticky top-0 z-10 mb-4 rounded-[16px] bg-gradient-to-r from-violet-50 to-amber-50/60 px-4 py-3 shadow-sm backdrop-blur-sm">
+        <div className="flex items-center gap-2.5">
+          <span className="text-[22px]">{dayEmoji}</span>
           <h2 className="font-[family-name:var(--font-display)] text-[17px] font-bold text-slate-900">
-            Day {dayNumber} &mdash; {formatDate(date)}
+            Day {dayNumber}
           </h2>
-          <span className="rounded-full bg-[#8B5CF6]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#8B5CF6]">
+          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-bold text-[#7C3AED] shadow-sm">
+            {formatDate(date)}
+          </span>
+          <span className="ml-auto rounded-full bg-[#8B5CF6]/15 px-2.5 py-0.5 text-[11px] font-bold text-[#7C3AED]">
             {items.length} {items.length === 1 ? 'activity' : 'activities'}
           </span>
         </div>
       </div>
       {items.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3 pl-2">
           {items.map((item, index) => (
             <Fragment key={item.itemId}>
               <ItineraryItemCard item={item} passcode={passcode} />
@@ -71,18 +73,17 @@ export default function DaySection({
                 segments[index].status !== 'no-coords' && (
                   <TravelSegmentConnector
                     segment={segments[index]}
-                    onModeChange={(mode) =>
-                      handleModeChange(item.itemId, mode)
-                    }
+                    onModeChange={(mode) => handleModeChange(item.itemId, mode)}
                   />
                 )}
             </Fragment>
           ))}
         </div>
       ) : (
-        <p className="py-4 text-center text-[13px] text-slate-400">
-          No activities yet. Tap + to add something!
-        </p>
+        <div className="flex flex-col items-center rounded-[20px] bg-white/60 py-8 text-center">
+          <span className="mb-2 text-[28px]">🗓️</span>
+          <p className="text-[13px] text-slate-400">No activities yet. Tap + to add something!</p>
+        </div>
       )}
     </section>
   );

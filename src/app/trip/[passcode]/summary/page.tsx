@@ -155,30 +155,52 @@ export default function SummaryPage() {
 
   return (
     <div>
-      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-6">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#EC4899] px-6 pb-8 pt-6">
+        <span className="pointer-events-none absolute -right-2 -top-2 text-[64px] opacity-20 rotate-12 select-none">
+          📊
+        </span>
+        <span className="pointer-events-none absolute right-16 top-8 text-[40px] opacity-15 -rotate-6 select-none">
+          💰
+        </span>
+        <span className="pointer-events-none absolute left-2 bottom-2 text-[48px] opacity-15 rotate-6 select-none">
+          ✈️
+        </span>
+        <span className="pointer-events-none absolute right-8 bottom-0 text-[36px] opacity-15 select-none">
+          🏆
+        </span>
         <Link
           href={`/trip/${passcode}`}
-          className="mb-2 inline-flex items-center gap-0.5 text-[13px] font-medium text-white/70"
+          className="relative z-10 mb-2 inline-flex items-center gap-0.5 text-[13px] font-medium text-white/70"
         >
           <ChevronLeft size={14} />
           Dashboard
         </Link>
-        <div className="flex items-start justify-between">
+        <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
+            <h1 className="text-3xl font-extrabold text-white drop-shadow-md font-[family-name:var(--font-display)]">
               Trip Recap
             </h1>
-            <p className="text-[13px] text-white/80">{trip.tripName}</p>
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 backdrop-blur-sm">
+              <span className="text-[13px] font-medium text-white">
+                {trip.tripName}
+              </span>
+            </div>
           </div>
           <ShareButton getShareData={getShareData} />
         </div>
       </div>
 
-      <div className="bg-white p-6">
+      <div className="bg-gradient-to-b from-slate-50 to-white p-6">
         {!hasExpenses && !hasItinerary ? (
-          <p className="py-12 text-center text-sm text-slate-400">
-            No data yet. Add expenses or itinerary items to see your trip recap.
-          </p>
+          <div className="flex flex-col items-center py-16 text-center">
+            <span className="text-[56px] mb-3">🗺️</span>
+            <p className="text-[18px] font-bold text-slate-900 font-[family-name:var(--font-display)]">
+              No data yet
+            </p>
+            <p className="mt-1 text-[13px] text-slate-500">
+              Add expenses or itinerary items to see your trip recap.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
             {hasExpenses && (

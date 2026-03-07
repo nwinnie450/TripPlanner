@@ -119,14 +119,28 @@ export default function SettlementPage() {
   });
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6 pt-12">
-        <div className="flex items-start justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#EC4899] px-6 pb-8 pt-12">
+        <span className="pointer-events-none absolute -right-2 -top-2 text-[64px] opacity-20 rotate-12 select-none">
+          💸
+        </span>
+        <span className="pointer-events-none absolute right-16 top-8 text-[40px] opacity-15 -rotate-6 select-none">
+          🤝
+        </span>
+        <span className="pointer-events-none absolute left-2 bottom-2 text-[48px] opacity-15 rotate-6 select-none">
+          💳
+        </span>
+        <span className="pointer-events-none absolute right-8 bottom-0 text-[36px] opacity-15 select-none">
+          🧾
+        </span>
+        <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="font-[family-name:var(--font-display)] text-[28px] font-bold text-white">
+            <h1 className="font-[family-name:var(--font-display)] text-3xl font-extrabold text-white drop-shadow-md">
               Settlement
             </h1>
-            <p className="mt-1 text-[15px] text-white/80">Who owes whom</p>
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 backdrop-blur-sm">
+              <span className="text-[13px] font-medium text-white">Who owes whom</span>
+            </div>
           </div>
           {hasData && (
             <ShareButton
@@ -142,13 +156,14 @@ export default function SettlementPage() {
         </div>
       </div>
 
-      <div className="bg-white p-6">
+      <div className="p-6">
         {!hasData ? (
           <div className="flex flex-col items-center py-16 text-center">
-            <p className="font-[family-name:var(--font-display)] text-[18px] font-semibold text-slate-900">
+            <span className="text-[56px] mb-3">🎉</span>
+            <p className="font-[family-name:var(--font-display)] text-[18px] font-bold text-slate-900">
               All settled!
             </p>
-            <p className="mt-1 text-[13px] text-slate-600">
+            <p className="mt-1 text-[13px] text-slate-500">
               No expenses recorded yet, or everyone is even.
             </p>
           </div>
@@ -158,13 +173,13 @@ export default function SettlementPage() {
               <div className="mb-6">
                 <button
                   onClick={() => setConvertMode(!convertMode)}
-                  className={`rounded-full px-4 py-2 text-[13px] font-medium transition-colors ${
+                  className={`rounded-full px-4 py-2 text-[13px] font-medium transition-all shadow-sm ${
                     convertMode
-                      ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white'
-                      : 'bg-slate-100 text-slate-600'
+                      ? 'bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white shadow-md'
+                      : 'bg-white text-slate-600'
                   }`}
                 >
-                  {convertMode ? `Converting to ${baseCurrency}` : `Convert to ${baseCurrency}`}
+                  {convertMode ? `Converting to ${baseCurrency} 💱` : `Convert to ${baseCurrency} 💱`}
                 </button>
 
                 {convertMode && (
@@ -186,7 +201,7 @@ export default function SettlementPage() {
               </div>
             )}
 
-            {/* Net Balances — one card per person */}
+            {/* Net Balances -- one card per person */}
             {balancesByMember.size > 0 && (() => {
               const globalMaxAbsolute = Math.max(
                 ...[...balancesByMember.values()].map(({ entries }) =>
@@ -196,10 +211,10 @@ export default function SettlementPage() {
               );
               return (
               <div className="mb-6">
-                <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
-                  Net Balances
+                <h2 className="mb-3 flex items-center gap-2 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
+                  <span>💰</span> Net Balances
                 </h2>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   {[...balancesByMember.entries()].map(
                     ([memberId, { memberName, entries }], index) => (
                       <BalanceCard
@@ -216,11 +231,11 @@ export default function SettlementPage() {
               );
             })()}
 
-            {/* Settle Up — one card per payer */}
+            {/* Settle Up -- one card per payer */}
             {debtsByPayer.size > 0 && (
               <div className="mb-6">
-                <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
-                  Settle Up
+                <h2 className="mb-3 flex items-center gap-2 font-[family-name:var(--font-display)] text-lg font-bold text-slate-900">
+                  <span>🧾</span> Settle Up
                 </h2>
                 <div className="flex flex-col gap-3">
                   {[...debtsByPayer.entries()].map(
@@ -241,8 +256,9 @@ export default function SettlementPage() {
               </div>
             )}
 
-            <div className="rounded-xl bg-[#F0FDFA] p-4">
+            <div className="rounded-[20px] bg-gradient-to-r from-[#F0FDFA] to-[#ECFDF5] p-4 shadow-sm">
               <p className="text-[13px] text-[#14B8A6]">
+                <span className="mr-1">💡</span>
                 These transactions represent the minimum number of payments needed to settle all
                 debts. You can record partial payments for large amounts.
               </p>

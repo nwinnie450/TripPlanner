@@ -10,15 +10,12 @@ interface TravelSegmentConnectorProps {
 
 const MODES: TransportMode[] = ['DRIVING', 'WALKING', 'TRANSIT', 'BICYCLING', 'FLIGHT'];
 
-const MODE_CONFIG: Record<
-  TransportMode,
-  { icon: typeof Car; label: string }
-> = {
-  DRIVING: { icon: Car, label: 'Drive' },
-  WALKING: { icon: Footprints, label: 'Walk' },
-  TRANSIT: { icon: Train, label: 'Transit' },
-  BICYCLING: { icon: Bike, label: 'Bike' },
-  FLIGHT: { icon: Plane, label: 'Fly' },
+const MODE_CONFIG: Record<TransportMode, { icon: typeof Car; label: string; emoji: string }> = {
+  DRIVING: { icon: Car, label: 'Drive', emoji: '🚗' },
+  WALKING: { icon: Footprints, label: 'Walk', emoji: '🚶' },
+  TRANSIT: { icon: Train, label: 'Transit', emoji: '🚌' },
+  BICYCLING: { icon: Bike, label: 'Bike', emoji: '🚲' },
+  FLIGHT: { icon: Plane, label: 'Fly', emoji: '✈️' },
 };
 
 export default function TravelSegmentConnector({
@@ -26,7 +23,6 @@ export default function TravelSegmentConnector({
   onModeChange,
 }: TravelSegmentConnectorProps) {
   const config = MODE_CONFIG[segment.mode];
-  const Icon = config.icon;
 
   function cycleMode() {
     const currentIndex = MODES.indexOf(segment.mode);
@@ -36,44 +32,52 @@ export default function TravelSegmentConnector({
 
   if (segment.status === 'loading') {
     return (
-      <div className="flex items-center justify-center py-1">
+      <div className="flex items-center justify-center py-2">
         <div className="flex items-center gap-2">
-          <div className="h-px w-6 bg-slate-200" />
-          <div className="h-5 w-24 animate-pulse rounded-full bg-slate-100" />
-          <div className="h-px w-6 bg-slate-200" />
+          <div className="h-px w-4 border-t border-dashed border-slate-300" />
+          <div className="h-6 w-28 animate-pulse rounded-full bg-violet-50" />
+          <div className="h-px w-4 border-t border-dashed border-slate-300" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center py-1">
-      <div className="flex items-center gap-2">
-        <div className="h-px w-6 bg-slate-200" />
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1">
-          <button
-            type="button"
-            onClick={cycleMode}
-            className="flex items-center justify-center text-[#8B5CF6] hover:text-[#7C3AED] active:scale-95"
-            title={`Switch to ${MODE_CONFIG[MODES[(MODES.indexOf(segment.mode) + 1) % MODES.length]].label}`}
-          >
-            <Icon size={14} />
-          </button>
-          <span className="text-[11px] font-medium text-slate-500">
+    <div className="flex items-center justify-center py-2">
+      <div className="flex items-center gap-1.5">
+        {/* Dotted line leading in */}
+        <div className="flex items-center gap-[3px]">
+          <div className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]/30" />
+          <div className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]/40" />
+          <div className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]/50" />
+        </div>
+
+        {/* Mode badge */}
+        <button
+          type="button"
+          onClick={cycleMode}
+          className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-3 py-1.5 shadow-sm transition-all hover:bg-violet-100 hover:shadow active:scale-95"
+          title={`Switch to ${MODE_CONFIG[MODES[(MODES.indexOf(segment.mode) + 1) % MODES.length]].label}`}
+        >
+          <span className="text-[16px]">{config.emoji}</span>
+          <span className="text-[11px] font-semibold text-[#7C3AED]">
             {segment.distance}
             {segment.status === 'ok' && segment.duration && (
               <>
                 {' '}
-                <span className="text-slate-300">&middot;</span>{' '}
-                {segment.duration}
+                <span className="text-[#8B5CF6]/60">|</span> {segment.duration}
               </>
             )}
-            {segment.status === 'error' && (
-              <span className="text-slate-400"> (est.)</span>
-            )}
+            {segment.status === 'error' && <span className="text-slate-400"> (est.)</span>}
           </span>
+        </button>
+
+        {/* Dotted line leading out */}
+        <div className="flex items-center gap-[3px]">
+          <div className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]/50" />
+          <div className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]/40" />
+          <div className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]/30" />
         </div>
-        <div className="h-px w-6 bg-slate-200" />
       </div>
     </div>
   );

@@ -28,6 +28,11 @@ export default function AppBottomNav() {
       label: 'Home',
       href: base ?? '/',
       active: pathname === '/' || pathname === '/create' || (!!base && pathname === base),
+      activeIcon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 9L12 2L21 9V20A2 2 0 0 1 19 22H5A2 2 0 0 1 3 20V9Z" />
+        </svg>
+      ),
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9L12 2L21 9V20A2 2 0 0 1 19 22H5A2 2 0 0 1 3 20V9Z" />
@@ -40,6 +45,11 @@ export default function AppBottomNav() {
       href: base ? `${base}/itinerary` : '/',
       active: pathname.includes('/itinerary'),
       disabled: !base,
+      activeIcon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        </svg>
+      ),
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -54,6 +64,13 @@ export default function AppBottomNav() {
       href: base ? `${base}/expenses` : '/',
       active: pathname.includes('/expenses'),
       disabled: !base,
+      activeIcon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="6" x2="12" y2="18" stroke="white" strokeWidth="2" />
+          <path d="M15 9H10.5A1.5 1.5 0 0 0 9 10.5 1.5 1.5 0 0 0 10.5 12H13.5A1.5 1.5 0 0 1 15 13.5 1.5 1.5 0 0 1 13.5 15H9" stroke="white" strokeWidth="2" />
+        </svg>
+      ),
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="1" x2="12" y2="23" />
@@ -66,6 +83,14 @@ export default function AppBottomNav() {
       href: base ? `${base}/settlement` : '/',
       active: pathname.includes('/settlement'),
       disabled: !base,
+      activeIcon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="9" cy="7" r="4" />
+          <path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21Z" />
+          <path d="M16 3.13A4 4 0 0 1 16 10.87" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path d="M23 21V19A4 4 0 0 0 20 15.13" fill="none" stroke="currentColor" strokeWidth="2" />
+        </svg>
+      ),
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21" />
@@ -79,6 +104,12 @@ export default function AppBottomNav() {
       label: 'Profile',
       href: '/profile',
       active: pathname === '/profile',
+      activeIcon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="7" r="4" />
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2Z" />
+        </svg>
+      ),
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -89,22 +120,22 @@ export default function AppBottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around bg-white shadow-nav" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-[72px] items-center justify-around rounded-t-3xl bg-white/95 backdrop-blur-md shadow-nav" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {tabs.map((tab) => {
         const isDisabled = 'disabled' in tab && tab.disabled;
         return (
           <Link
             key={tab.label}
             href={tab.href}
-            className={`relative flex min-w-[44px] flex-1 flex-col items-center justify-center gap-0.5 pt-1 ${
+            className={`relative flex min-w-[44px] flex-1 flex-col items-center justify-center gap-1 pt-1 transition-colors ${
               tab.active ? 'text-ocean' : isDisabled ? 'text-slate-300' : 'text-slate-400'
             }`}
           >
             {tab.active && (
-              <span className="absolute top-0 left-1/4 right-1/4 h-[3px] rounded-full bg-ocean" />
+              <span className="absolute top-1.5 rounded-full bg-ocean/10 px-4 py-3.5" />
             )}
-            {tab.icon}
-            <span className="text-[11px] font-medium">{tab.label}</span>
+            <span className="relative z-10">{tab.active ? tab.activeIcon : tab.icon}</span>
+            <span className="relative z-10 text-[10px] font-semibold">{tab.label}</span>
           </Link>
         );
       })}

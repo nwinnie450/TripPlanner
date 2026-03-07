@@ -158,128 +158,148 @@ export default function EditTripPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="flex items-center bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-4 pt-12">
-        <button
-          onClick={() => router.back()}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:text-white"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+    <div className="min-h-screen bg-gradient-to-br from-[#EDE9FE] via-[#F0EAFF] to-[#FFF7ED]">
+      {/* Fun gradient header with floating emojis */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-5 pb-10 pt-4">
+        {/* Floating travel emojis */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <span className="absolute left-[10%] top-[18%] text-2xl opacity-30 animate-pulse">✈️</span>
+          <span className="absolute right-[12%] top-[12%] text-xl opacity-25 animate-pulse" style={{ animationDelay: '500ms' }}>🌍</span>
+          <span className="absolute left-[60%] top-[30%] text-lg opacity-20 animate-pulse" style={{ animationDelay: '1000ms' }}>🏖️</span>
+          <span className="absolute right-[30%] top-[8%] text-xl opacity-20 animate-pulse" style={{ animationDelay: '750ms' }}>🗺️</span>
+          <span className="absolute left-[35%] top-[22%] text-lg opacity-25 animate-pulse" style={{ animationDelay: '1250ms' }}>⛰️</span>
+        </div>
+
+        <div className="relative flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white/80 transition-colors hover:bg-white/30 hover:text-white"
           >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-        <h1 className="ml-3 font-[family-name:var(--font-display)] text-[20px] font-bold text-white">
-          Edit Trip
-        </h1>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div className="relative mt-4 text-center">
+          <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold text-white">Edit Adventure</h1>
+          <p className="mt-1 text-[14px] text-white/70">Fine-tune your trip details</p>
+        </div>
       </div>
 
-      <div className="px-6 pt-6">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input
-            label="Trip Name"
-            placeholder="e.g., Barcelona 2026"
-            value={tripName}
-            onChange={(e) => setTripName(e.target.value)}
-            error={errors.tripName}
-          />
-          <Input
-            label="Start Date"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            error={errors.startDate}
-          />
-          <Input
-            label="End Date"
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            error={errors.endDate}
-          />
-          <Select
-            label="Currency"
-            options={CURRENCIES}
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            error={errors.currency}
-          />
-          <CurrencyPicker
-            selected={currencies}
-            onChange={setCurrencies}
-            exclude={currency}
-          />
-          <Input
-            label="Budget per person"
-            type="number"
-            placeholder="0"
-            min="0"
-            step="any"
-            value={budgetPerPax}
-            onChange={(e) => setBudgetPerPax(e.target.value)}
-            error={errors.budgetPerPax}
-          />
-          {budgetPerPax && Number(budgetPerPax) > 0 && members.length > 0 && (
-            <p className="text-[13px] text-slate-500">
-              Total budget: {formatCurrency(Number(budgetPerPax) * members.length, currency || 'USD')}{' '}
-              ({members.length} {members.length === 1 ? 'person' : 'people'})
-            </p>
-          )}
-          {!budgetPerPax && (
-            <Input
-              label="Total Budget (manual)"
-              type="number"
-              placeholder="0"
-              min="0"
-              step="any"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              error={errors.budget}
-            />
-          )}
-          {members.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <label className="text-[13px] font-semibold text-slate-600">
-                Personal Budgets
-              </label>
-              <p className="text-[12px] text-slate-400">
-                Each member can only see their own personal budget.
-              </p>
-              {members.map((m) => (
+      {/* Boarding-pass style form card */}
+      <div className="relative z-10 -mt-4 px-5 pb-8">
+        <div className="overflow-hidden rounded-[20px] border-t-2 border-dashed border-white/50 bg-white shadow-lg shadow-purple-900/10">
+          <div className="px-5 pb-6 pt-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <Input
+                label="Trip Name"
+                placeholder="e.g., Barcelona 2026"
+                value={tripName}
+                onChange={(e) => setTripName(e.target.value)}
+                error={errors.tripName}
+              />
+              <Input
+                label="Start Date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                error={errors.startDate}
+              />
+              <Input
+                label="End Date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                error={errors.endDate}
+              />
+              <Select
+                label="Currency"
+                options={CURRENCIES}
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                error={errors.currency}
+              />
+              <CurrencyPicker
+                selected={currencies}
+                onChange={setCurrencies}
+                exclude={currency}
+              />
+              <Input
+                label="Budget per person"
+                type="number"
+                placeholder="0"
+                min="0"
+                step="any"
+                value={budgetPerPax}
+                onChange={(e) => setBudgetPerPax(e.target.value)}
+                error={errors.budgetPerPax}
+              />
+              {budgetPerPax && Number(budgetPerPax) > 0 && members.length > 0 && (
+                <p className="text-[13px] text-slate-500">
+                  Total budget: {formatCurrency(Number(budgetPerPax) * members.length, currency || 'USD')}{' '}
+                  ({members.length} {members.length === 1 ? 'person' : 'people'})
+                </p>
+              )}
+              {!budgetPerPax && (
                 <Input
-                  key={m.memberId}
-                  label={m.name}
+                  label="Total Budget (manual)"
                   type="number"
-                  placeholder="No budget set"
+                  placeholder="0"
                   min="0"
                   step="any"
-                  value={personalBudgets[m.memberId] ?? ''}
-                  onChange={(e) =>
-                    setPersonalBudgets((prev) => ({
-                      ...prev,
-                      [m.memberId]: e.target.value,
-                    }))
-                  }
-                  error={errors[`pb_${m.memberId}`]}
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  error={errors.budget}
                 />
-              ))}
-            </div>
-          )}
-          {apiError && <ErrorMessage message={apiError} />}
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </form>
+              )}
+              {members.length > 0 && (
+                <div className="flex flex-col gap-3">
+                  <label className="text-[13px] font-semibold text-slate-600">
+                    Personal Budgets
+                  </label>
+                  <p className="text-[12px] text-slate-400">
+                    Each member can only see their own personal budget.
+                  </p>
+                  {members.map((m) => (
+                    <Input
+                      key={m.memberId}
+                      label={m.name}
+                      type="number"
+                      placeholder="No budget set"
+                      min="0"
+                      step="any"
+                      value={personalBudgets[m.memberId] ?? ''}
+                      onChange={(e) =>
+                        setPersonalBudgets((prev) => ({
+                          ...prev,
+                          [m.memberId]: e.target.value,
+                        }))
+                      }
+                      error={errors[`pb_${m.memberId}`]}
+                    />
+                  ))}
+                </div>
+              )}
+              {apiError && <ErrorMessage message={apiError} />}
+              <div className="pt-2">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

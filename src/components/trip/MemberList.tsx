@@ -30,21 +30,26 @@ export default function MemberList({ members }: MemberListProps) {
   return (
     <Card>
       <p className="mb-3 text-[13px] font-semibold text-slate-600">
-        Members ({members.length}/{MEMBER_LIMIT})
+        🧳 Travel Crew ({members.length}/{MEMBER_LIMIT})
       </p>
-      <div className="flex items-center gap-2 overflow-x-auto">
+      <div className="flex items-center gap-3 overflow-x-auto pb-1">
         {members.map((member, i) => (
           <div
             key={member.memberId}
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
+            className="flex shrink-0 flex-col items-center gap-1"
             title={member.name}
           >
-            {getInitials(member.name)}
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-full text-[12px] font-bold text-white shadow-md ring-2 ring-white ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
+            >
+              {getInitials(member.name)}
+            </div>
+            <span className="max-w-[56px] truncate text-[11px] text-slate-500">
+              {member.name.split(' ')[0]}
+            </span>
           </div>
         ))}
-        {members.length === 0 && (
-          <p className="text-[13px] text-slate-400">No members yet</p>
-        )}
+        {members.length === 0 && <p className="text-[13px] text-slate-400">No members yet</p>}
       </div>
     </Card>
   );

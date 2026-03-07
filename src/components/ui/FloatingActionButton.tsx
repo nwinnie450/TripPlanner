@@ -15,16 +15,10 @@ export default function FloatingActionButton({
     <Link
       href={href}
       aria-label={label}
-      className="fixed bottom-20 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] text-white shadow-fab transition-transform active:scale-95"
+      className="fixed bottom-20 right-6 z-30 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] text-white shadow-fab transition-all active:scale-90 hover:shadow-xl hover:scale-105 animate-bounce"
+      style={{ animationDuration: '3s', animationIterationCount: '3' }}
     >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M12 5V19M5 12H19"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-      </svg>
+      <span className="text-2xl">+</span>
     </Link>
   );
 }

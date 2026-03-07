@@ -128,32 +128,39 @@ export default function ExpenseForm({
 
       {/* Expense type toggle */}
       <div className="flex flex-col gap-2">
-        <label className="text-[13px] font-semibold text-slate-600">Expense type</label>
+        <label className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Expense type</label>
         <div className="flex gap-2">
-          {(['group', 'personal'] as const).map((type) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => setExpenseType(type)}
-              className={`rounded-full px-4 py-2 text-[13px] font-medium transition-colors ${
-                expenseType === type
-                  ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white'
-                  : 'bg-slate-100 text-slate-600'
-              }`}
-            >
-              {type === 'group' ? 'Group' : 'Personal'}
-            </button>
-          ))}
+          {(['group', 'personal'] as const).map((type) => {
+            const typeEmoji = type === 'group' ? '👥' : '🙋';
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setExpenseType(type)}
+                className={`rounded-full px-5 py-2.5 text-[13px] font-bold transition-all ${
+                  expenseType === type
+                    ? 'bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] text-white shadow-md scale-105'
+                    : 'bg-purple-50 text-slate-500 border border-purple-100 hover:bg-purple-100'
+                }`}
+              >
+                {typeEmoji} {type === 'group' ? 'Group' : 'Personal'}
+              </button>
+            );
+          })}
         </div>
         {expenseType === 'personal' && (
-          <p className="text-[12px] text-slate-400">
+          <p className="text-[12px] text-slate-400 italic">
             Personal expenses are tracked separately and not included in group budget or settlement.
           </p>
         )}
       </div>
 
+      {/* Dashed divider */}
+      <div className="border-t border-dashed border-purple-200" />
+
       {/* Amount display */}
-      <div className="flex flex-col items-center gap-2 py-4">
+      <div className="flex flex-col items-center gap-2 rounded-2xl bg-gradient-to-br from-purple-50 to-white py-6">
+        <p className="text-[11px] font-bold text-purple-400 uppercase tracking-widest">Amount</p>
         <input
           type="text"
           inputMode="decimal"
@@ -162,13 +169,13 @@ export default function ExpenseForm({
           onChange={(e) => setAmount(e.target.value)}
           className="w-full bg-transparent text-center font-[family-name:var(--font-display)] text-[48px] font-extrabold text-slate-900 placeholder:text-slate-300 focus:outline-none"
         />
-        <div className="h-1 w-24 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6]" />
+        <div className="h-1.5 w-28 rounded-full bg-gradient-to-r from-[#7C3AED] via-[#A78BFA] to-[#C4B5FD]" />
         {errors.amount && <p className="text-[13px] text-red-500">{errors.amount}</p>}
       </div>
 
       <Input
         label="Description *"
-        placeholder="e.g., Dinner at restaurant"
+        placeholder="e.g., Dinner at restaurant 🍽️"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         error={errors.description}
@@ -176,7 +183,7 @@ export default function ExpenseForm({
 
       {/* Category pills */}
       <div className="flex flex-col gap-2">
-        <label className="text-[13px] font-semibold text-slate-600">Category *</label>
+        <label className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Category *</label>
         <div className="flex flex-wrap gap-2">
           {EXPENSE_CATEGORIES.map((cat) => {
             const config = CATEGORY_COLORS[cat];
@@ -186,19 +193,22 @@ export default function ExpenseForm({
                 key={cat}
                 type="button"
                 onClick={() => setCategory(isSelected ? '' : cat)}
-                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-medium transition-all ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-bold transition-all ${
                   isSelected
-                    ? 'bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] text-white shadow-md scale-105'
+                    : 'border border-slate-200 bg-white text-slate-500 hover:border-purple-300 hover:bg-purple-50'
                 }`}
               >
-                <span>{config.emoji}</span> {cat}
+                <span className="text-[15px]">{config.emoji}</span> {cat}
               </button>
             );
           })}
         </div>
         {errors.category && <p className="text-[13px] text-red-500">{errors.category}</p>}
       </div>
+
+      {/* Dashed divider */}
+      <div className="border-t border-dashed border-purple-200" />
 
       <Input
         label="Date *"
@@ -220,12 +230,16 @@ export default function ExpenseForm({
       {/* Split between with purple checkboxes — only for group expenses */}
       {expenseType === 'group' && (
         <div className="flex flex-col gap-2">
-          <label className="text-[13px] font-semibold text-slate-600">Split between *</label>
+          <label className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Split between *</label>
           <div className="grid grid-cols-2 gap-2">
             {members.map((m) => (
               <label
                 key={m.memberId}
-                className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 px-3 transition-colors hover:bg-slate-50"
+                className={`flex h-11 cursor-pointer items-center gap-2.5 rounded-2xl border px-3 transition-all ${
+                  splitBetween.includes(m.memberId)
+                    ? 'border-purple-300 bg-purple-50'
+                    : 'border-slate-200 hover:bg-slate-50'
+                }`}
               >
                 <input
                   type="checkbox"
@@ -239,22 +253,25 @@ export default function ExpenseForm({
           </div>
           {errors.splitBetween && <p className="text-[13px] text-red-500">{errors.splitBetween}</p>}
           {perPerson > 0 && (
-            <p className="text-[13px] font-medium text-[#8B5CF6]">
-              Each person: {formatCurrency(perPerson, selectedCurrency)}
-            </p>
+            <div className="flex items-center gap-1.5 rounded-xl bg-purple-50 px-3 py-2">
+              <span className="text-[14px]">💰</span>
+              <p className="text-[13px] font-bold text-[#7C3AED]">
+                Each person: {formatCurrency(perPerson, selectedCurrency)}
+              </p>
+            </div>
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={() => setSplitBetween(members.map((m) => m.memberId))}
-              className="text-[13px] font-medium text-[#8B5CF6]"
+              className="text-[13px] font-bold text-[#8B5CF6] hover:text-[#7C3AED]"
             >
               Select All
             </button>
             <button
               type="button"
               onClick={() => setSplitBetween([])}
-              className="text-[13px] font-medium text-[#8B5CF6]"
+              className="text-[13px] font-bold text-[#8B5CF6] hover:text-[#7C3AED]"
             >
               Deselect All
             </button>
@@ -262,20 +279,23 @@ export default function ExpenseForm({
         </div>
       )}
 
+      {/* Dashed divider */}
+      <div className="border-t border-dashed border-purple-200" />
+
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-2 h-12 w-full rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] font-[family-name:var(--font-display)] text-[16px] font-bold text-white shadow-sm transition-opacity disabled:opacity-50"
+        className="mt-2 h-14 w-full rounded-2xl bg-gradient-to-r from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] font-[family-name:var(--font-display)] text-[16px] font-bold text-white shadow-lg transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50"
       >
-        {isSubmitting ? 'Saving...' : 'Save Expense'}
+        {isSubmitting ? 'Saving... ✈️' : 'Save Expense 🎉'}
       </button>
       {onDelete && (
         <button
           type="button"
           onClick={onDelete}
-          className="text-[13px] font-medium text-red-500 hover:text-red-600"
+          className="rounded-xl border border-red-200 bg-red-50 py-2.5 text-[13px] font-bold text-red-500 hover:bg-red-100 transition-colors"
         >
-          Delete this expense
+          🗑️ Delete this expense
         </button>
       )}
       <button

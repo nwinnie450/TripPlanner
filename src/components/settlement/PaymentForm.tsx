@@ -50,9 +50,9 @@ export default function PaymentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 rounded-xl border border-[#8B5CF6]/20 bg-[#F9F5FF] p-4">
-      <p className="mb-3 text-[13px] font-medium text-slate-600">
-        {fromName} pays {toName}
+    <form onSubmit={handleSubmit} className="mt-3 rounded-[16px] border border-[#7C3AED]/15 bg-gradient-to-br from-[#F9F5FF] to-[#FDF2F8] p-4">
+      <p className="mb-3 flex items-center gap-1.5 text-[13px] font-medium text-slate-600">
+        <span>💸</span> {fromName} pays {toName}
       </p>
 
       <div className="mb-3">
@@ -64,7 +64,7 @@ export default function PaymentForm({
           max={remaining}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-[15px] font-medium text-slate-900 focus:border-[#8B5CF6] focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
+          className="w-full rounded-[12px] border border-slate-200 bg-white px-3 py-2.5 text-[15px] font-medium text-slate-900 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
           placeholder="0.00"
         />
       </div>
@@ -75,7 +75,7 @@ export default function PaymentForm({
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-[14px] text-slate-900 focus:border-[#8B5CF6] focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
+          className="w-full rounded-[12px] border border-slate-200 bg-white px-3 py-2.5 text-[14px] text-slate-900 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
           placeholder="e.g. Bank transfer, PayNow..."
           maxLength={100}
         />
@@ -87,16 +87,16 @@ export default function PaymentForm({
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 rounded-lg border border-slate-200 py-2.5 text-[14px] font-medium text-slate-600"
+          className="flex-1 rounded-[12px] border border-slate-200 bg-white py-2.5 text-[14px] font-medium text-slate-600 transition-all hover:bg-slate-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 rounded-lg bg-gradient-to-b from-[#7C3AED] to-[#8B5CF6] py-2.5 text-[14px] font-semibold text-white disabled:opacity-50"
+          className="flex-1 rounded-[12px] bg-gradient-to-r from-[#7C3AED] to-[#EC4899] py-2.5 text-[14px] font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
         >
-          {isSubmitting ? 'Recording...' : 'Record Payment'}
+          {isSubmitting ? 'Recording...' : 'Record Payment 💸'}
         </button>
       </div>
     </form>

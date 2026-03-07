@@ -28,10 +28,16 @@ export default function BalanceCard({
   const showCurrency = entries.length > 1;
 
   return (
-    <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
+    <div
+      className={`rounded-[20px] p-4 shadow-sm transition-all hover:shadow-md ${
+        overallPositive
+          ? 'bg-gradient-to-r from-white to-[#ECFDF5] border border-emerald-100'
+          : 'bg-gradient-to-r from-white to-[#FEF2F2] border border-red-100'
+      }`}
+    >
       <div className="flex items-center gap-3">
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold text-white"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[15px] font-bold text-white shadow-md"
           style={{ backgroundColor: avatarColor }}
         >
           {firstLetter}
@@ -43,9 +49,10 @@ export default function BalanceCard({
               const isPositive = entry.net >= 0;
               return (
                 <div key={entry.currency} className="flex items-center gap-1.5">
+                  <span className="text-[13px]">{isPositive ? '🟢' : '🔴'}</span>
                   <span
                     className="text-[14px] font-bold"
-                    style={{ color: isPositive ? '#14B8A6' : '#EF4444' }}
+                    style={{ color: isPositive ? '#059669' : '#DC2626' }}
                   >
                     {isPositive ? '+' : '-'}
                     {formatCurrency(Math.abs(entry.net), entry.currency)}
@@ -60,13 +67,14 @@ export default function BalanceCard({
             })}
           </div>
         </div>
+        <span className="text-[20px]">{overallPositive ? '📈' : '📉'}</span>
       </div>
-      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
         <div
-          className="h-full rounded-full transition-all duration-300"
+          className="h-full rounded-full transition-all duration-500 ease-out"
           style={{
             width: `${barDenominator > 0 ? Math.round((maxAbsolute / barDenominator) * 100) : 0}%`,
-            backgroundColor: overallPositive ? '#14B8A6' : '#EF4444',
+            backgroundColor: overallPositive ? '#059669' : '#DC2626',
           }}
         />
       </div>

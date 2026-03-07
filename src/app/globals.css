@@ -30,10 +30,15 @@
   --color-pink: #F472B6;
   --color-pink-light: #FDF2F8;
 
-  /* Shadows (softer, purple-tinted) */
-  --shadow-card: 0 4px 16px rgba(139, 92, 246, 0.06);
-  --shadow-nav: 0 -4px 16px rgba(0, 0, 0, 0.05);
+  /* Amber accent */
+  --color-amber: #F59E0B;
+  --color-amber-light: #FFFBEB;
+
+  /* Shadows (warmer, more playful) */
+  --shadow-card: 0 4px 20px rgba(139, 92, 246, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-nav: 0 -4px 20px rgba(139, 92, 246, 0.1);
   --shadow-fab: 0 4px 16px rgba(139, 92, 246, 0.4);
+  --shadow-button: 0 4px 14px rgba(139, 92, 246, 0.25), 0 2px 6px rgba(139, 92, 246, 0.12);
 
   /* Fonts */
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -41,7 +46,7 @@
 }
 
 body {
-  background-color: var(--color-sand);
+  background: linear-gradient(135deg, #FAFAFF 0%, #FFF9FC 40%, #F5FAFF 70%, #FFFBF5 100%) fixed;
   color: var(--color-slate-900);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -55,4 +60,51 @@ html, body {
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.18);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+/* Boarding-pass dashed border utilities */
+.border-dashed-ticket {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+}
+
+.border-dashed-ticket-top {
+  border-top: 2px dashed rgba(139, 92, 246, 0.2);
+}
+
+.border-dashed-ticket-bottom {
+  border-bottom: 2px dashed rgba(139, 92, 246, 0.2);
+}
+
+/* Animated gradient background utility */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.bg-animated-gradient {
+  background: linear-gradient(135deg, #8B5CF6, #F472B6, #14B8A6, #F59E0B);
+  background-size: 300% 300%;
+  animation: gradient-shift 8s ease infinite;
 }

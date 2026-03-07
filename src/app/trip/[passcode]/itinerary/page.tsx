@@ -28,15 +28,29 @@ export default function ItineraryPage() {
   const hasItems = items.length > 0;
 
   return (
-    <div>
-      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-6">
-        <div className="flex items-start justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-violet-50/60 via-white to-amber-50/30">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-8 pt-2">
+        {/* Floating travel emojis */}
+        <span className="pointer-events-none absolute -right-2 top-2 text-[40px] opacity-20 rotate-12">
+          ✈️
+        </span>
+        <span className="pointer-events-none absolute left-8 top-1 text-[28px] opacity-15 -rotate-12">
+          🌍
+        </span>
+        <span className="pointer-events-none absolute right-16 bottom-2 text-[24px] opacity-20 rotate-6">
+          🧳
+        </span>
+        <span className="pointer-events-none absolute left-2 bottom-4 text-[20px] opacity-15">
+          🗺️
+        </span>
+
+        <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="mb-1 font-[family-name:var(--font-display)] text-[28px] font-bold text-white">
-              Itinerary
+            <h1 className="mb-1 font-[family-name:var(--font-display)] text-[28px] font-bold text-white drop-shadow-sm">
+              ✨ Itinerary
             </h1>
-            <p className="text-[13px] text-white/80">
-              {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)}
+            <p className="text-[13px] font-medium text-white/90">
+              🗓️ {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)}
             </p>
           </div>
           {hasItems && (
@@ -55,34 +69,21 @@ export default function ItineraryPage() {
           )}
         </div>
         {hasItems && (
-          <div className="mt-4">
+          <div className="relative z-10 mt-4">
             <ViewToggle view={view} onViewChange={setView} />
           </div>
         )}
       </div>
 
-      <div className="bg-white p-6">
+      <div className="px-5 py-6">
         {!hasItems ? (
-          <div className="flex flex-col items-center py-16 text-center">
-            <svg
-              className="mb-4 text-slate-400"
-              width="64"
-              height="64"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-            <p className="text-[18px] font-semibold text-slate-900">No plans yet!</p>
-            <p className="mt-1 text-[13px] text-slate-600">
-              Start building your itinerary by tapping the + button below.
+          <div className="flex flex-col items-center rounded-[24px] bg-white/80 py-16 text-center shadow-sm backdrop-blur-sm">
+            <div className="mb-4 text-[56px]">🏖️</div>
+            <p className="text-[18px] font-bold text-slate-900">No plans yet!</p>
+            <p className="mt-2 text-[14px] text-slate-500">
+              Time to start planning the adventure! 🎉
+              <br />
+              Tap the + button below to add your first activity.
             </p>
           </div>
         ) : view === 'list' ? (

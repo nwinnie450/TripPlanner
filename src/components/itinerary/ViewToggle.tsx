@@ -7,24 +7,24 @@ interface ViewToggleProps {
 
 export default function ViewToggle({ view, onViewChange }: ViewToggleProps) {
   return (
-    <div className="inline-flex rounded-xl bg-[#F4F4F5] p-1">
+    <div className="inline-flex rounded-full bg-white/20 p-1 backdrop-blur-sm">
       <button
         type="button"
         onClick={() => onViewChange('list')}
-        className={`rounded-[8px] px-4 py-1.5 text-[13px] transition-colors ${
-          view === 'list' ? 'bg-white font-semibold text-ocean shadow' : 'text-slate-400'
+        className={`rounded-full px-5 py-2 text-[13px] font-bold transition-all ${
+          view === 'list' ? 'bg-white text-[#7C3AED] shadow-md' : 'text-white/80 hover:text-white'
         }`}
       >
-        List
+        📋 List
       </button>
       <button
         type="button"
         onClick={() => onViewChange('map')}
-        className={`rounded-[8px] px-4 py-1.5 text-[13px] transition-colors ${
-          view === 'map' ? 'bg-white font-semibold text-ocean shadow' : 'text-slate-400'
+        className={`rounded-full px-5 py-2 text-[13px] font-bold transition-all ${
+          view === 'map' ? 'bg-white text-[#7C3AED] shadow-md' : 'text-white/80 hover:text-white'
         }`}
       >
-        Map
+        🗺️ Map
       </button>
     </div>
   );

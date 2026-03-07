@@ -96,19 +96,31 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-8 pt-12">
-        <div className="flex items-center justify-between">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white pb-20">
+      {/* Hero Header */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-12 pt-14">
+        {/* Floating travel emojis */}
+        <span className="pointer-events-none absolute left-4 top-6 text-[28px] opacity-20">✈️</span>
+        <span className="pointer-events-none absolute right-10 top-4 text-[20px] opacity-15">☁️</span>
+        <span className="pointer-events-none absolute left-1/3 top-3 text-[14px] opacity-10">☁️</span>
+        <span className="pointer-events-none absolute bottom-4 left-8 text-[22px] opacity-15">🌍</span>
+        <span className="pointer-events-none absolute bottom-8 right-6 text-[18px] opacity-20">🏖️</span>
+        <span className="pointer-events-none absolute right-1/4 top-10 text-[16px] opacity-10">⛅</span>
+        <span className="pointer-events-none absolute bottom-3 left-1/2 text-[14px] opacity-15">🗺️</span>
+
+        <div className="relative flex items-center justify-between">
           <div>
-            <p className="text-[14px] text-white/70">
-              Hi, {user?.name ?? 'there'}
+            <p className="text-[14px] font-medium text-white/80">
+              Hi, {user?.name ?? 'there'} 👋
             </p>
-            <h1 className="mt-0.5 font-display text-[24px] font-extrabold text-white">
-              GroupTrip
+            <h1 className="mt-1 font-display text-[30px] font-extrabold leading-tight text-white">
+              Where to next?
             </h1>
+            <p className="mt-1 text-[13px] text-white/60">
+              Your adventures start here
+            </p>
           </div>
-          <Link href="/profile" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+          <Link href="/profile" className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors active:bg-white/30">
             <svg
               width="20"
               height="20"
@@ -131,17 +143,18 @@ export default function HomePage() {
         {/* My Trips */}
         {tripsLoading ? (
           <div className="mb-6">
-            <h2 className="mb-3 text-[15px] font-semibold text-slate-500">My Trips</h2>
-            <div className="h-20 animate-pulse rounded-xl bg-slate-100" />
+            <h2 className="mb-3 text-[15px] font-semibold text-[#7C3AED]/60">My Trips</h2>
+            <div className="h-20 animate-pulse rounded-[20px] bg-purple-50" />
           </div>
         ) : trips.length > 0 ? (
           <div className="mb-6">
-            <h2 className="mb-3 text-[15px] font-semibold text-slate-500">My Trips</h2>
-            <div className="flex flex-col gap-2">
+            <h2 className="mb-3 text-[15px] font-semibold text-[#7C3AED]/60">My Trips</h2>
+            <div className="flex flex-col gap-3">
               {trips.map((trip) => (
                 <Link key={trip.passcode} href={`/trip/${trip.passcode}`} className="block">
-                  <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm active:bg-slate-50 transition-colors">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#7C3AED] to-[#A78BFA] text-[16px]">
+                  <div className="flex items-center gap-3 rounded-[20px] border border-purple-100/60 bg-white p-4 shadow-[0_2px_12px_rgba(124,58,237,0.08)] active:bg-purple-50/50 transition-all">
+                    <div className="w-1 self-stretch rounded-full bg-gradient-to-b from-[#7C3AED] to-[#A78BFA]" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-50 text-[18px]">
                       ✈️
                     </div>
                     <div className="min-w-0 flex-1">
@@ -150,45 +163,45 @@ export default function HomePage() {
                         {formatDate(trip.startDate)} &ndash; {formatDate(trip.endDate)} &middot; {trip.memberCount} {trip.memberCount === 1 ? 'member' : 'members'}
                       </p>
                     </div>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                    <span className="shrink-0 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] px-3 py-1 text-[11px] font-bold text-white">
+                      Go
+                    </span>
                   </div>
                 </Link>
               ))}
             </div>
           </div>
         ) : (
-          <div className="mb-6 rounded-xl border border-dashed border-slate-200 p-6 text-center">
-            <p className="text-[14px] text-slate-400">No trips yet</p>
-            <p className="mt-1 text-[12px] text-slate-300">Create or join a trip to get started</p>
+          <div className="mb-6 rounded-[20px] border border-dashed border-purple-200 bg-white p-8 text-center shadow-[0_2px_12px_rgba(124,58,237,0.06)]">
+            <p className="text-[40px]">🧳</p>
+            <p className="mt-2 text-[16px] font-semibold text-slate-700">No trips yet!</p>
+            <p className="mt-1 text-[13px] text-slate-400">Time to plan your first adventure</p>
           </div>
         )}
 
         {/* Actions */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {/* Create Trip */}
           <Link href="/create" className="block">
-            <div className="flex items-center gap-4 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] p-4 shadow-sm active:opacity-90 transition-opacity">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
+            <div className="flex items-center gap-4 rounded-[20px] bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] p-5 shadow-[0_4px_20px_rgba(124,58,237,0.25)] active:opacity-90 transition-opacity">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-[24px]">
+                🗺️
               </div>
               <div>
-                <h2 className="text-[15px] font-semibold text-white">Create a Trip</h2>
-                <p className="text-[12px] text-white/70">Start planning a new group adventure</p>
+                <h2 className="text-[17px] font-bold text-white">Create a Trip</h2>
+                <p className="mt-0.5 text-[13px] text-white/70">Plan a new adventure</p>
               </div>
             </div>
           </Link>
 
           {/* Join Trip */}
-          <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
-            <h2 className="text-[15px] font-semibold text-slate-900">Join a Trip</h2>
-            <p className="mt-0.5 text-[12px] text-slate-400">Enter the passcode shared by your group</p>
+          <div className="rounded-[20px] border border-purple-100/60 bg-white p-5 shadow-[0_2px_12px_rgba(124,58,237,0.08)]">
+            <div className="mb-4 border-b-2 border-dashed border-purple-100 pb-4">
+              <h2 className="text-[17px] font-bold text-slate-900">Got an invite? 🎟️</h2>
+              <p className="mt-0.5 text-[13px] text-slate-400">Enter the passcode to join the fun</p>
+            </div>
 
-            <div className="mt-4 flex justify-center gap-2">
+            <div className="flex justify-center gap-2">
               {chars.map((char, i) => (
                 <input
                   key={i}
@@ -203,7 +216,7 @@ export default function HomePage() {
                   onChange={(e) => handleChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onPaste={i === 0 ? handlePaste : undefined}
-                  className="h-12 w-11 rounded-lg border border-slate-200 bg-slate-50 text-center font-mono text-lg font-bold text-slate-900 focus:border-[#8B5CF6] focus:outline-none focus:ring-1 focus:ring-[#8B5CF6]"
+                  className="h-12 w-11 rounded-xl border-2 border-purple-100 bg-purple-50/50 text-center font-mono text-lg font-bold text-slate-900 transition-colors focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                   aria-label={`Passcode character ${i + 1}`}
                 />
               ))}
@@ -214,9 +227,9 @@ export default function HomePage() {
             <button
               onClick={handleJoin}
               disabled={isLoading}
-              className="mt-4 w-full rounded-xl bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] py-3 text-[15px] font-semibold text-white transition-opacity hover:opacity-90 active:opacity-90 disabled:opacity-50"
+              className="mt-4 w-full rounded-2xl bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] py-3.5 text-[15px] font-bold text-white shadow-[0_4px_12px_rgba(124,58,237,0.3)] transition-opacity hover:opacity-90 active:opacity-90 disabled:opacity-50"
             >
-              {isLoading ? 'Joining...' : 'Join Trip'}
+              {isLoading ? 'Joining...' : "Let's Go! 🚀"}
             </button>
           </div>
         </div>

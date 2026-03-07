@@ -17,7 +17,7 @@ describe("BalanceCard", () => {
     );
     const amountEl = screen.getByText(/\+.*\$25/);
     expect(amountEl).toBeInTheDocument();
-    expect(amountEl).toHaveStyle({ color: "#14B8A6" });
+    expect(amountEl).toHaveStyle({ color: "#059669" });
   });
 
   it("should display a negative balance with red color", () => {
@@ -26,15 +26,15 @@ describe("BalanceCard", () => {
     );
     const amountEl = screen.getByText(/15\.50/);
     expect(amountEl).toBeInTheDocument();
-    expect(amountEl).toHaveStyle({ color: "#EF4444" });
+    expect(amountEl).toHaveStyle({ color: "#DC2626" });
   });
 
-  it("should use teal color for a zero balance", () => {
+  it("should use green color for a zero balance", () => {
     render(
       <BalanceCard memberName="Charlie" entries={[{ currency: "USD", net: 0 }]} colorIndex={2} />
     );
     const amountEl = screen.getByText(/\$0/);
-    expect(amountEl).toHaveStyle({ color: "#14B8A6" });
+    expect(amountEl).toHaveStyle({ color: "#059669" });
   });
 
   it("should show currency badges when multiple entries", () => {
@@ -59,12 +59,12 @@ describe("BalanceCard", () => {
     expect(screen.queryByText("USD")).not.toBeInTheDocument();
   });
 
-  it("should render a progress bar with teal color for positive balance", () => {
+  it("should render a progress bar with green color for positive balance", () => {
     const { container } = render(
       <BalanceCard memberName="Alice" entries={[{ currency: "USD", net: 25 }]} colorIndex={0} />
     );
     const innerBar = container.querySelector(
-      "[style*='background-color: rgb(20, 184, 166)']"
+      "[style*='background-color: rgb(5, 150, 105)']"
     );
     expect(innerBar).toBeInTheDocument();
   });
@@ -74,7 +74,7 @@ describe("BalanceCard", () => {
       <BalanceCard memberName="Bob" entries={[{ currency: "USD", net: -15.5 }]} colorIndex={1} />
     );
     const innerBar = container.querySelector(
-      "[style*='background-color: rgb(239, 68, 68)']"
+      "[style*='background-color: rgb(220, 38, 38)']"
     );
     expect(innerBar).toBeInTheDocument();
   });
