@@ -20,6 +20,7 @@ interface AuthContextValue {
     name: string,
   ) => Promise<string | null>;
   logout: () => Promise<void>;
+  updateName: (name: string) => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextValue>({
   login: async () => null,
   signup: async () => null,
   logout: async () => {},
+  updateName: async () => null,
 });
 
 export function useAuth() {
@@ -101,8 +103,26 @@ export default function AuthProvider({
     router.push('/login');
   }, [router]);
 
+  const updateName = useCallback(
+    async (name: string): Promise<string | null> => {
+      const res = await fetch('/api/auth/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        return data.message || 'Failed to update name';
+      }
+      const data = await res.json();
+      setUser(data);
+      return null;
+    },
+    [],
+  );
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, signup, logout, updateName }}>
       {children}
     </AuthContext.Provider>
   );

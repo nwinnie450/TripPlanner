@@ -1,18 +1,53 @@
 'use client';
 
+import { useState, useMemo, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useMyTrips } from '@/hooks/useMyTrips';
-import { formatDate } from '@/lib/utils';
-import { User, Bell, Globe, Settings, ChevronRight, LogOut } from 'lucide-react';
+import { formatDate, getDaysBetween } from '@/lib/utils';
+import { formatCurrency } from '@/lib/constants';
+import { ChevronRight, ChevronDown, User, LogOut } from 'lucide-react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function ProfilePage() {
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, logout, updateName, isLoading: authLoading } = useAuth();
   const { trips, isLoading: tripsLoading } = useMyTrips(!!user);
 
-  if (authLoading) return <LoadingSpinner />;
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [nameSaving, setNameSaving] = useState(false);
 
+
+  const stats = useMemo(() => {
+    const uniqueCurrencies = [...new Set(trips.map((t) => t.currency))];
+    const totalSpent = trips.reduce((sum, t) => sum + t.totalSpent, 0);
+    const mostUsedCurrency = uniqueCurrencies.length > 0
+      ? uniqueCurrencies.reduce((best, cur) => {
+          const count = trips.filter((t) => t.currency === cur).length;
+          const bestCount = trips.filter((t) => t.currency === best).length;
+          return count > bestCount ? cur : best;
+        })
+      : 'USD';
+
+    const today = new Date().toISOString().split('T')[0];
+    const upcoming = trips
+      .filter((t) => t.endDate >= today)
+      .sort((a, b) => a.startDate.localeCompare(b.startDate));
+    const nextTrip = upcoming[0] ?? null;
+
+    let daysUntil = 0;
+    if (nextTrip) {
+      const start = new Date(nextTrip.startDate);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      daysUntil = Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    }
+
+    return { uniqueCurrencies, totalSpent, mostUsedCurrency, nextTrip, daysUntil };
+  }, [trips]);
+
+  if (authLoading) return <LoadingSpinner />;
   if (!user) return null;
 
   const initials = user.name
@@ -21,6 +56,20 @@ export default function ProfilePage() {
     .join('')
     .toUpperCase()
     .slice(0, 2);
+
+  async function handleNameSave(e: FormEvent) {
+    e.preventDefault();
+    const trimmed = newName.trim();
+    if (!trimmed) { setNameError('Name is required'); return; }
+    if (trimmed.length > 50) { setNameError('Name too long'); return; }
+
+    setNameSaving(true);
+    setNameError('');
+    const err = await updateName(trimmed);
+    setNameSaving(false);
+    if (err) { setNameError(err); return; }
+    setEditingName(false);
+  }
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -57,23 +106,93 @@ export default function ProfilePage() {
             <span className="text-[12px] font-medium text-[#71717A]">Trips</span>
           </div>
           <div className="flex flex-1 flex-col items-center gap-1 rounded-[20px] bg-[#14B8A610] p-4">
-            <span className="font-display text-[24px] font-extrabold text-[#14B8A6]">{trips.length}</span>
-            <span className="text-[12px] font-medium text-[#71717A]">Countries</span>
+            <span className="font-display text-[24px] font-extrabold text-[#14B8A6]">{stats.uniqueCurrencies.length}</span>
+            <span className="text-[12px] font-medium text-[#71717A]">Currencies</span>
+            {stats.uniqueCurrencies.length > 0 && (
+              <span className="text-[10px] text-[#A1A1AA]">{stats.uniqueCurrencies.join(', ')}</span>
+            )}
           </div>
-          <div className="flex flex-1 flex-col items-center gap-1 rounded-[20px] bg-[#F472B610] p-4">
-            <span className="font-display text-[24px] font-extrabold text-[#F472B6]">S$0</span>
-            <span className="text-[12px] font-medium text-[#71717A]">Spent</span>
-          </div>
+          {trips.length > 0 && (
+            <div className="flex flex-1 flex-col items-center gap-1 rounded-[20px] bg-[#F472B610] p-4">
+              <span className="font-display text-[24px] font-extrabold text-[#F472B6]">
+                {formatCurrency(stats.totalSpent, stats.mostUsedCurrency)}
+              </span>
+              <span className="text-[12px] font-medium text-[#71717A]">Total Spent</span>
+            </div>
+          )}
         </div>
+
+        {/* Next Trip countdown */}
+        {stats.nextTrip && (
+          <Link href={`/trip/${stats.nextTrip.passcode}`} className="block">
+            <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] p-5">
+              <div className="relative z-10">
+                <p className="text-[12px] font-medium text-white/70">
+                  {stats.daysUntil > 0 ? 'Upcoming Trip' : 'Ongoing Trip'}
+                </p>
+                <h3 className="mt-1 text-[18px] font-bold text-white">{stats.nextTrip.tripName}</h3>
+                <p className="mt-0.5 text-[13px] text-white/80">
+                  {formatDate(stats.nextTrip.startDate)} &ndash; {formatDate(stats.nextTrip.endDate)}
+                  {' '}&middot; {stats.nextTrip.memberCount} {stats.nextTrip.memberCount === 1 ? 'member' : 'members'}
+                </p>
+                <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5">
+                  <span className="text-[14px]">✈️</span>
+                  <span className="text-[14px] font-bold text-white">
+                    {stats.daysUntil > 0
+                      ? `${stats.daysUntil} day${stats.daysUntil === 1 ? '' : 's'} to go`
+                      : stats.daysUntil === 0
+                        ? "It's today!"
+                        : `${getDaysBetween(stats.nextTrip.startDate, stats.nextTrip.endDate)} day trip`}
+                  </span>
+                </div>
+              </div>
+              <div className="absolute -right-4 -top-4 text-[80px] opacity-10">✈️</div>
+            </div>
+          </Link>
+        )}
 
         {/* Settings */}
         <div>
-          <h3 className="mb-3 font-display text-[18px] font-bold text-[#18181B]">Settings</h3>
+          <h3 className="mb-3 font-display text-[18px] font-bold text-[#18181B]">Account</h3>
           <div className="overflow-hidden rounded-[20px] border border-[#E4E4E7] bg-white">
-            <SettingsRow icon={<User size={18} />} iconBg="#8B5CF610" iconColor="#8B5CF6" label="Edit Profile" />
-            <SettingsRow icon={<Bell size={18} />} iconBg="#14B8A610" iconColor="#14B8A6" label="Notifications" border />
-            <SettingsRow icon={<Globe size={18} />} iconBg="#F472B610" iconColor="#F472B6" label="Currency" border />
-            <SettingsRow icon={<Settings size={18} />} iconBg="#F9731610" iconColor="#F97316" label="Preferences" border last />
+            {/* Edit Name */}
+            <div>
+              <button
+                onClick={() => {
+                  setEditingName(!editingName);
+                  setNewName(user.name);
+                  setNameError('');
+                }}
+                className="flex w-full items-center gap-3.5 px-[18px] py-4"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#8B5CF610] text-[#8B5CF6]">
+                  <User size={18} />
+                </div>
+                <span className="flex-1 text-left text-[15px] font-medium text-[#18181B]">Edit Name</span>
+                <ChevronDown size={18} className={`text-[#A1A1AA] transition-transform ${editingName ? 'rotate-180' : ''}`} />
+              </button>
+              {editingName && (
+                <form onSubmit={handleNameSave} className="border-t border-[#F4F4F5] px-[18px] pb-4 pt-3">
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => { setNewName(e.target.value); setNameError(''); }}
+                    placeholder="Your name"
+                    maxLength={50}
+                    className="h-11 w-full rounded-xl bg-[#F4F4F5] px-4 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/30"
+                  />
+                  {nameError && <p className="mt-1.5 text-[12px] text-red-500">{nameError}</p>}
+                  <button
+                    type="submit"
+                    disabled={nameSaving}
+                    className="mt-3 h-10 w-full rounded-xl bg-gradient-to-b from-[#7C3AED] to-[#8B5CF6] text-[14px] font-semibold text-white disabled:opacity-50"
+                  >
+                    {nameSaving ? 'Saving...' : 'Save'}
+                  </button>
+                </form>
+              )}
+            </div>
+
           </div>
         </div>
 
@@ -118,37 +237,6 @@ export default function ProfilePage() {
         {/* Version */}
         <p className="text-center text-[12px] font-medium text-[#D4D4D8]">GroupTrip v1.0.0</p>
       </div>
-    </div>
-  );
-}
-
-function SettingsRow({
-  icon,
-  iconBg,
-  iconColor,
-  label,
-  border,
-  last,
-}: {
-  icon: React.ReactNode;
-  iconBg: string;
-  iconColor: string;
-  label: string;
-  border?: boolean;
-  last?: boolean;
-}) {
-  return (
-    <div
-      className={`flex items-center gap-3.5 px-[18px] py-4 ${border && !last ? 'border-t border-[#F4F4F5]' : ''}`}
-    >
-      <div
-        className="flex h-9 w-9 items-center justify-center rounded-[10px]"
-        style={{ backgroundColor: iconBg, color: iconColor }}
-      >
-        {icon}
-      </div>
-      <span className="flex-1 text-[15px] font-medium text-[#18181B]">{label}</span>
-      <ChevronRight size={18} className="text-[#A1A1AA]" />
     </div>
   );
 }

@@ -7,7 +7,10 @@ interface MyTrip {
   startDate: string;
   endDate: string;
   currency: string;
+  budget: number;
   memberCount: number;
+  totalSpent: number;
+  mySpent: number;
 }
 
 interface MyTripsResponse {
