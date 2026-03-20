@@ -81,7 +81,7 @@ export default function ItineraryItemCard({ item, passcode }: ItineraryItemProps
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="mt-1 flex items-center gap-1 text-[13px] text-ocean hover:underline"
+                className="mt-1 flex items-center gap-1 text-[13px] text-ocean hover:underline active:underline"
               >
                 <MapPin className="h-3 w-3 shrink-0" />
                 <span className="truncate">{shortenLocation(item.location)}</span>
@@ -101,7 +101,7 @@ export default function ItineraryItemCard({ item, passcode }: ItineraryItemProps
                 `/trip/${passcode}/expenses/add?title=${encodeURIComponent(item.title)}&category=${mapItineraryCategoryToExpense(item.category)}&date=${item.dayDate}`,
               );
             }}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-500 transition-colors hover:bg-emerald-100"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-500 transition-colors hover:bg-emerald-100 active:bg-emerald-100"
             aria-label="Add expense for this activity"
           >
             <DollarSign className="h-4 w-4" />

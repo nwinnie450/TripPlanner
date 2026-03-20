@@ -21,7 +21,10 @@ export default function ConfirmDialog({
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      style={{ padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }}
       onClick={onCancel}
     >
       <div
@@ -34,14 +37,14 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-[14px] font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-[14px] font-medium text-slate-700 transition-colors hover:bg-slate-50 active:bg-slate-100"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="flex-1 rounded-xl bg-[#EF4444] px-4 py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-[#DC2626]"
+            className="flex-1 rounded-xl bg-[#EF4444] px-4 py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-[#DC2626] active:bg-[#DC2626]"
           >
             {confirmLabel}
           </button>

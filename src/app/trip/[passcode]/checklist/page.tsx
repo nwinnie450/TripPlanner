@@ -70,7 +70,7 @@ export default function ChecklistPage() {
   const progressPercent = items.length > 0 ? Math.round((packedCount / items.length) * 100) : 0;
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-dvh flex-col">
       <div className="relative overflow-hidden bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#EC4899] px-6 pb-8 pt-6">
         <span className="pointer-events-none absolute -right-2 -top-2 text-[64px] opacity-20 rotate-12 select-none">
           🧳
@@ -159,7 +159,7 @@ export default function ChecklistPage() {
         )}
       </div>
 
-      <div className="fixed bottom-16 left-0 right-0 border-t border-[#E4E4E7] bg-white/95 backdrop-blur-md px-4 pb-3 pt-3 shadow-lg">
+      <div className="fixed bottom-16 left-0 right-0 border-t border-[#E4E4E7] bg-white/95 backdrop-blur-md px-4 pt-3 shadow-lg" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
         <form onSubmit={handleAdd} className="flex gap-2">
           <input
             type="text"

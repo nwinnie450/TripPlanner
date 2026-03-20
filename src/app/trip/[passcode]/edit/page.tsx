@@ -158,7 +158,7 @@ export default function EditTripPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EDE9FE] via-[#F0EAFF] to-[#FFF7ED]">
+    <div className="min-h-dvh bg-gradient-to-br from-[#EDE9FE] via-[#F0EAFF] to-[#FFF7ED]">
       {/* Fun gradient header with floating emojis */}
       <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-5 pb-10 pt-4">
         {/* Floating travel emojis */}
@@ -173,7 +173,7 @@ export default function EditTripPage() {
         <div className="relative flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white/80 transition-colors hover:bg-white/30 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white/80 transition-colors hover:bg-white/30 hover:text-white"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

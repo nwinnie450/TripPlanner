@@ -52,7 +52,7 @@ export default function PasscodeDisplay({ passcode }: PasscodeDisplayProps) {
         </div>
         <button
           onClick={handleCopyCode}
-          className="flex h-10 min-w-[44px] items-center justify-center rounded-xl bg-white px-3 text-[13px] font-medium text-ocean shadow-md transition-shadow hover:shadow-lg"
+          className="flex h-10 min-w-[44px] items-center justify-center rounded-xl bg-white px-3 text-[13px] font-medium text-ocean shadow-md transition-shadow hover:shadow-lg active:scale-95"
           aria-label="Copy passcode"
         >
           {copiedCode ? 'Copied!' : 'Copy'}
@@ -64,7 +64,7 @@ export default function PasscodeDisplay({ passcode }: PasscodeDisplayProps) {
       </p>
       <button
         onClick={handleShare}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-4 py-2.5 text-[14px] font-semibold text-white shadow-md transition-shadow hover:shadow-lg"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-4 py-2.5 text-[14px] font-semibold text-white shadow-md transition-shadow hover:shadow-lg active:scale-[0.98]"
         aria-label="Share trip invite message"
       >
         {copiedMsg ? 'Copied!' : '✈️ Share Invite'}

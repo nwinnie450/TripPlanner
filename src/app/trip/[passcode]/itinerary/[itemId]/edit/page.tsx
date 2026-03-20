@@ -72,7 +72,7 @@ export default function EditItineraryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50/60 via-white to-amber-50/30">
+    <div className="min-h-dvh bg-gradient-to-b from-violet-50/60 via-white to-amber-50/30">
       <div className="relative overflow-hidden bg-gradient-to-br from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-6 pt-12">
         {/* Floating travel emojis */}
         <span className="pointer-events-none absolute right-6 top-8 text-[28px] opacity-20 rotate-12">

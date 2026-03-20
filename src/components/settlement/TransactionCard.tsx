@@ -115,7 +115,7 @@ export default function TransactionCard({
                       onClick={() =>
                         setExpandedIndex(expandedIndex === index ? null : index)
                       }
-                      className="rounded-full bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-3.5 py-1 text-[12px] font-semibold text-white shadow-sm transition-all hover:shadow-md"
+                      className="rounded-full bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-3.5 py-1 text-[12px] font-semibold text-white shadow-sm transition-all hover:shadow-md active:scale-95"
                     >
                       Pay 💸
                     </button>
@@ -208,7 +208,7 @@ export default function TransactionCard({
                       </span>
                       <button
                         onClick={() => setConfirmDeleteId(p.paymentId)}
-                        className="text-[11px] font-medium text-red-400 hover:text-red-600"
+                        className="text-[11px] font-medium text-red-400 hover:text-red-600 active:text-red-600"
                       >
                         Undo
                       </button>

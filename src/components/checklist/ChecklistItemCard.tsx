@@ -65,7 +65,7 @@ export default function ChecklistItemCard({
         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 ${
           item.packed
             ? 'border-emerald-500 bg-emerald-500 scale-110'
-            : 'border-slate-300 bg-white hover:border-[#7C3AED] hover:scale-105'
+            : 'border-slate-300 bg-white hover:border-[#7C3AED] hover:scale-105 active:border-[#7C3AED] active:scale-95'
         }`}
         aria-label={item.packed ? 'Mark as unpacked' : 'Mark as packed'}
       >
@@ -109,7 +109,7 @@ export default function ChecklistItemCard({
         type="button"
         onClick={handleDelete}
         disabled={loading}
-        className="shrink-0 rounded-xl p-2 text-slate-300 transition-all hover:bg-red-50 hover:text-red-400 hover:scale-105"
+        className="shrink-0 rounded-xl p-2 text-slate-300 transition-all hover:bg-red-50 hover:text-red-400 hover:scale-105 active:bg-red-50 active:text-red-400 active:scale-95"
         aria-label="Delete item"
       >
         <svg

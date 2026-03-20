@@ -44,7 +44,7 @@ function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F5FF]">
+    <div className="min-h-dvh bg-[#F8F5FF]">
       {/* Purple gradient hero with floating travel elements */}
       <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-14 pt-12 text-center">
         {/* Floating travel emojis */}
@@ -86,6 +86,7 @@ function SignupForm() {
               onChange={(e) => setName(e.target.value)}
               required
               icon={<User size={18} />}
+              autoComplete="name"
             />
             <Input
               label="Email"
@@ -95,6 +96,7 @@ function SignupForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               icon={<Mail size={18} />}
+              autoComplete="email"
             />
             <div>
               <Input
@@ -106,6 +108,7 @@ function SignupForm() {
                 required
                 minLength={8}
                 icon={<EyeOff size={18} />}
+                autoComplete="new-password"
               />
               <p className="mt-1 text-xs text-[#A1A1AA]">Min. 8 characters</p>
             </div>
@@ -126,7 +129,7 @@ function SignupForm() {
             Already have an account?{' '}
             <Link
               href={`/login${redirect !== '/' ? `?redirect=${encodeURIComponent(redirect)}` : ''}`}
-              className="font-semibold text-[#7C3AED] hover:underline"
+              className="font-semibold text-[#7C3AED] hover:underline active:underline"
             >
               Log In
             </Link>
@@ -141,7 +144,7 @@ export default function SignupPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-dvh items-center justify-center">
           <LoadingSpinner />
         </div>
       }

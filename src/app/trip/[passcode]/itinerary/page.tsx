@@ -28,7 +28,7 @@ export default function ItineraryPage() {
   const hasItems = items.length > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50/60 via-white to-amber-50/30">
+    <div className="min-h-dvh bg-gradient-to-b from-violet-50/60 via-white to-amber-50/30">
       <div className="relative overflow-hidden bg-gradient-to-br from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-8 pt-2">
         {/* Floating travel emojis */}
         <span className="pointer-events-none absolute -right-2 top-2 text-[40px] opacity-20 rotate-12">

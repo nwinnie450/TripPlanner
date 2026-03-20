@@ -48,7 +48,7 @@ export default function Toast({ toasts }: { toasts: ToastItem[] }) {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-4 left-4 right-4 z-50 flex flex-col items-center gap-2">
+    <div className="fixed top-4 left-4 right-4 z-50 flex flex-col items-center gap-2" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       {toasts.map((toast) => (
         <ToastItem key={toast.id} toast={toast} />
       ))}

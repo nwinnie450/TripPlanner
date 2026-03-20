@@ -92,7 +92,7 @@ export default function CreateTripPage() {
 
   if (createdPasscode) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#EDE9FE] via-[#F0EAFF] to-[#FFF7ED] px-4">
+      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-[#EDE9FE] via-[#F0EAFF] to-[#FFF7ED] px-4">
         <div className="flex w-full max-w-sm flex-col items-center gap-6">
           {/* Celebratory emojis */}
           <div className="flex items-center gap-3 text-5xl">
@@ -129,7 +129,7 @@ export default function CreateTripPage() {
           <Link href={`/trip/${createdPasscode}`} className="w-full">
             <Button>Let&apos;s Go! ✈️</Button>
           </Link>
-          <Link href="/" className="text-[13px] font-medium text-[#7C3AED] transition-colors hover:text-[#6D28D9]">
+          <Link href="/" className="text-[13px] font-medium text-[#7C3AED] transition-colors hover:text-[#6D28D9] active:text-[#6D28D9]">
             Back to Home
           </Link>
         </div>
@@ -138,7 +138,7 @@ export default function CreateTripPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EDE9FE] via-[#F0EAFF] to-[#FFF7ED]">
+    <div className="min-h-dvh bg-gradient-to-br from-[#EDE9FE] via-[#F0EAFF] to-[#FFF7ED]">
       {/* Fun gradient header with floating emojis */}
       <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-5 pb-10 pt-4">
         {/* Floating travel emojis */}
@@ -153,7 +153,7 @@ export default function CreateTripPage() {
         <div className="relative flex items-center gap-3">
           <Link
             href="/"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/30"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors hover:bg-white/30 active:bg-white/30"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5" />

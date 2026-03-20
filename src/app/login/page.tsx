@@ -38,7 +38,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F5FF]">
+    <div className="min-h-dvh bg-[#F8F5FF]">
       {/* Purple gradient hero with floating travel elements */}
       <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-14 pt-12 text-center">
         {/* Floating travel emojis */}
@@ -81,6 +81,7 @@ function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               icon={<Mail size={18} />}
+              autoComplete="email"
             />
             <Input
               label="Password"
@@ -90,6 +91,7 @@ function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               icon={<EyeOff size={18} />}
+              autoComplete="current-password"
             />
             {error && <p className="text-[13px] text-red">{error}</p>}
             <Button type="submit" disabled={isSubmitting}>
@@ -108,7 +110,7 @@ function LoginForm() {
             Don&apos;t have an account?{' '}
             <Link
               href={`/signup${redirect !== '/' ? `?redirect=${encodeURIComponent(redirect)}` : ''}`}
-              className="font-semibold text-[#7C3AED] hover:underline"
+              className="font-semibold text-[#7C3AED] hover:underline active:underline"
             >
               Sign Up
             </Link>
@@ -123,7 +125,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-dvh items-center justify-center">
           <LoadingSpinner />
         </div>
       }

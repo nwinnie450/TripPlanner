@@ -59,6 +59,7 @@ export default function PaymentForm({
         <label className="mb-1 block text-[12px] font-medium text-slate-500">Amount</label>
         <input
           type="number"
+          inputMode="decimal"
           step="0.01"
           min="0.01"
           max={remaining}
@@ -87,14 +88,14 @@ export default function PaymentForm({
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 rounded-[12px] border border-slate-200 bg-white py-2.5 text-[14px] font-medium text-slate-600 transition-all hover:bg-slate-50"
+          className="flex-1 rounded-[12px] border border-slate-200 bg-white py-2.5 text-[14px] font-medium text-slate-600 transition-all hover:bg-slate-50 active:bg-slate-100"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 rounded-[12px] bg-gradient-to-r from-[#7C3AED] to-[#EC4899] py-2.5 text-[14px] font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
+          className="flex-1 rounded-[12px] bg-gradient-to-r from-[#7C3AED] to-[#EC4899] py-2.5 text-[14px] font-semibold text-white shadow-md transition-all hover:shadow-lg active:scale-[0.98] disabled:opacity-50"
         >
           {isSubmitting ? 'Recording...' : 'Record Payment 💸'}
         </button>

@@ -31,6 +31,7 @@ export default function ExchangeRateForm({
       </span>
       <input
         type="number"
+        inputMode="decimal"
         step="any"
         min="0"
         value={rate}
@@ -44,7 +45,7 @@ export default function ExchangeRateForm({
       <button
         type="button"
         onClick={handleSave}
-        className="ml-auto rounded-full bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-4 py-1.5 text-[13px] font-medium text-white shadow-sm transition-all hover:shadow-md"
+        className="ml-auto rounded-full bg-gradient-to-r from-[#7C3AED] to-[#EC4899] px-4 py-1.5 text-[13px] font-medium text-white shadow-sm transition-all hover:shadow-md active:scale-95"
       >
         Save
       </button>

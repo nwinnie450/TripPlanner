@@ -31,9 +31,9 @@ export default function LocationAutocomplete({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click/touch
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(e.target as Node)
@@ -41,8 +41,12 @@ export default function LocationAutocomplete({
         setShowDropdown(false);
       }
     }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   const fetchSuggestions = useCallback(
@@ -135,7 +139,7 @@ export default function LocationAutocomplete({
         value={value}
         onChange={handleInput}
         placeholder={placeholder}
-        className={`h-12 w-full rounded-[10px] border border-sand-dark bg-white px-4 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean ${error ? 'border-red' : ''}`}
+        className={`h-12 w-full rounded-[10px] border border-sand-dark bg-white px-4 text-base text-slate-900 placeholder:text-slate-400 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean ${error ? 'border-red' : ''}`}
         autoComplete="off"
       />
       {showDropdown && suggestions.length > 0 && (

@@ -81,7 +81,7 @@ export default function EditExpensePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
+    <div className="min-h-dvh bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
       <div className="relative overflow-hidden flex items-center bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-4 pb-6 pt-12">
         {/* Floating travel emojis */}
         <span className="absolute right-4 top-4 text-[32px] opacity-20 rotate-12 select-none pointer-events-none">🧾</span>
@@ -89,7 +89,7 @@ export default function EditExpensePage() {
 
         <Link
           href={`/trip/${passcode}/expenses`}
-          className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20 transition-colors"
+          className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />

@@ -19,7 +19,7 @@ export default function CategoryFilter({
         className={`shrink-0 snap-start rounded-full px-4 py-2 text-[13px] font-bold transition-all ${
           selected === null
             ? 'bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] text-white shadow-md scale-105'
-            : 'bg-white/80 text-slate-500 border border-slate-200 hover:border-purple-300 hover:bg-purple-50'
+            : 'bg-white/80 text-slate-500 border border-slate-200 hover:border-purple-300 hover:bg-purple-50 active:bg-purple-50'
         }`}
       >
         All
@@ -33,7 +33,7 @@ export default function CategoryFilter({
             className={`shrink-0 snap-start rounded-full px-4 py-2 text-[13px] font-bold transition-all ${
               selected === cat
                 ? 'bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] text-white shadow-md scale-105'
-                : 'bg-white/80 text-slate-500 border border-slate-200 hover:border-purple-300 hover:bg-purple-50'
+                : 'bg-white/80 text-slate-500 border border-slate-200 hover:border-purple-300 hover:bg-purple-50 active:bg-purple-50'
             }`}
           >
             {config?.emoji} {cat}

@@ -51,7 +51,7 @@ export default function ExpensesPage() {
       : groupExpenses;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
+    <div className="min-h-dvh bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
       <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-8 pt-6">
         {/* Floating travel emojis */}
         <span className="absolute -right-2 top-3 text-[40px] opacity-20 rotate-12 select-none pointer-events-none">✈️</span>

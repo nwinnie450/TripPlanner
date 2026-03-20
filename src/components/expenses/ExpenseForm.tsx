@@ -140,7 +140,7 @@ export default function ExpenseForm({
                 className={`rounded-full px-5 py-2.5 text-[13px] font-bold transition-all ${
                   expenseType === type
                     ? 'bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] text-white shadow-md scale-105'
-                    : 'bg-purple-50 text-slate-500 border border-purple-100 hover:bg-purple-100'
+                    : 'bg-purple-50 text-slate-500 border border-purple-100 hover:bg-purple-100 active:bg-purple-100'
                 }`}
               >
                 {typeEmoji} {type === 'group' ? 'Group' : 'Personal'}
@@ -196,7 +196,7 @@ export default function ExpenseForm({
                 className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-bold transition-all ${
                   isSelected
                     ? 'bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] text-white shadow-md scale-105'
-                    : 'border border-slate-200 bg-white text-slate-500 hover:border-purple-300 hover:bg-purple-50'
+                    : 'border border-slate-200 bg-white text-slate-500 hover:border-purple-300 hover:bg-purple-50 active:bg-purple-50'
                 }`}
               >
                 <span className="text-[15px]">{config.emoji}</span> {cat}
@@ -238,7 +238,7 @@ export default function ExpenseForm({
                 className={`flex h-11 cursor-pointer items-center gap-2.5 rounded-2xl border px-3 transition-all ${
                   splitBetween.includes(m.memberId)
                     ? 'border-purple-300 bg-purple-50'
-                    : 'border-slate-200 hover:bg-slate-50'
+                    : 'border-slate-200 hover:bg-slate-50 active:bg-slate-50'
                 }`}
               >
                 <input
@@ -264,14 +264,14 @@ export default function ExpenseForm({
             <button
               type="button"
               onClick={() => setSplitBetween(members.map((m) => m.memberId))}
-              className="text-[13px] font-bold text-[#8B5CF6] hover:text-[#7C3AED]"
+              className="text-[13px] font-bold text-[#8B5CF6] hover:text-[#7C3AED] active:text-[#7C3AED]"
             >
               Select All
             </button>
             <button
               type="button"
               onClick={() => setSplitBetween([])}
-              className="text-[13px] font-bold text-[#8B5CF6] hover:text-[#7C3AED]"
+              className="text-[13px] font-bold text-[#8B5CF6] hover:text-[#7C3AED] active:text-[#7C3AED]"
             >
               Deselect All
             </button>
@@ -293,7 +293,7 @@ export default function ExpenseForm({
         <button
           type="button"
           onClick={onDelete}
-          className="rounded-xl border border-red-200 bg-red-50 py-2.5 text-[13px] font-bold text-red-500 hover:bg-red-100 transition-colors"
+          className="rounded-xl border border-red-200 bg-red-50 py-2.5 text-[13px] font-bold text-red-500 hover:bg-red-100 active:bg-red-100 transition-colors"
         >
           🗑️ Delete this expense
         </button>
@@ -301,7 +301,7 @@ export default function ExpenseForm({
       <button
         type="button"
         onClick={onCancel}
-        className="text-[13px] font-medium text-slate-400 hover:text-slate-600"
+        className="text-[13px] font-medium text-slate-400 hover:text-slate-600 active:text-slate-600"
       >
         Cancel
       </button>

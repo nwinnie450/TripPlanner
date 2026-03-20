@@ -96,7 +96,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white pb-20">
+    <div className="flex min-h-dvh flex-col bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white pb-20">
       {/* Hero Header */}
       <div className="relative overflow-hidden bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-12 pt-14">
         {/* Floating travel emojis */}

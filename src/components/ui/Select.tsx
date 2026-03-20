@@ -38,7 +38,7 @@ export default function Select({
       <div className="relative">
         <select
           id={selectId}
-          className={`h-12 w-full appearance-none rounded-[10px] border border-sand-dark bg-white px-4 pr-10 text-[15px] text-slate-900 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean ${error ? 'border-red' : ''} ${className}`}
+          className={`h-12 w-full appearance-none rounded-[10px] border border-sand-dark bg-white px-4 pr-10 text-base text-slate-900 focus:border-ocean focus:outline-none focus:ring-1 focus:ring-ocean ${error ? 'border-red' : ''} ${className}`}
           {...props}
         >
           {placeholder && (

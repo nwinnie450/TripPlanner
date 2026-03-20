@@ -1,0 +1,16 @@
+{
+  "name": "GroupTrip",
+  "short_name": "GroupTrip",
+  "description": "Plan together. Split fair.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAFF",
+  "theme_color": "#7C3AED",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

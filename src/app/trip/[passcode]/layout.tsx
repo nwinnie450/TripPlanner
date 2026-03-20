@@ -70,7 +70,7 @@ export default function TripLayout({
 
   if (!validated) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center">
         <LoadingSpinner />
       </div>
     );

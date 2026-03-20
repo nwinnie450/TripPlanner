@@ -51,7 +51,7 @@ export default function JoinPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4">
+      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4">
         <div className="w-full max-w-sm">
           <div className="rounded-[20px] bg-white p-6 shadow-lg text-center">
             <span className="text-[48px] mb-2 block">😕</span>
@@ -69,7 +69,7 @@ export default function JoinPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4">
       <div className="relative w-full max-w-sm overflow-hidden">
         {/* Floating emojis background */}
         <span className="pointer-events-none absolute -right-4 -top-4 text-[64px] opacity-10 rotate-12 select-none">

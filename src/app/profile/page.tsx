@@ -72,13 +72,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5F3FF] via-[#FDF2F8]/30 to-[#F5F3FF] pb-20">
+    <div className="min-h-dvh bg-gradient-to-b from-[#F5F3FF] via-[#FDF2F8]/30 to-[#F5F3FF] pb-20">
       {/* Gradient header with avatar */}
       <div className="bg-gradient-to-b from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] px-6 pb-12 pt-4">
         <div className="mb-8 flex items-center gap-3">
           <Link
             href="/"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5" />
