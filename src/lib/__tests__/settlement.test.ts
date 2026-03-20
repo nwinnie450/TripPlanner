@@ -1,4 +1,4 @@
-import { calculateSettlement } from "../settlement";
+import { calculateSettlement, calculateRemainingTransactions } from "../settlement";
 import type { Expense, Member } from "@/types";
 
 function makeMember(id: string, name: string): Member {
@@ -245,6 +245,50 @@ describe("calculateSettlement", () => {
 
       // Greedy algorithm produces at most N-1 transactions
       expect(transactions.length).toBeLessThanOrEqual(members.length - 1);
+    });
+
+    it("should produce no transactions when all balances are zero after payments", () => {
+      // Scenario: Lyn paid for flights, everyone paid Lyn back, then
+      // Sri and Mei added new accommodation expenses
+      const members = [
+        makeMember("W", "Winnie"),
+        makeMember("L", "Lyn"),
+        makeMember("M", "Mei"),
+        makeMember("K", "Kelvin"),
+        makeMember("S", "Sri"),
+      ];
+
+      const expenses = [
+        makeExpense({ expenseId: "e1", amount: 1130.25, paidBy: "L", splitBetween: ["W","L","M","K","S"] }),
+        makeExpense({ expenseId: "e2", amount: 478.98, paidBy: "S", splitBetween: ["W","L","M","K","S"] }),
+        makeExpense({ expenseId: "e3", amount: 183, paidBy: "M", splitBetween: ["W","L","M","K","S"] }),
+      ];
+
+      const { balances } = calculateSettlement(expenses, members);
+
+      // Everyone already paid Lyn their flight share (S$226.05 each)
+      const payments = [
+        { from: "W", to: "L", amount: 226.05 },
+        { from: "K", to: "L", amount: 226.05 },
+        { from: "M", to: "L", amount: 226.05 },
+        { from: "S", to: "L", amount: 226.05 },
+      ];
+
+      const remaining = calculateRemainingTransactions(balances, payments, members);
+
+      // After payments, Lyn should NOT appear as a creditor (she's been paid)
+      const lynsDebts = remaining.filter((t) => t.to === "L");
+      expect(lynsDebts).toHaveLength(0);
+
+      // Winnie and Kelvin should owe Sri or Mei (not Lyn)
+      const winniesDebts = remaining.filter((t) => t.from === "W");
+      const kelvinsDebts = remaining.filter((t) => t.from === "K");
+      expect(winniesDebts.length).toBeGreaterThan(0);
+      expect(kelvinsDebts.length).toBeGreaterThan(0);
+
+      // Total remaining should balance out
+      const totalOut = remaining.reduce((sum, t) => sum + t.amount, 0);
+      expect(totalOut).toBeGreaterThan(0);
     });
 
     it("should produce no transactions when all balances are zero", () => {

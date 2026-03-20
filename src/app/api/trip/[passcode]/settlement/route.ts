@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validatePasscodeFormat, lookupTrip } from "@/lib/passcode";
-import { calculateMultiCurrencySettlement } from "@/lib/settlement";
+import { calculateMultiCurrencySettlement, calculateRemainingTransactions } from "@/lib/settlement";
 import { ApiError, handleApiError } from "@/lib/errors";
 import { rateLimitGeneral } from "@/lib/rate-limit";
 import type { Payment } from "@/types";
@@ -34,23 +34,36 @@ export async function GET(
     );
 
     const payments: Payment[] = trip.payments ?? [];
+    const members = trip.members ?? [];
 
-    // Calculate paid amounts per transaction (from->to pair), grouped by currency
-    const paidMap = new Map<string, number>();
+    // Group payments by currency to match settlement currency groups
+    const paymentsByCurrency = new Map<string, { from: string; to: string; amount: number }[]>();
     for (const p of payments) {
       const currency = p.currency ?? trip.currency;
-      const key = `${currency}:${p.from}->${p.to}`;
-      paidMap.set(key, (paidMap.get(key) ?? 0) + p.amount);
+      if (!paymentsByCurrency.has(currency)) {
+        paymentsByCurrency.set(currency, []);
+      }
+      paymentsByCurrency.get(currency)!.push({ from: p.from, to: p.to, amount: p.amount });
     }
 
-    // Enrich transactions with paid/remaining info per currency group
+    // For each currency group, recalculate transactions factoring in payments
     const groups = settlements.map((settlement) => {
-      const enrichedTransactions = settlement.transactions.map((tx) => {
-        const key = `${settlement.currency}:${tx.from}->${tx.to}`;
-        const paid = Math.round((paidMap.get(key) ?? 0) * 100) / 100;
-        const remaining = Math.round(Math.max(0, tx.amount - paid) * 100) / 100;
-        return { ...tx, paid, remaining };
-      });
+      const currencyPayments = paymentsByCurrency.get(settlement.currency) ?? [];
+
+      // Calculate remaining transactions after accounting for payments
+      const remainingTransactions = calculateRemainingTransactions(
+        settlement.balances,
+        currencyPayments,
+        members,
+      );
+
+      // Enrich with paid=0, remaining=amount (these ARE the remaining amounts)
+      const enrichedTransactions = remainingTransactions.map((tx) => ({
+        ...tx,
+        paid: 0,
+        remaining: tx.amount,
+      }));
+
       return {
         currency: settlement.currency,
         balances: settlement.balances,

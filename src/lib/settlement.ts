@@ -81,6 +81,76 @@ export function calculateSettlement(
   return { balances, transactions };
 }
 
+/**
+ * Given raw expense-based balances and recorded payments,
+ * compute the remaining transactions needed to fully settle.
+ * Payments shift net positions: payer's balance goes up, receiver's goes down.
+ */
+export function calculateRemainingTransactions(
+  balances: Balance[],
+  payments: { from: string; to: string; amount: number }[],
+  members: Member[],
+): Transaction[] {
+  const memberMap = new Map(members.map((m) => [m.memberId, m.name]));
+
+  // Start from expense-based net balances
+  const netMap = new Map<string, number>();
+  for (const b of balances) {
+    netMap.set(b.memberId, b.net);
+  }
+
+  // Apply payments: payer's net goes up, receiver's net goes down
+  for (const p of payments) {
+    const fromNet = netMap.get(p.from) ?? 0;
+    const toNet = netMap.get(p.to) ?? 0;
+    netMap.set(p.from, fromNet + p.amount);
+    netMap.set(p.to, toNet - p.amount);
+  }
+
+  // Greedy debt simplification on adjusted balances
+  const creditors: { id: string; amount: number }[] = [];
+  const debtors: { id: string; amount: number }[] = [];
+
+  for (const [memberId, net] of netMap) {
+    const rounded = Math.round(net * 100) / 100;
+    if (rounded > 0.01) {
+      creditors.push({ id: memberId, amount: rounded });
+    } else if (rounded < -0.01) {
+      debtors.push({ id: memberId, amount: Math.abs(rounded) });
+    }
+  }
+
+  creditors.sort((a, b) => b.amount - a.amount);
+  debtors.sort((a, b) => b.amount - a.amount);
+
+  const transactions: Transaction[] = [];
+  let ci = 0;
+  let di = 0;
+
+  while (ci < creditors.length && di < debtors.length) {
+    const transfer = Math.min(creditors[ci].amount, debtors[di].amount);
+    const roundedTransfer = Math.round(transfer * 100) / 100;
+
+    if (roundedTransfer > 0) {
+      transactions.push({
+        from: debtors[di].id,
+        fromName: memberMap.get(debtors[di].id) ?? "",
+        to: creditors[ci].id,
+        toName: memberMap.get(creditors[ci].id) ?? "",
+        amount: roundedTransfer,
+      });
+    }
+
+    creditors[ci].amount -= transfer;
+    debtors[di].amount -= transfer;
+
+    if (creditors[ci].amount < 0.01) ci++;
+    if (debtors[di].amount < 0.01) di++;
+  }
+
+  return transactions;
+}
+
 export interface CurrencySettlement {
   currency: string;
   balances: Balance[];
