@@ -83,7 +83,7 @@ export default function ExpensesPage() {
             <div className="flex items-center gap-2">
               <ExportButton
                 getCSV={() => ({
-                  filename: `${(trip?.tripName ?? 'trip').replace(/\s+/g, '_')}_expenses.csv`,
+                  filename: `${(trip?.tripName ?? 'trip').replace(/[^a-z0-9_\-]/gi, '_')}_expenses.csv`,
                   content: formatExpensesCSV(expenses, members, currency),
                 })}
               />

@@ -146,7 +146,8 @@ export function formatExpensesCSV(
     escape(e.splitBetween.map((id) => memberMap.get(id) ?? id).join(', ')),
   ]);
 
-  return [header.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+  // UTF-8 BOM so Excel on Windows reads the file correctly
+  return '﻿' + [header.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
 }
 
 export function formatExpensesJson(
