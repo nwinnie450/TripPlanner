@@ -335,8 +335,8 @@ describe("calculateMultiCurrencySettlement", () => {
       const groups = calculateMultiCurrencySettlement(expenses, members, "SGD");
       expect(groups).toHaveLength(1);
       expect(groups[0].currency).toBe("SGD");
-      const alice = groups[0].balances.find((b) => b.memberId === "a")!;
-      expect(alice.net).toBe(40); // paid 60, owes 20
+      const aliceBalance = groups[0].balances.find((b) => b.memberId === "a")!;
+      expect(aliceBalance.net).toBe(40); // paid 60, owes 20
     });
   });
 
@@ -423,16 +423,16 @@ describe("calculateMultiCurrencySettlement", () => {
       ];
       const groups = calculateMultiCurrencySettlement(expenses, members, "SGD", { MYR: 0.30 });
       const sgdGroup = groups[0];
-      // Total SGD = 10 + 9 = 19. Each owes 19/3 ≈ 6.33
-      // Alice: paid 10 SGD, owes ~6.33 → net ~+3.67
+      // Total SGD = 10 + 9 = 19. sharePerPerson = floor(1900/3)/100 = 6.33, remainder = 0.01 → payer Alice absorbs it
+      // Alice: paid 10, owes 6.33, absorbs 0.01 remainder → net 10 - 6.33 - 0.01 = 3.66
       const aliceBalance = sgdGroup.balances.find((b) => b.memberId === "a")!;
-      expect(aliceBalance.net).toBeCloseTo(3.67, 1);
-      // Bob: paid 9 SGD (converted), owes ~6.33 → net ~+2.67
+      expect(aliceBalance.net).toBe(3.66);
+      // Bob: paid 9 SGD (converted), owes 6.33 → net 9 - 6.33 = 2.67
       const bobBalance = sgdGroup.balances.find((b) => b.memberId === "b")!;
-      expect(bobBalance.net).toBeCloseTo(2.67, 1);
-      // Charlie: paid 0, owes ~6.33 → net ~-6.33
+      expect(bobBalance.net).toBe(2.67);
+      // Charlie: paid 0, owes 6.33 → net -6.33
       const charlieBalance = sgdGroup.balances.find((b) => b.memberId === "c")!;
-      expect(charlieBalance.net).toBeCloseTo(-6.33, 1);
+      expect(charlieBalance.net).toBe(-6.33);
     });
 
     it("falls back to separate groups when exchange rate is missing for a currency", () => {
