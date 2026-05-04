@@ -9,10 +9,11 @@ import { formatCurrency } from '@/lib/constants';
 import CategoryFilter from '@/components/expenses/CategoryFilter';
 import ExpenseCard from '@/components/expenses/ExpenseCard';
 import ShareButton from '@/components/ui/ShareButton';
+import ExportButton from '@/components/ui/ExportButton';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
-import { formatExpensesJson } from '@/lib/formatExport';
+import { formatExpensesJson, formatExpensesCSV } from '@/lib/formatExport';
 
 export default function ExpensesPage() {
   const { passcode, currentMember } = useTripContext();
@@ -79,17 +80,25 @@ export default function ExpensesPage() {
             Expenses 💰
           </h1>
           {expenses.length > 0 && (
-            <ShareButton
-              getShareData={() => ({
-                title: `${trip?.tripName ?? 'Trip'} Expenses`,
-                text: formatExpensesJson(
-                  trip?.tripName ?? 'Trip',
-                  currency,
-                  expenses,
-                  members,
-                ),
-              })}
-            />
+            <div className="flex items-center gap-2">
+              <ExportButton
+                getCSV={() => ({
+                  filename: `${(trip?.tripName ?? 'trip').replace(/\s+/g, '_')}_expenses.csv`,
+                  content: formatExpensesCSV(expenses, members, currency),
+                })}
+              />
+              <ShareButton
+                getShareData={() => ({
+                  title: `${trip?.tripName ?? 'Trip'} Expenses`,
+                  text: formatExpensesJson(
+                    trip?.tripName ?? 'Trip',
+                    currency,
+                    expenses,
+                    members,
+                  ),
+                })}
+              />
+            </div>
           )}
         </div>
         {typeFilter === 'personal' && myPersonalBudget > 0 ? (

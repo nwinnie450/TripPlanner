@@ -125,6 +125,30 @@ export function formatItineraryText(
   return lines.join('\n');
 }
 
+export function formatExpensesCSV(
+  expenses: Expense[],
+  members: Member[],
+  baseCurrency: string,
+): string {
+  const memberMap = new Map(members.map((m) => [m.memberId, m.name]));
+
+  const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+
+  const header = ['Date', 'Description', 'Amount', 'Currency', 'Category', 'Type', 'Paid By', 'Split Between'];
+  const rows = expenses.map((e) => [
+    e.date,
+    escape(e.description),
+    e.amount.toFixed(2),
+    e.currency ?? baseCurrency,
+    e.category,
+    e.expenseType ?? 'group',
+    escape(memberMap.get(e.paidBy) ?? e.paidBy),
+    escape(e.splitBetween.map((id) => memberMap.get(id) ?? id).join(', ')),
+  ]);
+
+  return [header.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+}
+
 export function formatExpensesJson(
   tripName: string,
   currency: string,
