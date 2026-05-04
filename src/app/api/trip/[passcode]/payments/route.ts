@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validatePasscodeFormat, lookupTrip } from "@/lib/passcode";
 import { getCollection } from "@/lib/mongodb";
+import { addPaymentSchema } from "@/lib/validation";
 import { ApiError, handleApiError } from "@/lib/errors";
 import { rateLimitGeneral } from "@/lib/rate-limit";
 import { generateId } from "@/lib/utils";
@@ -57,15 +58,16 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { from, to, amount, currency, note, date } = body;
-
-    if (!from || !to || !amount || !date) {
-      throw new ApiError("VALIDATION_ERROR", "from, to, amount, and date are required", 400);
+    const parsed = addPaymentSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ApiError(
+        "VALIDATION_ERROR",
+        parsed.error.issues.map((i) => i.message).join(", "),
+        400
+      );
     }
 
-    if (typeof amount !== "number" || amount <= 0) {
-      throw new ApiError("VALIDATION_ERROR", "amount must be a positive number", 400);
-    }
+    const { from, to, amount, currency, note, date } = parsed.data;
 
     const memberIds = new Set(trip.members.map((m) => m.memberId));
     if (!memberIds.has(from)) {

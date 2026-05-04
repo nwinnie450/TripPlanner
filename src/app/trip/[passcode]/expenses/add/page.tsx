@@ -18,6 +18,7 @@ export default function AddExpensePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const defaultValues = {
     description: searchParams.get('title') ?? '',
@@ -41,6 +42,7 @@ export default function AddExpensePage() {
     splitBetween: string[];
   }) {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await fetch(`/api/trip/${passcode}/expenses`, {
         method: 'POST',
@@ -53,7 +55,12 @@ export default function AddExpensePage() {
       if (res.ok) {
         await mutate();
         router.back();
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setSubmitError(json?.message ?? 'Failed to save expense. Please try again.');
       }
+    } catch {
+      setSubmitError('Network error. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -91,6 +98,11 @@ export default function AddExpensePage() {
         </h1>
       </div>
       <div className="px-5 -mt-3">
+        {submitError && (
+          <div className="mb-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">
+            {submitError}
+          </div>
+        )}
         <div className="rounded-[20px] border-t-4 border-dashed border-[#A78BFA] bg-white p-6 shadow-lg">
           <ExpenseForm
             members={members}
