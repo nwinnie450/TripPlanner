@@ -82,10 +82,20 @@ export default function ExpensesPage() {
           {expenses.length > 0 && (
             <div className="flex items-center gap-2">
               <ExportButton
-                getCSV={() => ({
-                  filename: `${(trip?.tripName ?? 'trip').replace(/[^a-z0-9_\-]/gi, '_')}_expenses.csv`,
-                  content: formatExpensesCSV(expenses, members, currency),
-                })}
+                options={[
+                  {
+                    label: 'CSV',
+                    filename: `${(trip?.tripName ?? 'trip').replace(/[^a-z0-9_\-]/gi, '_')}_expenses.csv`,
+                    content: formatExpensesCSV(expenses, members, currency),
+                    mimeType: 'text/csv;charset=utf-8;',
+                  },
+                  {
+                    label: 'JSON',
+                    filename: `${(trip?.tripName ?? 'trip').replace(/[^a-z0-9_\-]/gi, '_')}_expenses.json`,
+                    content: formatExpensesJson(trip?.tripName ?? 'Trip', currency, expenses, members),
+                    mimeType: 'application/json',
+                  },
+                ]}
               />
               <ShareButton
                 getShareData={() => ({
