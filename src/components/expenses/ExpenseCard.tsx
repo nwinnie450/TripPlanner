@@ -59,7 +59,7 @@ export default function ExpenseCard({
             </div>
           </div>
           <p className="shrink-0 pl-3 font-[family-name:var(--font-display)] text-[18px] font-extrabold text-[#7C3AED]">
-            {formatCurrency(expense.amount, currency)}
+            {formatCurrency(expense.amount, expense.currency ?? currency)}
           </p>
         </div>
       </div>
