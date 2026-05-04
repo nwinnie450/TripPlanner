@@ -24,6 +24,7 @@ export default function EditExpensePage() {
     useExpenses(passcode);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
   if (tripLoading || membersLoading || expensesLoading)
@@ -46,6 +47,7 @@ export default function EditExpensePage() {
     splitBetween: string[];
   }) {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await fetch(
         `/api/trip/${passcode}/expenses/${expenseId}`,
@@ -58,7 +60,12 @@ export default function EditExpensePage() {
       if (res.ok) {
         await mutate();
         router.back();
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setSubmitError(json?.message ?? 'Failed to save expense. Please try again.');
       }
+    } catch {
+      setSubmitError('Network error. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -74,9 +81,11 @@ export default function EditExpensePage() {
       if (res.ok) {
         await mutate();
         router.replace(`/trip/${passcode}/expenses`);
+      } else {
+        setSubmitError('Failed to delete expense. Please try again.');
       }
     } catch {
-      alert('Failed to delete. Please try again.');
+      setSubmitError('Network error. Please check your connection and try again.');
     }
   }
 
@@ -100,6 +109,11 @@ export default function EditExpensePage() {
         </h1>
       </div>
       <div className="px-5 -mt-3">
+        {submitError && (
+          <div className="mb-3 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">
+            {submitError}
+          </div>
+        )}
         <div className="rounded-[20px] border-t-4 border-dashed border-[#A78BFA] bg-white p-6 shadow-lg">
           <ExpenseForm
             members={members}

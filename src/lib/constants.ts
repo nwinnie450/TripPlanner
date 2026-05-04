@@ -80,7 +80,7 @@ export function formatCurrency(amount: number, currency: string = 'SGD'): string
     INR: '\u20B9',
   };
   const symbol = symbols[currency] || currency + ' ';
-  return `${symbol}${Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: amount % 1 !== 0 ? 2 : 0 })}`;
+  return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function mapItineraryCategoryToExpense(category?: ItineraryCategory): ExpenseCategory {

@@ -42,6 +42,23 @@ export async function PATCH(
       throw new ApiError("ITEM_NOT_FOUND", "Expense not found", 404);
     }
 
+    const memberIds = new Set(trip.members.map((m) => m.memberId));
+
+    if (parsed.data.paidBy !== undefined && !memberIds.has(parsed.data.paidBy)) {
+      throw new ApiError("VALIDATION_ERROR", "paidBy must be a valid member ID", 400);
+    }
+
+    if (parsed.data.splitBetween !== undefined) {
+      const invalid = parsed.data.splitBetween.filter((id) => !memberIds.has(id));
+      if (invalid.length > 0) {
+        throw new ApiError(
+          "VALIDATION_ERROR",
+          `Invalid member IDs in splitBetween: ${invalid.join(", ")}`,
+          400
+        );
+      }
+    }
+
     const now = new Date().toISOString();
     const setFields: Record<string, unknown> = {
       "expenses.$[elem].updatedAt": now,

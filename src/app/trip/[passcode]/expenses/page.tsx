@@ -32,9 +32,22 @@ export default function ExpensesPage() {
   const currency = trip?.currency ?? 'USD';
   const groupExpenses = expenses.filter((e) => e.expenseType !== 'personal');
   const personalExpenses = expenses.filter((e) => e.expenseType === 'personal');
-  const groupTotal = groupExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const personalTotal = personalExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+  // Separate base-currency totals from other currencies to avoid mixing amounts
+  const baseGroupExpenses = groupExpenses.filter((e) => (e.currency ?? currency) === currency);
+  const basePersonalExpenses = personalExpenses.filter((e) => (e.currency ?? currency) === currency);
+  const groupTotal = baseGroupExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const personalTotal = basePersonalExpenses.reduce((sum, e) => sum + e.amount, 0);
   const perPerson = members.length > 0 ? groupTotal / members.length : 0;
+
+  // Per-currency totals for non-base currencies
+  const otherGroupTotals = new Map<string, number>();
+  for (const e of groupExpenses) {
+    const cur = e.currency ?? currency;
+    if (cur !== currency) {
+      otherGroupTotals.set(cur, (otherGroupTotals.get(cur) ?? 0) + e.amount);
+    }
+  }
 
   const myPersonalBudget = currentMember
     ? (trip?.personalBudgets?.[currentMember.memberId] ?? 0)
@@ -42,7 +55,9 @@ export default function ExpensesPage() {
   const myPersonalExpenses = personalExpenses.filter(
     (e) => e.paidBy === currentMember?.memberId,
   );
-  const myPersonalSpent = myPersonalExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const myPersonalSpent = myPersonalExpenses
+    .filter((e) => (e.currency ?? currency) === currency)
+    .reduce((sum, e) => sum + e.amount, 0);
 
   const filtered = typeFilter === 'all'
     ? expenses
@@ -97,6 +112,11 @@ export default function ExpensesPage() {
               of {formatCurrency(trip?.budget ?? 0, currency)} budget &middot;{' '}
               {formatCurrency(perPerson, currency)}/person
             </p>
+            {[...otherGroupTotals.entries()].map(([cur, total]) => (
+              <p key={cur} className="mt-1 text-[13px] text-white/60">
+                + {formatCurrency(total, cur)} group ({cur})
+              </p>
+            ))}
             {personalTotal > 0 && (
               <p className="mt-1 text-[13px] text-white/60">
                 + {formatCurrency(personalTotal, currency)} personal

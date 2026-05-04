@@ -122,6 +122,20 @@ export const updateTripSchema = z.object({
   personalBudgets: z.record(z.string(), z.number().min(0)).optional(),
 });
 
+export const addPaymentSchema = z
+  .object({
+    from: z.string().min(1),
+    to: z.string().min(1),
+    amount: z.number().positive(),
+    currency: z.string().min(3).max(3).optional(),
+    note: z.string().max(200).optional(),
+    date: z.iso.date(),
+  })
+  .refine((data) => data.from !== data.to, {
+    message: "from and to must be different members",
+    path: ["to"],
+  });
+
 export const addChecklistItemSchema = z.object({
   text: z.string().min(1).max(200),
   assignee: z.string().optional(),
