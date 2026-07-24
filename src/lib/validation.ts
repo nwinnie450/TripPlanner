@@ -95,6 +95,25 @@ export const addExpenseSchema = z.object({
   createdBy: z.string().min(1),
 });
 
+export const importExpensesSchema = z.object({
+  createdBy: z.string().min(1),
+  expenses: z
+    .array(
+      z.object({
+        amount: z.number().positive(),
+        currency: z.string().min(3).max(3).optional(),
+        description: z.string().min(1).max(200),
+        category: z.enum(EXPENSE_CATEGORIES as [string, ...string[]]),
+        expenseType: z.enum(['personal', 'group']).optional(),
+        paidBy: z.string().min(1),
+        splitBetween: z.array(z.string().min(1)).min(1).max(MEMBER_LIMIT),
+        date: z.iso.date(),
+      }),
+    )
+    .min(1)
+    .max(500),
+});
+
 export const updateExpenseSchema = z.object({
   amount: z.number().positive().optional(),
   currency: z.string().min(3).max(3).optional(),
@@ -156,4 +175,5 @@ export type UpdateItineraryItemInput = z.infer<
 >;
 export type AddExpenseInput = z.infer<typeof addExpenseSchema>;
 export type UpdateExpenseInput = z.infer<typeof updateExpenseSchema>;
+export type ImportExpensesInput = z.infer<typeof importExpensesSchema>;
 export type UpdateTripInput = z.infer<typeof updateTripSchema>;
