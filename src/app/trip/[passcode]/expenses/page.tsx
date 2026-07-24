@@ -9,6 +9,7 @@ import { useMembers } from '@/hooks/useMembers';
 import { useExpenses } from '@/hooks/useExpenses';
 import { formatCurrency } from '@/lib/constants';
 import CategoryFilter from '@/components/expenses/CategoryFilter';
+import PaidByFilter from '@/components/expenses/PaidByFilter';
 import ExpenseCard from '@/components/expenses/ExpenseCard';
 import ShareButton from '@/components/ui/ShareButton';
 import ExportButton from '@/components/ui/ExportButton';
@@ -23,6 +24,7 @@ export default function ExpensesPage() {
   const { members } = useMembers(passcode);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<'all' | 'group' | 'personal'>('all');
+  const [paidByFilter, setPaidByFilter] = useState<string | null>(null);
   const {
     expenses,
     isLoading,
@@ -62,11 +64,15 @@ export default function ExpensesPage() {
     .filter((e) => (e.currency ?? currency) === currency)
     .reduce((sum, e) => sum + e.amount, 0);
 
-  const filtered = typeFilter === 'all'
+  const typeFiltered = typeFilter === 'all'
     ? expenses
     : typeFilter === 'personal'
       ? personalExpenses
       : groupExpenses;
+
+  const filtered = paidByFilter
+    ? typeFiltered.filter((e) => e.paidBy === paidByFilter)
+    : typeFiltered;
 
   return (
     <div className="min-h-dvh bg-gradient-to-b from-[#F5F3FF] via-[#FAF5FF] to-white">
@@ -175,22 +181,51 @@ export default function ExpensesPage() {
             );
           })}
         </div>
-        <div className="mb-4">
+        <div className="mb-3">
           <CategoryFilter
             selected={categoryFilter}
             onSelect={setCategoryFilter}
           />
         </div>
+        <div className="mb-4">
+          <PaidByFilter
+            members={members}
+            selected={paidByFilter}
+            onSelect={setPaidByFilter}
+          />
+        </div>
+
+        {expenses.length > 0 && (
+          <p className="mb-3 text-[13px] font-medium text-slate-500">
+            {filtered.length} record{filtered.length === 1 ? '' : 's'}
+            {paidByFilter && (
+              <> paid by <span className="font-bold text-slate-700">{members.find((m) => m.memberId === paidByFilter)?.name}</span></>
+            )}
+          </p>
+        )}
 
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center rounded-[20px] bg-white/60 border border-dashed border-purple-200 py-16 text-center">
             <span className="mb-3 text-[56px]">🧾</span>
             <p className="text-[18px] font-bold text-slate-900">
-              No expenses yet!
+              {expenses.length === 0 ? 'No expenses yet!' : 'No expenses match your filters'}
             </p>
-            <p className="mt-1 text-[13px] text-slate-500">
-              Tap the + button to add your first expense.
-            </p>
+            {expenses.length === 0 ? (
+              <p className="mt-1 text-[13px] text-slate-500">
+                Tap the + button to add your first expense.
+              </p>
+            ) : (
+              <button
+                onClick={() => {
+                  setCategoryFilter(null);
+                  setTypeFilter('all');
+                  setPaidByFilter(null);
+                }}
+                className="mt-3 rounded-full bg-purple-100 px-4 py-2 text-[13px] font-bold text-purple-700 hover:bg-purple-200"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col gap-3">
