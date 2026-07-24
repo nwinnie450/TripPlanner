@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { Upload } from 'lucide-react';
 import { useTripContext } from '@/context/TripContext';
 import { useTrip } from '@/hooks/useTrip';
 import { useMembers } from '@/hooks/useMembers';
@@ -79,8 +81,16 @@ export default function ExpensesPage() {
           <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">
             Expenses 💰
           </h1>
-          {expenses.length > 0 && (
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/trip/${passcode}/expenses/import`}
+              className="flex items-center gap-1.5 rounded-lg border border-white/40 px-3 py-1.5 text-[13px] font-medium text-white hover:bg-white/10"
+            >
+              <Upload size={14} />
+              Import
+            </Link>
+            {expenses.length > 0 && (
+              <>
               <ExportButton
                 options={[
                   {
@@ -108,8 +118,9 @@ export default function ExpensesPage() {
                   ),
                 })}
               />
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </div>
         {typeFilter === 'personal' && myPersonalBudget > 0 ? (
           <div className="relative bg-white/20 backdrop-blur-sm rounded-[20px] p-4 border border-white/10">
